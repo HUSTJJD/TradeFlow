@@ -1,0 +1,114 @@
+# 智能交易系统依赖包
+# 支持多券商API和GUI界面
+
+# 核心数据科学库
+pandas
+numpy
+scipy
+
+# 技术分析
+ta-lib
+# 配置管理
+PyYAML
+
+# 日期时间处理
+python-dateutil
+pytz
+
+# 网络请求
+requests
+websocket-client
+
+# 数据库（可选）
+sqlalchemy
+
+# 图表绘制
+matplotlib
+plotly
+seaborn
+
+
+# 高级GUI（可选）
+customtkinter  # 现代主题的Tkinter
+
+# 定时任务
+schedule
+
+# 日志记录
+loguru  # 更友好的日志库
+
+# 券商API SDK
+
+# 长桥OpenAPI SDK
+longport
+
+# Interactive Brokers API
+ib_async
+
+# QMT相关（需要券商特定安装）
+xtquant  # 通常由券商提供
+
+# 数据源API（备用）
+yfinance  # Yahoo Finance数据
+akshare   # 国内财经数据
+
+# 回测引擎
+backtrader  # 专业回测框架
+
+# 机器学习（可选）
+scikit-learn
+pytorch
+
+# 性能分析
+memory_profiler
+psutil
+
+# 测试框架
+pytest
+pytest-cov
+
+# 代码质量
+black
+flake8
+mypy
+
+# 文档生成
+sphinx
+sphinx-rtd-theme
+
+# 其他工具
+tqdm  # 进度条
+colorama # 彩色输出
+python-dotenv  # 环境变量管理
+
+# 开发工具
+ipython
+jupyter
+notebook
+# 版本管理相关（可选）
+gitpython
+# 安全相关
+cryptography
+
+# 序列化
+msgpack
+
+# Web框架（可选，用于Web界面）
+flask
+flask-socketio
+
+# 异步支持（可选）
+asyncio  # Python标准库
+aiohttp
+
+# 平台特定依赖（Windows）
+pywin32  # Windows API访问
+
+# 平台特定依赖（Linux）
+# 通常不需要额外依赖
+
+# 平台特定依赖（macOS）
+# 通常不需要额外依赖
+
+# 版本锁定（生产环境建议）
+# 在生产环境中建议锁定具体版本号以避免兼容性问题
