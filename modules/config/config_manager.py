@@ -45,126 +45,13 @@ class ConfigManager:
             with open(self.config_path, 'r', encoding='utf-8') as f:
                 config = yaml.safe_load(f)
             
-            # 设置默认值
-            default_config = self._get_default_config()
-            config = self._merge_configs(default_config, config)
-            
             self.logger.info(f"配置文件加载成功: {self.config_path}")
             return config
             
         except FileNotFoundError:
-            self.logger.warning(f"配置文件不存在，使用默认配置: {self.config_path}")
-            return self._get_default_config()
+            raise FileNotFoundError(f"配置文件不存在: {self.config_path}")
         except Exception as e:
-            self.logger.error(f"配置文件加载失败: {e}")
-            return self._get_default_config()
-    
-    def _get_default_config(self) -> Dict[str, Any]:
-        """获取默认配置"""
-        return {
-            "brokers": {
-                "LongPort": {
-                    "enabled": True,
-                    "description": "长桥证券 - 支持港股、美股",
-                    "app_key": "your_app_key",
-                    "app_secret": "your_app_secret", 
-                    "access_token": "your_access_token",
-                    "quote_url": "wss://openapi-quote.LongPortapp.com/v2",
-                    "trade_url": "wss://openapi-trade.LongPortapp.com/v2",
-                    "commission_rate": 0.001,
-                    "min_commission": 0,
-                    "supported_features": ["real_time_data", "historical_data", "trading", "portfolio"]
-                },
-                "ibkr": {
-                    "enabled": True,
-                    "description": "Interactive Brokers - 支持全球市场",
-                    "host": "127.0.0.1",
-                    "port": 7497,
-                    "client_id": 1,
-                    "account": "your_account",
-                    "commission_rate": 0.0005,
-                    "min_commission": 1.0,
-                    "supported_features": ["real_time_data", "historical_data", "trading", "portfolio", "options"]
-                },
-                "qmt": {
-                    "enabled": False,
-                    "description": "QMT量化交易平台 - 支持A股",
-                    "account_id": "your_account_id",
-                    "simulated": True,
-                    "commission_rate": 0.0003,
-                    "min_commission": 5.0,
-                    "supported_features": ["real_time_data", "historical_data", "trading", "quant_strategy"]
-                }
-            },
-            "market_broker_mapping": {
-                "HK": "LongPort",  # 港股使用长桥
-                "US": "ibkr",        # 美股使用IBKR
-                "CN": "qmt"          # A股使用QMT
-            },
-            "markets": {
-                "HK": {"enabled": True, "trading_hours": "09:30-16:00"},
-                "US": {"enabled": True, "trading_hours": "21:30-04:00"},
-                "CN": {"enabled": False, "trading_hours": "09:30-15:00"}
-            },
-            "products": {
-                "stock": {"enabled": True},
-                "etf": {"enabled": True},
-                "warrant": {"enabled": False},
-                "cbbc": {"enabled": False},
-                "option": {"enabled": False}
-            },
-            "screening": {
-                "batch_size": 100,
-                "min_volume": 1000000,
-                "max_volatility": 0.5,
-                "rsi_threshold": 30,
-                "ma_period": 20
-            },
-            "trading": {
-                "max_position_size": 0.1,
-                "stop_loss": 0.05,
-                "take_profit": 0.15,
-                "commission_rate": 0.001
-            },
-            "backtest": {
-                "enabled": True,
-                "initial_cash": 1000000.0,
-                "auto_backtest": False,
-                "default_start_date": "2024-01-01",
-                "default_end_date": "2024-12-31",
-                "max_backtest_days": 1825,
-                "risk_free_rate": 0.02,
-                "commission": 0.001,
-                "slippage": 0.001,
-                "metrics": [
-                    "total_return",
-                    "annual_return", 
-                    "sharpe_ratio",
-                    "max_drawdown",
-                    "win_rate"
-                ]
-            },
-            "gui": {
-                "theme": "light",
-                "auto_start": False,
-                "update_interval": 1000,
-                "show_notifications": True
-            }
-        }
-    
-    def _merge_configs(self, default: Dict[str, Any], user: Dict[str, Any]) -> Dict[str, Any]:
-        """合并默认配置和用户配置"""
-        result = default.copy()
-        
-        def merge_dict(d1, d2):
-            for key, value in d2.items():
-                if key in d1 and isinstance(d1[key], dict) and isinstance(value, dict):
-                    merge_dict(d1[key], value)
-                else:
-                    d1[key] = value
-        
-        merge_dict(result, user)
-        return result
+            raise Exception(f"配置文件加载失败: {e}")
     
     def get_broker_config(self, broker_type: str) -> Dict[str, Any]:
         """获取券商配置"""
