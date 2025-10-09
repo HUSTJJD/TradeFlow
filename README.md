@@ -49,7 +49,7 @@
 
 1. **克隆项目**
 ```bash
-git clone https://github.com/your-repo/trading-system.git
+git clone https://github.com/HUSTJJD/TradeFlow.git
 cd trading-system
 ```
 
@@ -269,18 +269,10 @@ tail -f trading_system.log
 
 本项目采用MIT许可证，详见LICENSE文件。
 
-## 🙏 致谢
-
-感谢以下开源项目的支持：
-- [pandas](https://pandas.pydata.org/) - 数据分析
-- [tkinter](https://docs.python.org/3/library/tkinter.html) - GUI框架
-- [长桥OpenAPI](https://open.longbridgeapp.com/) - 港股美股API
-- [IBKR API](https://interactivebrokers.github.io/) - 全球市场API
-
 ## 📞 联系方式
 
-- 项目主页: https://github.com/your-repo/trading-system
-- 问题反馈: https://github.com/your-repo/trading-system/issues
+- 项目主页: https://github.com/HUSTJJD/TradeFlow
+- 问题反馈: https://github.com/HUSTJJD/TradeFlow/issues
 - 邮箱: your-email@example.com
 
 ---

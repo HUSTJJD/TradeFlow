@@ -227,7 +227,7 @@ class LongPortBroker(BrokerInterface):
         
         try:
             # 转换周期
-            from LongPort.openapi import Period, AdjustType
+            from longport.openapi import Period, AdjustType
             period_mapping = {
                 "1min": Period.Min1,
                 "5min": Period.Min5,
