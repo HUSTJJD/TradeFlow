@@ -169,10 +169,10 @@ def demo_gui_functionality():
         return False
 
 
-def demo_development_mode():
-    """演示开发模式功能"""
+def demo_backtest_mode():
+    """演示回测模式功能"""
     print("\n" + "=" * 60)
-    print("开发模式功能演示")
+    print("回测模式功能演示")
     print("=" * 60)
     
     try:
@@ -181,27 +181,28 @@ def demo_development_mode():
         
         print("回测分析功能:")
         print("  📅 历史数据回测")
-        print("  ⚙️ 策略参数优化")
         print("  📊 绩效报告生成")
-        print("  🔍 样本外验证")
+        print("  📈 资金曲线分析")
+        print("  ⚖️ 风险指标计算")
         
-        print("\n策略优化演示:")
-        print("  优化参数: RSI阈值, 移动平均周期")
-        print("  优化方法: 网格搜索")
-        print("  评估指标: 夏普比率")
+        print("\n回测配置演示:")
+        print("  时间范围: 自定义起止日期")
+        print("  市场选择: 多市场支持")
+        print("  策略参数: 可配置交易规则")
+        print("  手续费率: 真实交易成本模拟")
         
-        # 模拟优化结果
-        print("\n模拟优化结果:")
-        print("  最佳参数: RSI阈值=30, MA周期=20")
-        print("  夏普比率: 1.85")
-        print("  最大回撤: -12.5%")
-        print("  年化收益: 25.3%")
+        # 模拟回测结果
+        print("\n模拟回测结果:")
+        print("  总收益率: 18.5%")
+        print("  夏普比率: 1.65")
+        print("  最大回撤: -15.2%")
+        print("  年化收益: 22.3%")
         
-        print("\n开发工具:")
-        print("  📝 策略代码编辑器")
-        print("  🔧 参数调试工具")
-        print("  📋 回测结果对比")
-        print("  💾 策略模板库")
+        print("\n回测工具:")
+        print("  📊 绩效图表展示")
+        print("  📋 交易记录查看")
+        print("  💾 结果导出功能")
+        print("  🔄 参数对比分析")
         
         return True
         
@@ -209,7 +210,7 @@ def demo_development_mode():
         print(f"回测模块导入失败: {e}")
         return False
     except Exception as e:
-        print(f"开发模式演示失败: {e}")
+        print(f"回测模式演示失败: {e}")
         return False
 
 
@@ -322,17 +323,19 @@ def main():
     if not check_dependencies():
         print("\n⚠️  部分依赖缺失，演示功能可能受限")
     
-    # 执行各个演示模块
-    demos = [
-        ("券商管理", demo_broker_management),
-        ("交易系统", demo_trading_system),
-        ("GUI功能", demo_gui_functionality),
-        ("开发模式", demo_development_mode),
-        ("高级功能", demo_advanced_features)
+    # 功能演示菜单
+    demo_functions = [
+        ("系统概览", demo_system_overview),
+        ("券商功能", demo_broker_features),
+        ("筛选策略", demo_screening_strategy),
+        ("交易执行", demo_trading_execution),
+        ("回测模式", demo_backtest_mode),
+        ("高级功能", demo_advanced_features),
+        ("GUI界面", demo_gui_interface)
     ]
     
     results = []
-    for demo_name, demo_func in demos:
+    for demo_name, demo_func in demo_functions:
         try:
             success = demo_func()
             results.append((demo_name, success))
@@ -353,13 +356,13 @@ def main():
         if success:
             successful_demos += 1
     
-    print(f"\n总演示模块: {len(demos)}")
+    print(f"\n总演示模块: {len(demo_functions)}")
     print(f"成功演示: {successful_demos}")
-    print(f"成功率: {successful_demos/len(demos)*100:.1f}%")
+    print(f"成功率: {successful_demos/len(demo_functions)*100:.1f}%")
     
     # 下一步建议
     print("\n🎯 下一步建议:")
-    if successful_demos == len(demos):
+    if successful_demos == len(demo_functions):
         print("1. 配置真实的券商API参数")
         print("2. 运行 'python main.py --mode gui' 启动图形界面")
         print("3. 在GUI中测试实际交易功能")

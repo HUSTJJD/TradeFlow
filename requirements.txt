@@ -27,9 +27,8 @@ matplotlib
 plotly
 seaborn
 
-
-# 高级GUI（可选）
-customtkinter  # 现代主题的Tkinter
+# GUI框架
+PyQt6
 
 # 定时任务
 schedule
@@ -57,7 +56,7 @@ backtrader  # 专业回测框架
 
 # 机器学习（可选）
 scikit-learn
-pytorch
+torch
 
 # 性能分析
 memory_profiler

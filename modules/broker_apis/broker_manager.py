@@ -10,11 +10,34 @@ from .broker_factory import BrokerFactory
 class BrokerManager:
     """券商管理器"""
     
-    def __init__(self, broker_configs: Dict[str, Dict[str, Any]]):
-        self.broker_configs = broker_configs
+    def __init__(self, config_manager):
+        """
+        初始化券商管理器
+        
+        Args:
+            config_manager: 配置管理器对象，包含券商配置信息
+        """
+        self.config_manager = config_manager
+        self.broker_configs = self._get_broker_configs()
         self.active_brokers: Dict[str, BrokerInterface] = {}
         self.market_broker_mapping: Dict[Market, str] = {}
         self._initialize_brokers()
+    
+    def _get_broker_configs(self) -> Dict[str, Dict[str, Any]]:
+        """从配置管理器获取券商配置"""
+        try:
+            # 尝试从配置管理器获取券商配置
+            if hasattr(self.config_manager, 'get_broker_configs'):
+                return self.config_manager.get_broker_configs()
+            elif hasattr(self.config_manager, 'config') and 'brokers' in self.config_manager.config:
+                return self.config_manager.config.get('brokers', {})
+            else:
+                # 返回空配置
+                print("警告: 无法获取券商配置，使用空配置")
+                return {}
+        except Exception as e:
+            print(f"获取券商配置失败: {e}")
+            return {}
     
     def _initialize_brokers(self):
         """初始化券商连接"""

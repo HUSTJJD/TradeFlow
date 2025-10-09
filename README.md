@@ -244,9 +244,9 @@ class NewPanel(ttk.Frame):
 - 确认市场状态
 
 ### 日志查看
-系统日志保存在 `trading_system.log`：
+系统日志保存在 `trading_flow.log`：
 ```bash
-tail -f trading_system.log
+tail -f trading_flow.log
 ```
 
 ## 🤝 贡献指南

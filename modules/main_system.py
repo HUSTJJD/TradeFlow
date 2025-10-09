@@ -23,9 +23,9 @@ class TradingSystem:
     def __init__(self, config_path: str = "config.yaml"):
         self.config_manager = ConfigManager(config_path)
         self.broker_manager = BrokerManager(self.config_manager.get_all_broker_configs())
-        self.data_provider = MarketDataProvider(self.config_manager, self.broker_manager)
+        self.data_provider = MarketDataProvider(self.config_manager)
         self.screening_engine = ScreeningEngine()
-        self.trading_engine = TradingEngine(self.config_manager, self.broker_manager)
+        self.trading_engine = TradingEngine(self.config_manager)
         self.backtest_engine = BacktestEngine(self.config_manager)
         self.logger = Logger("trading_system")
         
@@ -75,7 +75,7 @@ class TradingSystem:
         if not self._is_trading_time():
             self.logger.info("当前不是交易模式运行时间")
             return []
-        
+
         self.logger.info("开始运行交易模式...")
         
         # 检查券商连接状态
@@ -107,9 +107,9 @@ class TradingSystem:
         self.logger.info(f"交易模式完成，共执行 {len(executed_trades)} 笔交易")
         return executed_trades
     
-    def run_development_mode(self, backtest_config: Dict[str, Any] = None):
-        """运行开发模式（回测和策略优化）"""
-        self.logger.info("开始运行开发模式...")
+    def run_backtest_mode(self, backtest_config: Dict[str, Any] = None):
+        """运行回测模式"""
+        self.logger.info("开始运行回测模式...")
         
         # 默认回测配置
         if backtest_config is None:
@@ -143,7 +143,7 @@ class TradingSystem:
                 self.system_status["last_backtest_time"] = datetime.now()
                 self.system_status["total_backtests_run"] += 1
                 
-                self.logger.info("开发模式完成")
+                self.logger.info("回测模式完成")
                 return {
                     "success": True,
                     "backtest_results": backtest_results,
@@ -154,93 +154,8 @@ class TradingSystem:
                 return {"success": False, "error": backtest_results.get('error')}
                 
         except Exception as e:
-            self.logger.error(f"开发模式执行失败: {e}")
+            self.logger.error(f"回测模式执行失败: {e}")
             return {"success": False, "error": str(e)}
-    
-    def optimize_strategy_parameters(self, parameter_ranges: Dict[str, Any]):
-        """优化策略参数"""
-        self.logger.info("开始策略参数优化...")
-        
-        # 简化实现：网格搜索
-        best_params = {}
-        best_performance = -float('inf')
-        
-        # 示例：优化RSI阈值和移动平均线周期
-        rsi_thresholds = parameter_ranges.get('rsi_thresholds', [20, 30, 40, 50, 60, 70, 80])
-        ma_periods = parameter_ranges.get('ma_periods', [5, 10, 20, 30, 50])
-        
-        for rsi_threshold in rsi_thresholds:
-            for ma_period in ma_periods:
-                try:
-                    # 使用不同参数运行回测
-                    strategy_config = {
-                        "rsi_threshold": rsi_threshold,
-                        "ma_period": ma_period
-                    }
-                    
-                    backtest_config = {
-                        "start_date": "2024-01-01",
-                        "end_date": "2024-06-30",
-                        "markets": self._get_enabled_markets(),
-                        "products": self._get_enabled_products(),
-                        "strategy_config": strategy_config
-                    }
-                    
-                    results = self.run_development_mode(backtest_config)
-                    
-                    if results.get("success") and results.get("backtest_results"):
-                        performance = results["backtest_results"].get("sharpe_ratio", 0)
-                        
-                        if performance > best_performance:
-                            best_performance = performance
-                            best_params = strategy_config
-                            
-                except Exception as e:
-                    self.logger.warning(f"参数优化失败 ({rsi_threshold}, {ma_period}): {e}")
-                    continue
-        
-        self.logger.info(f"策略参数优化完成，最佳参数: {best_params}, 夏普比率: {best_performance:.2f}")
-        return {
-            "best_parameters": best_params,
-            "best_performance": best_performance
-        }
-    
-    def validate_strategy_on_out_of_sample_data(self, 
-                                               train_period: Dict[str, str],
-                                               test_period: Dict[str, str]):
-        """在样本外数据上验证策略"""
-        self.logger.info("开始样本外验证...")
-        
-        # 1. 在训练期优化参数
-        train_config = {
-            "start_date": train_period["start"],
-            "end_date": train_period["end"],
-            "markets": self._get_enabled_markets(),
-            "products": self._get_enabled_products()
-        }
-        
-        optimization_result = self.optimize_strategy_parameters({
-            "rsi_thresholds": [20, 30, 40, 50, 60, 70, 80],
-            "ma_periods": [5, 10, 20, 30, 50]
-        })
-        
-        # 2. 在测试期验证策略
-        test_config = {
-            "start_date": test_period["start"],
-            "end_date": test_period["end"],
-            "markets": self._get_enabled_markets(),
-            "products": self._get_enabled_products(),
-            "strategy_config": optimization_result["best_parameters"]
-        }
-        
-        validation_results = self.run_development_mode(test_config)
-        
-        return {
-            "optimization_result": optimization_result,
-            "validation_results": validation_results,
-            "train_period": train_period,
-            "test_period": test_period
-        }
     
     def get_broker_status(self) -> Dict[str, Any]:
         """获取券商状态信息"""
@@ -529,9 +444,9 @@ class TradingSystem:
         # 交易时段每30分钟运行一次交易
         schedule.every(30).minutes.do(self.run_trading_mode)
         
-        # 开发模式：每周运行一次回测（可选）
+        # 回测模式：每周运行一次回测（可选）
         if self.config_manager.get_backtest_config().get('auto_backtest', False):
-            schedule.every().week.do(self.run_development_mode)
+            schedule.every().week.do(self.run_backtest_mode)
         
         self.logger.info("定时任务已启动")
         

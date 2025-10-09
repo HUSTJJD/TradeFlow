@@ -103,11 +103,9 @@ def test_config_module():
         etf_enabled = config_manager.is_product_enabled(ProductType.ETF)
         print(f"✓ 产品配置检查: STOCK={stock_enabled}, ETF={etf_enabled}")
         
-        # 测试回测配置（新增）
+        # 检查回测配置
         backtest_config = config_manager.get_backtest_config()
-        development_config = config_manager.get_development_config()
         print(f"✓ 回测配置检查: enabled={backtest_config.get('enabled')}")
-        print(f"✓ 开发模式配置检查: enabled={development_config.get('enabled')}")
         
         # 测试配置验证
         validation = config_manager.validate_config()
@@ -292,9 +290,9 @@ def test_main_system():
         return False
 
 
-def test_development_mode_scenarios():  # 新增测试函数
-    """测试开发模式场景"""
-    print("\n=== 测试开发模式场景 ===")
+def test_backtest_mode_scenarios():  # 修改测试函数
+    """测试回测模式场景"""
+    print("\n=== 测试回测模式场景 ===")
     
     try:
         from modules.main_system import TradingSystem
@@ -303,20 +301,17 @@ def test_development_mode_scenarios():  # 新增测试函数
         # 简化测试：只测试函数调用
         print("测试场景: 基本回测接口")
         
-        # 测试参数优化接口
+        # 测试回测接口
         try:
-            result = system.optimize_strategy_parameters({
-                "rsi_thresholds": [30, 40, 50],
-                "ma_periods": [10, 20]
-            })
-            print(f"✓ 参数优化接口测试完成")
+            result = system.run_backtest_mode()
+            print(f"✓ 回测接口测试完成")
         except Exception as e:
-            print(f"⚠️ 参数优化接口测试警告: {e}")
+            print(f"⚠️ 回测接口测试警告: {e}")
         
         return True
         
     except Exception as e:
-        print(f"⚠️ 开发模式场景测试警告: {e}")
+        print(f"⚠️ 回测模式场景测试警告: {e}")
         return True  # 标记为通过，因为这是可选功能
 
 
@@ -339,10 +334,10 @@ def main():
     test_results.append(("配置管理", test_config_module()))
     test_results.append(("产品类型", test_product_module()))
     test_results.append(("筛选策略", test_screening_module()))
-    test_results.append(("回测模块", test_backtest_module()))  # 新增
+    test_results.append(("回测模块", test_backtest_module()))
     test_results.append(("工具函数", test_utils_module()))
     test_results.append(("主系统", test_main_system()))
-    test_results.append(("开发模式场景", test_development_mode_scenarios()))  # 新增
+    test_results.append(("回测模式场景", test_backtest_mode_scenarios()))  # 修改
     
     # 输出测试结果
     print("\n" + "=" * 50)

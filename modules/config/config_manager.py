@@ -26,7 +26,7 @@ class ProductType(Enum):
 
 class BrokerType(Enum):
     """券商类型枚举"""
-    LongPort = "LongPort"  # 长桥
+    LongPort = "longport"  # 长桥
     IBKR = "ibkr"              # Interactive Brokers
     QMT = "qmt"                # QMT
 
@@ -132,14 +132,17 @@ class ConfigManager:
                 "auto_backtest": False,
                 "default_start_date": "2024-01-01",
                 "default_end_date": "2024-12-31",
-                "max_backtest_days": 365 * 5,
-                "risk_free_rate": 0.02
-            },
-            "development": {
-                "enabled": True,
-                "parameter_optimization": True,
-                "out_of_sample_validation": True,
-                "report_generation": True
+                "max_backtest_days": 1825,
+                "risk_free_rate": 0.02,
+                "commission": 0.001,
+                "slippage": 0.001,
+                "metrics": [
+                    "total_return",
+                    "annual_return", 
+                    "sharpe_ratio",
+                    "max_drawdown",
+                    "win_rate"
+                ]
             },
             "gui": {
                 "theme": "light",
@@ -235,13 +238,19 @@ class ConfigManager:
         """获取回测配置"""
         return self.config["backtest"]
     
-    def get_development_config(self) -> Dict[str, Any]:
-        """获取开发模式配置"""
-        return self.config["development"]
+    def set_backtest_config(self, config: Dict[str, Any]):
+        """设置回测配置"""
+        self.config["backtest"] = config
+        self._save_config()
     
     def get_gui_config(self) -> Dict[str, Any]:
         """获取GUI配置"""
         return self.config["gui"]
+    
+    def set_gui_config(self, config: Dict[str, Any]):
+        """设置GUI配置"""
+        self.config["gui"] = config
+        self._save_config()
     
     def update_config(self, updates: Dict[str, Any]):
         """更新配置"""
@@ -276,20 +285,6 @@ class ConfigManager:
             self.config["products"][product_type.value] = {}
         
         self.config["products"][product_type.value]["enabled"] = enabled
-        self.update_config({})
-    
-    def set_backtest_parameters(self, parameters: Dict[str, Any]):
-        """设置回测参数"""
-        backtest_config = self.config.get("backtest", {})
-        backtest_config.update(parameters)
-        self.config["backtest"] = backtest_config
-        self.update_config({})
-    
-    def set_development_mode(self, enabled: bool = True):
-        """启用或禁用开发模式"""
-        development_config = self.config.get("development", {})
-        development_config["enabled"] = enabled
-        self.config["development"] = development_config
         self.update_config({})
     
     def validate_config(self) -> Dict[str, Any]:
