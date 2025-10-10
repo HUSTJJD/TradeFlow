@@ -284,7 +284,7 @@ def check_dependencies():
     dependencies = [
         ("pandas", "数据分析"),
         ("numpy", "数值计算"),
-        ("yaml", "配置解析"),
+        ("PyYAML", "配置解析"),  # 修复：yaml模块来自PyYAML包
         ("datetime", "时间处理"),
         ("tkinter", "GUI界面")
     ]
@@ -294,7 +294,7 @@ def check_dependencies():
         try:
             if dep == "tkinter":
                 import tkinter
-            elif dep == "yaml":
+            elif dep == "PyYAML":  # 修复：检查PyYAML包
                 import yaml
             else:
                 __import__(dep)

@@ -1,14 +1,19 @@
 # 智能交易系统配置文件
 # 支持多券商API和GUI界面
+#
+# 使用说明：
+# 1. 请将your_开头的占位符替换为实际的配置值
+# 2. 启用券商前请确保已安装对应的SDK和配置正确的API密钥
+# 3. 建议先启用一个券商进行测试
 
 # 券商配置
 brokers:
   longport:
     enabled: true
     description: "长桥证券 - 支持港股、美股"
-    app_key: "your_app_key_here"
-    app_secret: "your_app_secret_here"
-    access_token: "your_access_token_here"
+    app_key: "your_app_key_here"  # 请替换为实际的长桥App Key
+    app_secret: "your_app_secret_here"  # 请替换为实际的长桥App Secret
+    access_token: "your_access_token_here"  # 请替换为实际的长桥Access Token
     commission_rate: 0.001
     min_commission: 0
     supported_features: 
@@ -24,7 +29,7 @@ brokers:
     host: "127.0.0.1"
     port: 7497
     client_id: 1
-    account: "your_ibkr_account"
+    account: "your_ibkr_account"  # 请替换为实际的IBKR账户号
     commission_rate: 0.0005
     min_commission: 1.0
     supported_features:
@@ -36,9 +41,9 @@ brokers:
     test_connection: true
 
   qmt:
-    enabled: false
+    enabled: false  # 需要安装QMT平台，建议先禁用
     description: "QMT量化交易平台 - 支持A股"
-    account_id: "your_qmt_account_id"
+    account_id: "your_qmt_account_id"  # 请替换为实际的QMT账户ID
     simulated: true
     commission_rate: 0.0003
     min_commission: 5.0

@@ -12,24 +12,24 @@ from .brokers.qmt_broker import QMTBroker
 class BrokerFactory:
     """券商工厂类"""
     
-    # 券商类型映射
+    # 券商类型映射（统一使用小写键名）
     BROKER_MAPPING = {
-        "LongPort": LongPortBroker,
+        "longport": LongPortBroker,  # 修复：统一使用小写
         "ibkr": IBKRBroker,
         "qmt": QMTBroker,
     }
     
     # 市场与券商映射（自动选择逻辑）
     MARKET_BROKER_MAPPING = {
-        Market.HK: ["LongPort"],      # 港股首选长桥
-        Market.US: ["ibkr", "LongPort"],  # 美股首选IBKR，备选长桥
+        Market.HK: ["longport"],      # 港股首选长桥（修复：使用小写）
+        Market.US: ["ibkr", "longport"],  # 美股首选IBKR，备选长桥（修复：使用小写）
         Market.CN: ["qmt"]  # A股支持多种券商
     }
     
     @classmethod
     def create_broker(cls, broker_type: str, config: Dict[str, Any]) -> Optional[BrokerInterface]:
         """创建指定类型的券商API实例"""
-        broker_class = cls.BROKER_MAPPING.get(broker_type.lower())
+        broker_class = cls.BROKER_MAPPING.get(broker_type.lower())  # 修复：使用小写匹配
         if not broker_class:
             raise ValueError(f"不支持的券商类型: {broker_type}")
         
@@ -69,18 +69,20 @@ class BrokerFactory:
             if field not in config:
                 errors.append(f"缺少必需字段: {field}")
         
-        # 券商特定配置验证
-        if broker_type == "LongPort":
+        # 券商特定配置验证（统一使用小写比较）
+        broker_type_lower = broker_type.lower()
+        
+        if broker_type_lower == "longport":  # 修复：使用小写比较
             required_api_fields = ["app_key", "app_secret", "access_token"]
             for field in required_api_fields:
                 if not config.get(field):
                     errors.append(f"长桥API缺少必需字段: {field}")
         
-        elif broker_type == "ibkr":
+        elif broker_type_lower == "ibkr":
             if not config.get("host") or not config.get("port"):
                 errors.append("IBKR API需要配置host和port")
         
-        elif broker_type == "qmt":
+        elif broker_type_lower == "qmt":
             if not config.get("account_id"):
                 errors.append(f"{broker_type.upper()}需要配置account_id")
         

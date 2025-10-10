@@ -15,13 +15,15 @@ from .trading_execution.trading_engine import TradingEngine, TradingStrategy
 from .utils.common_utils import DateTimeUtils, DataConverter, Logger, PerformanceMetrics
 
 # 有条件导入main_system，避免schedule依赖问题
+MAIN_SYSTEM_AVAILABLE = True
+TradingSystem = None
+
 try:
     from .main_system import TradingSystem
-    MAIN_SYSTEM_AVAILABLE = True
 except ImportError as e:
     if "schedule" in str(e):
         MAIN_SYSTEM_AVAILABLE = False
-        TradingSystem = None
+        print("警告: schedule模块未安装，TradingSystem不可用")
     else:
         raise
 
@@ -47,7 +49,7 @@ __all__ = [
 ]
 
 # 如果有条件地添加TradingSystem
-if MAIN_SYSTEM_AVAILABLE:
+if MAIN_SYSTEM_AVAILABLE and TradingSystem is not None:
     __all__.append('TradingSystem')
 
 # 包信息

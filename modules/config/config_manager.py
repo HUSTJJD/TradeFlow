@@ -139,6 +139,15 @@ class ConfigManager:
         self.config["gui"] = config
         self._save_config()
     
+    def _save_config(self):
+        """保存配置到文件"""
+        try:
+            with open(self.config_path, 'w', encoding='utf-8') as f:
+                yaml.dump(self.config, f, default_flow_style=False, allow_unicode=True, indent=2)
+            self.logger.info(f"配置已保存: {self.config_path}")
+        except Exception as e:
+            self.logger.error(f"配置保存失败: {e}")
+
     def update_config(self, updates: Dict[str, Any]):
         """更新配置"""
         def update_dict(d1, d2):
@@ -151,12 +160,7 @@ class ConfigManager:
         update_dict(self.config, updates)
         
         # 保存到文件
-        try:
-            with open(self.config_path, 'w', encoding='utf-8') as f:
-                yaml.dump(self.config, f, default_flow_style=False, allow_unicode=True, indent=2)
-            self.logger.info(f"配置已更新并保存: {self.config_path}")
-        except Exception as e:
-            self.logger.error(f"配置保存失败: {e}")
+        self._save_config()
     
     def enable_market(self, market: Market, enabled: bool = True):
         """启用或禁用市场"""
@@ -222,7 +226,7 @@ class ConfigManager:
         """验证券商配置"""
         errors = []
         
-        if broker_type == "LongPort":
+        if broker_type == "longport":
             required_fields = ["app_key", "app_secret", "access_token"]
             for field in required_fields:
                 if not config.get(field) or config[field].startswith("your_"):
@@ -237,11 +241,6 @@ class ConfigManager:
                 errors.append(f"{broker_type.upper()}需要配置有效的account_id")
         
         return errors
-    
-    def save_config(self):
-        """保存配置到文件"""
-        with open(self.config_path, 'w', encoding='utf-8') as file:
-            yaml.dump(self.config, file, default_flow_style=False, allow_unicode=True)
 
 
 if __name__ == "__main__":

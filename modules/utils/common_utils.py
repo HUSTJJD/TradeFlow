@@ -245,7 +245,10 @@ class PerformanceMetrics:
 
 
 class ConfigLoader:
-    """配置加载工具类"""
+    """配置加载工具类
+    注意：这是一个简单的配置加载工具类，主要用于快速加载配置文件。
+    对于完整的配置管理功能，请使用 modules.config.config_manager.ConfigManager 类。
+    """
     
     @staticmethod
     def load_yaml_config(file_path: str) -> Dict[str, Any]:

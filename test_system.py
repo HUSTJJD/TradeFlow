@@ -29,7 +29,7 @@ def check_dependencies():
     dependencies = [
         ("pandas", "pandas"),
         ("numpy", "numpy"),
-        ("yaml", "yaml"),
+        ("PyYAML", "yaml"),  # 修复：yaml包的正确名称是PyYAML
         ("requests", "requests"),
         ("scipy", "scipy"),  # 新增
         ("matplotlib", "matplotlib"),  # 新增
