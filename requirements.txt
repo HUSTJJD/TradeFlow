@@ -1,11 +1,6 @@
-ib_async==2.0.1
-longport==3.0.14
-numpy==2.3.3
-pandas==2.3.3
-psutil==6.0.0
-PyQt6==6.9.1
-pyqt6_sip==13.10.2
-PyYAML==6.0.1
-PyYAML==6.0.3
-schedule==1.2.2
-xtquant==250516.1.1
+longport>=1.0.0
+requests>=2.0.0
+pandas>=1.0.0
+ta-lib>=0.4.0
+PyYAML>=6.0
+akshare>=1.13.0

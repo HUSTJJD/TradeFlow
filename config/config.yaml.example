@@ -1,0 +1,142 @@
+longport:
+  app_key: "YOUR_APP_KEY"
+  app_secret: "YOUR_APP_SECRET"
+  access_token: "YOUR_ACCESS_TOKEN"
+
+log:
+  level: "DEBUG"
+  dir: "logs"
+  filename: "tradeflow.log"
+  backup_count: 7
+  console: true
+
+notification:
+  email:
+    smtp_server: "smtp.example.com"
+    smtp_port: 465
+    sender_email: "your_email@example.com"
+    sender_password: "your_password"
+    receiver_emails: ['receiver@example.com']
+
+trading:
+  is_simulation: true
+  total_capital: 100000
+  position_ratio: 0.2
+  position_sizing:
+    # 单标的最大仓位（权益占比）
+    max_position_ratio: 0.25
+    # 单笔最大风险（权益占比），用于波动自适应仓位
+    risk_per_trade: 0.01
+    # ATR止损倍数（与策略风控保持一致）
+    atr_stop_multiple: 2.5
+    # 再平衡最小变化比例（降低噪声交易）
+    min_rebalance_ratio: 0.05
+
+strategy:
+  # 单策略模式
+  name: "TrendSwingT"
+  params:
+    ema_fast: 20
+    ema_slow: 60
+    adx_period: 14
+    adx_threshold: 20
+    donchian_period: 20
+    atr_period: 14
+    atr_stop_loss: 2.5
+    atr_trailing: 3.0
+    take_profit_r_multiple_1: 2.0
+    take_profit_ratio_1: 0.5
+    enable_t: true
+    t_rsi_period: 6
+    t_overbought: 75
+    t_oversold: 25
+    t_step_ratio: 0.10
+    base_target_position_ratio: 0.20
+
+  # # 多因子组合策略模式
+  # name: "Composite"
+  # params:
+  #   mode: "any" # consensus (一致), any (任意), vote (投票)
+  #   strategies:
+  #     - name: "MACD"
+  #       params: {fast: 12, slow: 26, signal: 9}
+  #     - name: "RSI"
+  #       params: {period: 14, overbought: 70, oversold: 30}
+
+  timeframe: "1d" # 1m, 5m, 15m, 30m, 60m, 1d
+  history_count: 100
+  t:
+    max_trades_per_symbol_per_day: 2
+
+backtest:
+  enabled: true
+  start_time: "2025-01-01"
+  end_time: "2025-12-31"
+  initial_balance: 1000000
+  commission_rate: 0.0003
+  benchmarks:
+    - "HSI.HK"
+    - "HSCEI.HK"
+    - "HSTECH.HK"
+    - ".IXIC.US"
+    - ".SPX.US"
+    - ".DJI.US"
+    - "000001.SH"
+    - "399001.SZ"
+    - "000300.SH"
+    - "000905.SH"
+    - "399006.SZ"
+
+  multi_timeframe:
+    # 是否启用多周期回测：日K做波段入场/出场，日内（如15m）做T
+    enabled: true
+    swing_timeframe: "1d"
+    t_timeframe: "15m"
+
+monitor:
+  interval: 60
+  request_delay: 0.5
+  symbols:
+    - "700.HK"
+    - "9988.HK"
+    - "3690.HK"
+    - "1810.HK"
+    - "1024.HK"
+
+universe:
+  selector:
+    # 动态选股约束：最多跟踪标的数量
+    max_symbols: 5
+    # 控制集中度风险：每个行业只选 1 只
+    one_per_industry: true
+
+  refresh:
+    # 闭市离线刷新：是否执行两步刷新
+    # Step1: 拉取 A股 / 港股通 标的代码+名称，单独保存
+    # Step2: 基于 Step1 的清单，用长桥拉取K线等详细数据并打分
+    enabled: true
+    # 闭市离线刷新：要扫描的市场
+    # - CN: A股
+    # - HKCONNECT: 港股通（仅港股通标的，不是全港股）
+    markets:
+      - "CN"
+      - "HKCONNECT"
+    # 技术面打分需要的历史长度（交易日）
+    lookback_days: 120
+    # 热度/消息面相关指标的时间窗（天）
+    sentiment_window_days: 7
+
+plot:
+  enabled: true
+  output_dir: "reports"
+  colors:
+    account: "#1f77b4"
+    buy: "#2ca02c"
+    sell: "#d62728"
+  benchmarks:
+    - symbol: "HSI.HK"
+      name: "恒生指数"
+      color: "#ff7f0e"
+    - symbol: ".IXIC.US"
+      name: "纳斯达克"
+      color: "#9467bd"
