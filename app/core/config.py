@@ -5,7 +5,6 @@ from typing import Any, Dict, Optional
 
 logger = logging.getLogger(__name__)
 
-
 class AppConfig:
     """
     应用程序配置管理器。

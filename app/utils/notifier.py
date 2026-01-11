@@ -3,7 +3,7 @@ import os
 import smtplib
 from email.mime.text import MIMEText
 from email.header import Header
-from typing import Optional, List, Union
+from typing import Optional, List
 from app.core.config import global_config
 
 logger = logging.getLogger(__name__)
@@ -20,19 +20,19 @@ class EmailNotifier:
         使用环境变量或配置文件初始化 EmailNotifier。
         """
         # 优先使用环境变量，然后是配置文件
-        self.smtp_server: Optional[str] = global_config.get(
-            "notification.email.smtp_server"
-        )
-        self.smtp_port: int = global_config.get("notification.email.smtp_port", 465)
-        self.sender_email: Optional[str] = global_config.get(
-            "notification.email.sender_email"
-        )
-        self.sender_password: Optional[str] = global_config.get(
-            "notification.email.sender_password"
-        )
+        self.smtp_server: str = str(global_config.get("email.smtp_server", "") or "")
+        self.smtp_port: int = int(global_config.get("email.smtp_port", 465))
+        self.sender_email: str = str(global_config.get("email.sender_email", "") or "")
+        self.sender_password: str = str(global_config.get("email.sender_password", "") or "")
 
-        receiver_config = global_config.get("notification.email.receiver_emails")
-        self.receiver_emails = [str(email).strip() for email in receiver_config if str(email).strip()]
+        receiver_config = global_config.get("email.receiver_emails", [])
+        if receiver_config is None:
+            receiver_config = []
+        if not isinstance(receiver_config, list):
+            receiver_config = [receiver_config]
+        self.receiver_emails: List[str] = [
+            str(email).strip() for email in receiver_config if str(email).strip()
+        ]
 
 
     def send_message(self, title: str, content: str) -> None:
@@ -59,7 +59,7 @@ class EmailNotifier:
         message["From"] = self.sender_email
         # 邮件头显示所有接收者
         message["To"] = ", ".join(self.receiver_emails)
-        message["Subject"] = Header(title, "utf-8")
+        message["Subject"] = str(Header(title, "utf-8"))
 
         try:
             if self.smtp_port == 465:

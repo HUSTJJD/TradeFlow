@@ -1,0 +1,2356 @@
+{
+  "items": [
+    {
+      "symbol": "00001.HK",
+      "name": "CKH HOLDINGS"
+    },
+    {
+      "symbol": "00002.HK",
+      "name": "CLP HOLDINGS"
+    },
+    {
+      "symbol": "00003.HK",
+      "name": "HK & CHINA GAS"
+    },
+    {
+      "symbol": "00004.HK",
+      "name": "WHARF HOLDINGS"
+    },
+    {
+      "symbol": "00005.HK",
+      "name": "HSBC HOLDINGS"
+    },
+    {
+      "symbol": "00006.HK",
+      "name": "POWER ASSETS"
+    },
+    {
+      "symbol": "00008.HK",
+      "name": "PCCW"
+    },
+    {
+      "symbol": "00010.HK",
+      "name": "HANG LUNG GROUP"
+    },
+    {
+      "symbol": "00011.HK",
+      "name": "HANG SENG BANK"
+    },
+    {
+      "symbol": "00012.HK",
+      "name": "HENDERSON LAND"
+    },
+    {
+      "symbol": "00013.HK",
+      "name": "HUTCHMED"
+    },
+    {
+      "symbol": "00014.HK",
+      "name": "HYSAN DEV"
+    },
+    {
+      "symbol": "00016.HK",
+      "name": "SHK PPT"
+    },
+    {
+      "symbol": "00017.HK",
+      "name": "NEW WORLD DEV"
+    },
+    {
+      "symbol": "00019.HK",
+      "name": "SWIRE PACIFIC A"
+    },
+    {
+      "symbol": "00020.HK",
+      "name": "SENSETIME-W"
+    },
+    {
+      "symbol": "00027.HK",
+      "name": "GALAXY ENT"
+    },
+    {
+      "symbol": "00038.HK",
+      "name": "FIRST TRACTOR"
+    },
+    {
+      "symbol": "00041.HK",
+      "name": "GREAT EAGLE H"
+    },
+    {
+      "symbol": "00066.HK",
+      "name": "MTR CORPORATION"
+    },
+    {
+      "symbol": "00081.HK",
+      "name": "CH OVS G OCEANS"
+    },
+    {
+      "symbol": "00083.HK",
+      "name": "SINO LAND"
+    },
+    {
+      "symbol": "00087.HK",
+      "name": "SWIRE PACIFIC B"
+    },
+    {
+      "symbol": "00101.HK",
+      "name": "HANG LUNG PPT"
+    },
+    {
+      "symbol": "00107.HK",
+      "name": "SICHUAN EXPRESS"
+    },
+    {
+      "symbol": "00119.HK",
+      "name": "POLY PROPERTY"
+    },
+    {
+      "symbol": "00123.HK",
+      "name": "YUEXIU PROPERTY"
+    },
+    {
+      "symbol": "00135.HK",
+      "name": "KUNLUN ENERGY"
+    },
+    {
+      "symbol": "00136.HK",
+      "name": "CHINA RUYI"
+    },
+    {
+      "symbol": "00142.HK",
+      "name": "FIRST PACIFIC"
+    },
+    {
+      "symbol": "00144.HK",
+      "name": "CHINA MER PORT"
+    },
+    {
+      "symbol": "00148.HK",
+      "name": "KINGBOARD HLDG"
+    },
+    {
+      "symbol": "00151.HK",
+      "name": "WANT WANT CHINA"
+    },
+    {
+      "symbol": "00152.HK",
+      "name": "SHENZHEN INT'L"
+    },
+    {
+      "symbol": "00165.HK",
+      "name": "CHINA EB LTD"
+    },
+    {
+      "symbol": "00168.HK",
+      "name": "TSINGTAO BREW"
+    },
+    {
+      "symbol": "00173.HK",
+      "name": "K. WAH INT'L"
+    },
+    {
+      "symbol": "00175.HK",
+      "name": "GEELY AUTO"
+    },
+    {
+      "symbol": "00177.HK",
+      "name": "JIANGSU EXPRESS"
+    },
+    {
+      "symbol": "00179.HK",
+      "name": "JOHNSON ELEC H"
+    },
+    {
+      "symbol": "00187.HK",
+      "name": "JINGCHENG MAC"
+    },
+    {
+      "symbol": "00189.HK",
+      "name": "DONGYUE GROUP"
+    },
+    {
+      "symbol": "00200.HK",
+      "name": "MELCO INT'L DEV"
+    },
+    {
+      "symbol": "00220.HK",
+      "name": "U-PRESID CHINA"
+    },
+    {
+      "symbol": "00241.HK",
+      "name": "ALI HEALTH"
+    },
+    {
+      "symbol": "00257.HK",
+      "name": "EB ENVIRONMENT"
+    },
+    {
+      "symbol": "00267.HK",
+      "name": "CITIC"
+    },
+    {
+      "symbol": "00268.HK",
+      "name": "KINGDEE INT'L"
+    },
+    {
+      "symbol": "00270.HK",
+      "name": "GUANGDONG INV"
+    },
+    {
+      "symbol": "00272.HK",
+      "name": "SHUI ON LAND"
+    },
+    {
+      "symbol": "00285.HK",
+      "name": "BYD ELECTRONIC"
+    },
+    {
+      "symbol": "00288.HK",
+      "name": "WH GROUP"
+    },
+    {
+      "symbol": "00291.HK",
+      "name": "CHINA RES BEER"
+    },
+    {
+      "symbol": "00293.HK",
+      "name": "CATHAY PAC AIR"
+    },
+    {
+      "symbol": "00297.HK",
+      "name": "SINOFERT"
+    },
+    {
+      "symbol": "00300.HK",
+      "name": "MIDEA GROUP"
+    },
+    {
+      "symbol": "00303.HK",
+      "name": "VTECH HOLDINGS"
+    },
+    {
+      "symbol": "00308.HK",
+      "name": "CHINA TRAVEL HK"
+    },
+    {
+      "symbol": "00316.HK",
+      "name": "OOIL"
+    },
+    {
+      "symbol": "00317.HK",
+      "name": "COMEC"
+    },
+    {
+      "symbol": "00322.HK",
+      "name": "TINGYI"
+    },
+    {
+      "symbol": "00323.HK",
+      "name": "MAANSHAN IRON"
+    },
+    {
+      "symbol": "00325.HK",
+      "name": "BLOKS"
+    },
+    {
+      "symbol": "00327.HK",
+      "name": "PAX GLOBAL"
+    },
+    {
+      "symbol": "00336.HK",
+      "name": "HUABAO INTL"
+    },
+    {
+      "symbol": "00338.HK",
+      "name": "SHANGHAI PECHEM"
+    },
+    {
+      "symbol": "00345.HK",
+      "name": "VITASOY INT'L"
+    },
+    {
+      "symbol": "00347.HK",
+      "name": "ANGANG STEEL"
+    },
+    {
+      "symbol": "00354.HK",
+      "name": "CHINASOFT INT'L"
+    },
+    {
+      "symbol": "00358.HK",
+      "name": "JIANGXI COPPER"
+    },
+    {
+      "symbol": "00363.HK",
+      "name": "SHANGHAI IND H"
+    },
+    {
+      "symbol": "00371.HK",
+      "name": "BJ ENT WATER"
+    },
+    {
+      "symbol": "00384.HK",
+      "name": "CHINA GAS HOLD"
+    },
+    {
+      "symbol": "00386.HK",
+      "name": "SINOPEC CORP"
+    },
+    {
+      "symbol": "00388.HK",
+      "name": "HKEX"
+    },
+    {
+      "symbol": "00390.HK",
+      "name": "CHINA RAILWAY"
+    },
+    {
+      "symbol": "00392.HK",
+      "name": "BEIJING ENT"
+    },
+    {
+      "symbol": "00425.HK",
+      "name": "MINTH GROUP"
+    },
+    {
+      "symbol": "00440.HK",
+      "name": "DAH SING"
+    },
+    {
+      "symbol": "00460.HK",
+      "name": "SIHUAN PHARM"
+    },
+    {
+      "symbol": "00467.HK",
+      "name": "UNITEDENERGY GP"
+    },
+    {
+      "symbol": "00489.HK",
+      "name": "DONGFENG GROUP"
+    },
+    {
+      "symbol": "00506.HK",
+      "name": "CHINA FOODS"
+    },
+    {
+      "symbol": "00512.HK",
+      "name": "GRAND PHARMA"
+    },
+    {
+      "symbol": "00522.HK",
+      "name": "ASMPT"
+    },
+    {
+      "symbol": "00525.HK",
+      "name": "GUANGSHEN RAIL"
+    },
+    {
+      "symbol": "00546.HK",
+      "name": "FUFENG GROUP"
+    },
+    {
+      "symbol": "00548.HK",
+      "name": "SHENZHENEXPRESS"
+    },
+    {
+      "symbol": "00551.HK",
+      "name": "YUE YUEN IND"
+    },
+    {
+      "symbol": "00552.HK",
+      "name": "CHINACOMSERVICE"
+    },
+    {
+      "symbol": "00553.HK",
+      "name": "NANJING PANDA"
+    },
+    {
+      "symbol": "00564.HK",
+      "name": "ZCZL"
+    },
+    {
+      "symbol": "00568.HK",
+      "name": "SHANDONG MOLONG"
+    },
+    {
+      "symbol": "00570.HK",
+      "name": "TRAD CHI MED"
+    },
+    {
+      "symbol": "00576.HK",
+      "name": "ZHEJIANGEXPRESS"
+    },
+    {
+      "symbol": "00586.HK",
+      "name": "CONCH VENTURE"
+    },
+    {
+      "symbol": "00588.HK",
+      "name": "BEIJING N STAR"
+    },
+    {
+      "symbol": "00590.HK",
+      "name": "LUK FOOK HOLD"
+    },
+    {
+      "symbol": "00598.HK",
+      "name": "SINOTRANS"
+    },
+    {
+      "symbol": "00604.HK",
+      "name": "SHENZHEN INVEST"
+    },
+    {
+      "symbol": "00631.HK",
+      "name": "SANY INT'L"
+    },
+    {
+      "symbol": "00636.HK",
+      "name": "KLN"
+    },
+    {
+      "symbol": "00638.HK",
+      "name": "FIBOCOM"
+    },
+    {
+      "symbol": "00639.HK",
+      "name": "SHOUGANG RES"
+    },
+    {
+      "symbol": "00656.HK",
+      "name": "FOSUN INTL"
+    },
+    {
+      "symbol": "00666.HK",
+      "name": "REPT BATTERO"
+    },
+    {
+      "symbol": "00667.HK",
+      "name": "CHINA EAST EDU"
+    },
+    {
+      "symbol": "00669.HK",
+      "name": "TECHTRONIC IND"
+    },
+    {
+      "symbol": "00670.HK",
+      "name": "CHINA EAST AIR"
+    },
+    {
+      "symbol": "00683.HK",
+      "name": "KERRY PPT"
+    },
+    {
+      "symbol": "00688.HK",
+      "name": "CHINA OVERSEAS"
+    },
+    {
+      "symbol": "00694.HK",
+      "name": "BEIJING AIRPORT"
+    },
+    {
+      "symbol": "00696.HK",
+      "name": "TRAVELSKY TECH"
+    },
+    {
+      "symbol": "00697.HK",
+      "name": "SHOUCHENG"
+    },
+    {
+      "symbol": "00699.HK",
+      "name": "JOYSON ELEC"
+    },
+    {
+      "symbol": "00700.HK",
+      "name": "TENCENT"
+    },
+    {
+      "symbol": "00719.HK",
+      "name": "SHANDONG XINHUA"
+    },
+    {
+      "symbol": "00728.HK",
+      "name": "CHINA TELECOM"
+    },
+    {
+      "symbol": "00751.HK",
+      "name": "SKYWORTH GROUP"
+    },
+    {
+      "symbol": "00753.HK",
+      "name": "AIR CHINA"
+    },
+    {
+      "symbol": "00754.HK",
+      "name": "HOPSON DEV HOLD"
+    },
+    {
+      "symbol": "00762.HK",
+      "name": "CHINA UNICOM"
+    },
+    {
+      "symbol": "00763.HK",
+      "name": "ZTE"
+    },
+    {
+      "symbol": "00772.HK",
+      "name": "CHINA LIT"
+    },
+    {
+      "symbol": "00777.HK",
+      "name": "NETDRAGON"
+    },
+    {
+      "symbol": "00780.HK",
+      "name": "TONGCHENGTRAVEL"
+    },
+    {
+      "symbol": "00788.HK",
+      "name": "CHINA TOWER"
+    },
+    {
+      "symbol": "00811.HK",
+      "name": "XINHUA WINSHARE"
+    },
+    {
+      "symbol": "00817.HK",
+      "name": "CHINA JINMAO"
+    },
+    {
+      "symbol": "00819.HK",
+      "name": "TIANNENG POWER"
+    },
+    {
+      "symbol": "00826.HK",
+      "name": "TIANGONG INT'L"
+    },
+    {
+      "symbol": "00836.HK",
+      "name": "CHINA RES POWER"
+    },
+    {
+      "symbol": "00839.HK",
+      "name": "CHINA EDU GROUP"
+    },
+    {
+      "symbol": "00853.HK",
+      "name": "MICROPORT"
+    },
+    {
+      "symbol": "00855.HK",
+      "name": "CHINA WATER"
+    },
+    {
+      "symbol": "00856.HK",
+      "name": "VSTECS"
+    },
+    {
+      "symbol": "00857.HK",
+      "name": "PETROCHINA"
+    },
+    {
+      "symbol": "00861.HK",
+      "name": "DC HOLDINGS"
+    },
+    {
+      "symbol": "00867.HK",
+      "name": "CMS"
+    },
+    {
+      "symbol": "00868.HK",
+      "name": "XINYI GLASS"
+    },
+    {
+      "symbol": "00874.HK",
+      "name": "BAIYUNSHAN PH"
+    },
+    {
+      "symbol": "00880.HK",
+      "name": "SJM HOLDINGS"
+    },
+    {
+      "symbol": "00881.HK",
+      "name": "ZHONGSHENG HLDG"
+    },
+    {
+      "symbol": "00883.HK",
+      "name": "CNOOC"
+    },
+    {
+      "symbol": "00895.HK",
+      "name": "DONGJIANG ENV"
+    },
+    {
+      "symbol": "00902.HK",
+      "name": "HUANENG POWER"
+    },
+    {
+      "symbol": "00909.HK",
+      "name": "MING YUAN CLOUD"
+    },
+    {
+      "symbol": "00914.HK",
+      "name": "CONCH CEMENT"
+    },
+    {
+      "symbol": "00916.HK",
+      "name": "CHINA LONGYUAN"
+    },
+    {
+      "symbol": "00917.HK",
+      "name": "QUNABOX GROUP"
+    },
+    {
+      "symbol": "00921.HK",
+      "name": "HISENSE HA"
+    },
+    {
+      "symbol": "00934.HK",
+      "name": "SINOPEC KANTONS"
+    },
+    {
+      "symbol": "00939.HK",
+      "name": "CCB"
+    },
+    {
+      "symbol": "00941.HK",
+      "name": "CHINA MOBILE"
+    },
+    {
+      "symbol": "00956.HK",
+      "name": "CHINA SUNTIEN"
+    },
+    {
+      "symbol": "00960.HK",
+      "name": "LONGFOR GROUP"
+    },
+    {
+      "symbol": "00966.HK",
+      "name": "CHINA TAIPING"
+    },
+    {
+      "symbol": "00968.HK",
+      "name": "XINYI SOLAR"
+    },
+    {
+      "symbol": "00975.HK",
+      "name": "MONGOL MINING"
+    },
+    {
+      "symbol": "00981.HK",
+      "name": "SMIC"
+    },
+    {
+      "symbol": "00990.HK",
+      "name": "DEEP SOURCE"
+    },
+    {
+      "symbol": "00991.HK",
+      "name": "DATANG POWER"
+    },
+    {
+      "symbol": "00992.HK",
+      "name": "LENOVO GROUP"
+    },
+    {
+      "symbol": "00995.HK",
+      "name": "ANHUIEXPRESSWAY"
+    },
+    {
+      "symbol": "00998.HK",
+      "name": "CITIC BANK"
+    },
+    {
+      "symbol": "00999.HK",
+      "name": "XIAOCAIYUAN"
+    },
+    {
+      "symbol": "01024.HK",
+      "name": "KUAISHOU-W"
+    },
+    {
+      "symbol": "01030.HK",
+      "name": "SEAZEN"
+    },
+    {
+      "symbol": "01033.HK",
+      "name": "SINOPEC SSC"
+    },
+    {
+      "symbol": "01038.HK",
+      "name": "CKI HOLDINGS"
+    },
+    {
+      "symbol": "01044.HK",
+      "name": "HENGAN INT'L"
+    },
+    {
+      "symbol": "01052.HK",
+      "name": "YUEXIUTRANSPORT"
+    },
+    {
+      "symbol": "01053.HK",
+      "name": "CHONGQING IRON"
+    },
+    {
+      "symbol": "01055.HK",
+      "name": "CHINA SOUTH AIR"
+    },
+    {
+      "symbol": "01057.HK",
+      "name": "ZHEJIANG SHIBAO"
+    },
+    {
+      "symbol": "01060.HK",
+      "name": "DAMAI ENT"
+    },
+    {
+      "symbol": "01065.HK",
+      "name": "TIANJIN CAPITAL"
+    },
+    {
+      "symbol": "01066.HK",
+      "name": "WEIGAO GROUP"
+    },
+    {
+      "symbol": "01070.HK",
+      "name": "TCL ELECTRONICS"
+    },
+    {
+      "symbol": "01071.HK",
+      "name": "HUADIAN POWER"
+    },
+    {
+      "symbol": "01072.HK",
+      "name": "DONGFANG ELEC"
+    },
+    {
+      "symbol": "01083.HK",
+      "name": "TG SMART ENERGY"
+    },
+    {
+      "symbol": "01088.HK",
+      "name": "CHINA SHENHUA"
+    },
+    {
+      "symbol": "01093.HK",
+      "name": "CSPC PHARMA"
+    },
+    {
+      "symbol": "01099.HK",
+      "name": "SINOPHARM"
+    },
+    {
+      "symbol": "01108.HK",
+      "name": "TRIUMPH NEW EN"
+    },
+    {
+      "symbol": "01109.HK",
+      "name": "CHINA RES LAND"
+    },
+    {
+      "symbol": "01112.HK",
+      "name": "H&H INTL HLDG"
+    },
+    {
+      "symbol": "01113.HK",
+      "name": "CK ASSET"
+    },
+    {
+      "symbol": "01114.HK",
+      "name": "BRILLIANCE CHI"
+    },
+    {
+      "symbol": "01117.HK",
+      "name": "CH MODERN D"
+    },
+    {
+      "symbol": "01128.HK",
+      "name": "WYNN MACAU"
+    },
+    {
+      "symbol": "01138.HK",
+      "name": "COSCO SHIP ENGY"
+    },
+    {
+      "symbol": "01157.HK",
+      "name": "ZOOMLION"
+    },
+    {
+      "symbol": "01164.HK",
+      "name": "CGN MINING"
+    },
+    {
+      "symbol": "01171.HK",
+      "name": "YANKUANG ENERGY"
+    },
+    {
+      "symbol": "01177.HK",
+      "name": "SINO BIOPHARM"
+    },
+    {
+      "symbol": "01186.HK",
+      "name": "CHINA RAIL CONS"
+    },
+    {
+      "symbol": "01193.HK",
+      "name": "CHINA RES GAS"
+    },
+    {
+      "symbol": "01196.HK",
+      "name": "REALORD GROUP"
+    },
+    {
+      "symbol": "01199.HK",
+      "name": "COSCO SHIP PORT"
+    },
+    {
+      "symbol": "01208.HK",
+      "name": "MMG"
+    },
+    {
+      "symbol": "01209.HK",
+      "name": "CHINA RES MIXC"
+    },
+    {
+      "symbol": "01211.HK",
+      "name": "BYD COMPANY"
+    },
+    {
+      "symbol": "01258.HK",
+      "name": "CHINFMINING"
+    },
+    {
+      "symbol": "01276.HK",
+      "name": "HENGRUI PHARMA"
+    },
+    {
+      "symbol": "01277.HK",
+      "name": "KINETIC DEV"
+    },
+    {
+      "symbol": "01288.HK",
+      "name": "ABC"
+    },
+    {
+      "symbol": "01299.HK",
+      "name": "AIA"
+    },
+    {
+      "symbol": "01302.HK",
+      "name": "LIFETECH SCI"
+    },
+    {
+      "symbol": "01304.HK",
+      "name": "FORTIOR"
+    },
+    {
+      "symbol": "01308.HK",
+      "name": "SITC"
+    },
+    {
+      "symbol": "01310.HK",
+      "name": "HKBN"
+    },
+    {
+      "symbol": "01313.HK",
+      "name": "CR BLDG MAT TEC"
+    },
+    {
+      "symbol": "01316.HK",
+      "name": "NEXTEER"
+    },
+    {
+      "symbol": "01318.HK",
+      "name": "MAO GEPING"
+    },
+    {
+      "symbol": "01330.HK",
+      "name": "DYNAGREEN ENV"
+    },
+    {
+      "symbol": "01333.HK",
+      "name": "BRETON"
+    },
+    {
+      "symbol": "01336.HK",
+      "name": "NCI"
+    },
+    {
+      "symbol": "01339.HK",
+      "name": "PICC GROUP"
+    },
+    {
+      "symbol": "01341.HK",
+      "name": "HAO TIAN INTL"
+    },
+    {
+      "symbol": "01347.HK",
+      "name": "HUA HONG SEMI"
+    },
+    {
+      "symbol": "01349.HK",
+      "name": "FUDANZHANGJIANG"
+    },
+    {
+      "symbol": "01357.HK",
+      "name": "MEITU"
+    },
+    {
+      "symbol": "01359.HK",
+      "name": "CHINA CINDA"
+    },
+    {
+      "symbol": "01361.HK",
+      "name": "361 DEGREES"
+    },
+    {
+      "symbol": "01364.HK",
+      "name": "GUMING"
+    },
+    {
+      "symbol": "01368.HK",
+      "name": "XTEP INT'L"
+    },
+    {
+      "symbol": "01375.HK",
+      "name": "CC SECURITIES"
+    },
+    {
+      "symbol": "01378.HK",
+      "name": "CHINAHONGQIAO"
+    },
+    {
+      "symbol": "01385.HK",
+      "name": "SHANGHAI FUDAN"
+    },
+    {
+      "symbol": "01398.HK",
+      "name": "ICBC"
+    },
+    {
+      "symbol": "01405.HK",
+      "name": "DPC DASH"
+    },
+    {
+      "symbol": "01415.HK",
+      "name": "COWELL"
+    },
+    {
+      "symbol": "01448.HK",
+      "name": "FU SHOU YUAN"
+    },
+    {
+      "symbol": "01456.HK",
+      "name": "GLMS SEC"
+    },
+    {
+      "symbol": "01475.HK",
+      "name": "NISSIN FOODS"
+    },
+    {
+      "symbol": "01478.HK",
+      "name": "Q TECH"
+    },
+    {
+      "symbol": "01513.HK",
+      "name": "LIVZON PHARMA"
+    },
+    {
+      "symbol": "01515.HK",
+      "name": "CR MEDICAL"
+    },
+    {
+      "symbol": "01516.HK",
+      "name": "SUNAC SERVICES"
+    },
+    {
+      "symbol": "01519.HK",
+      "name": "J&T EXPRESS-W"
+    },
+    {
+      "symbol": "01528.HK",
+      "name": "RS MACALLINE"
+    },
+    {
+      "symbol": "01530.HK",
+      "name": "3SBIO"
+    },
+    {
+      "symbol": "01548.HK",
+      "name": "GENSCRIPT BIO"
+    },
+    {
+      "symbol": "01579.HK",
+      "name": "YIHAI INTL"
+    },
+    {
+      "symbol": "01585.HK",
+      "name": "YADEA"
+    },
+    {
+      "symbol": "01610.HK",
+      "name": "COFCO JOYCOME"
+    },
+    {
+      "symbol": "01618.HK",
+      "name": "MCC"
+    },
+    {
+      "symbol": "01635.HK",
+      "name": "DZUG"
+    },
+    {
+      "symbol": "01658.HK",
+      "name": "PSBC"
+    },
+    {
+      "symbol": "01675.HK",
+      "name": "ASIAINFO TECH"
+    },
+    {
+      "symbol": "01686.HK",
+      "name": "SUNEVISION"
+    },
+    {
+      "symbol": "01691.HK",
+      "name": "JS GLOBAL LIFE"
+    },
+    {
+      "symbol": "01709.HK",
+      "name": "DL HOLDINGS GP"
+    },
+    {
+      "symbol": "01729.HK",
+      "name": "TIME INTERCON"
+    },
+    {
+      "symbol": "01735.HK",
+      "name": "CENTRAL NEW EGY"
+    },
+    {
+      "symbol": "01766.HK",
+      "name": "CRRC"
+    },
+    {
+      "symbol": "01772.HK",
+      "name": "GANFENGLITHIUM"
+    },
+    {
+      "symbol": "01773.HK",
+      "name": "TIANLI INT HLDG"
+    },
+    {
+      "symbol": "01776.HK",
+      "name": "GF SEC"
+    },
+    {
+      "symbol": "01783.HK",
+      "name": "ENVISION GREEN"
+    },
+    {
+      "symbol": "01787.HK",
+      "name": "SD GOLD"
+    },
+    {
+      "symbol": "01788.HK",
+      "name": "GUOTAI JUNAN I"
+    },
+    {
+      "symbol": "01789.HK",
+      "name": "AK MEDICAL"
+    },
+    {
+      "symbol": "01797.HK",
+      "name": "EAST BUY"
+    },
+    {
+      "symbol": "01798.HK",
+      "name": "DATANG RENEW"
+    },
+    {
+      "symbol": "01800.HK",
+      "name": "CHINA COMM CONS"
+    },
+    {
+      "symbol": "01801.HK",
+      "name": "INNOVENT BIO"
+    },
+    {
+      "symbol": "01810.HK",
+      "name": "XIAOMI-W"
+    },
+    {
+      "symbol": "01811.HK",
+      "name": "CGN NEW ENERGY"
+    },
+    {
+      "symbol": "01816.HK",
+      "name": "CGN POWER"
+    },
+    {
+      "symbol": "01818.HK",
+      "name": "ZHAOJIN MINING"
+    },
+    {
+      "symbol": "01828.HK",
+      "name": "FWD"
+    },
+    {
+      "symbol": "01833.HK",
+      "name": "PA GOODDOCTOR"
+    },
+    {
+      "symbol": "01836.HK",
+      "name": "STELLA HOLDINGS"
+    },
+    {
+      "symbol": "01855.HK",
+      "name": "ZONQING LTD"
+    },
+    {
+      "symbol": "01858.HK",
+      "name": "CHUNLI MEDICAL"
+    },
+    {
+      "symbol": "01860.HK",
+      "name": "MOBVISTA"
+    },
+    {
+      "symbol": "01876.HK",
+      "name": "BUD APAC"
+    },
+    {
+      "symbol": "01877.HK",
+      "name": "JUNSHI BIO"
+    },
+    {
+      "symbol": "01880.HK",
+      "name": "CTG DUTY-FREE"
+    },
+    {
+      "symbol": "01882.HK",
+      "name": "HAITIAN INT'L"
+    },
+    {
+      "symbol": "01883.HK",
+      "name": "CITIC TELECOM"
+    },
+    {
+      "symbol": "01888.HK",
+      "name": "KB LAMINATES"
+    },
+    {
+      "symbol": "01896.HK",
+      "name": "MAOYAN ENT"
+    },
+    {
+      "symbol": "01898.HK",
+      "name": "CHINA COAL"
+    },
+    {
+      "symbol": "01907.HK",
+      "name": "CHINA RISUN GP"
+    },
+    {
+      "symbol": "01908.HK",
+      "name": "C&D INTL GROUP"
+    },
+    {
+      "symbol": "01910.HK",
+      "name": "SAMSONITE"
+    },
+    {
+      "symbol": "01918.HK",
+      "name": "SUNAC"
+    },
+    {
+      "symbol": "01919.HK",
+      "name": "COSCO SHIP HOLD"
+    },
+    {
+      "symbol": "01921.HK",
+      "name": "DALIPAL HLDG"
+    },
+    {
+      "symbol": "01928.HK",
+      "name": "SANDS CHINA LTD"
+    },
+    {
+      "symbol": "01929.HK",
+      "name": "CHOW TAI FOOK"
+    },
+    {
+      "symbol": "01951.HK",
+      "name": "JXR"
+    },
+    {
+      "symbol": "01952.HK",
+      "name": "EVEREST MED"
+    },
+    {
+      "symbol": "01958.HK",
+      "name": "BAIC MOTOR"
+    },
+    {
+      "symbol": "01963.HK",
+      "name": "BCQ"
+    },
+    {
+      "symbol": "01969.HK",
+      "name": "CHINA CHUNLAI"
+    },
+    {
+      "symbol": "01972.HK",
+      "name": "SWIREPROPERTIES"
+    },
+    {
+      "symbol": "01988.HK",
+      "name": "MINSHENG BANK"
+    },
+    {
+      "symbol": "01997.HK",
+      "name": "WHARF REIC"
+    },
+    {
+      "symbol": "01999.HK",
+      "name": "MAN WAH HLDGS"
+    },
+    {
+      "symbol": "02005.HK",
+      "name": "SSY GROUP"
+    },
+    {
+      "symbol": "02007.HK",
+      "name": "COUNTRY GARDEN"
+    },
+    {
+      "symbol": "02009.HK",
+      "name": "BBMG"
+    },
+    {
+      "symbol": "02013.HK",
+      "name": "WEIMOB INC"
+    },
+    {
+      "symbol": "02015.HK",
+      "name": "LI AUTO-W"
+    },
+    {
+      "symbol": "02016.HK",
+      "name": "CZBANK"
+    },
+    {
+      "symbol": "02018.HK",
+      "name": "AAC TECH"
+    },
+    {
+      "symbol": "02020.HK",
+      "name": "ANTA SPORTS"
+    },
+    {
+      "symbol": "02038.HK",
+      "name": "FIH"
+    },
+    {
+      "symbol": "02039.HK",
+      "name": "CIMC"
+    },
+    {
+      "symbol": "02050.HK",
+      "name": "SANHUA"
+    },
+    {
+      "symbol": "02057.HK",
+      "name": "ZTO EXPRESS-W"
+    },
+    {
+      "symbol": "02068.HK",
+      "name": "CHALIECO"
+    },
+    {
+      "symbol": "02096.HK",
+      "name": "SIMCERE PHARMA"
+    },
+    {
+      "symbol": "02097.HK",
+      "name": "MIXUE GROUP"
+    },
+    {
+      "symbol": "02099.HK",
+      "name": "CHINAGOLDINTL"
+    },
+    {
+      "symbol": "02128.HK",
+      "name": "CHINA LESSO"
+    },
+    {
+      "symbol": "02145.HK",
+      "name": "CHICMAX"
+    },
+    {
+      "symbol": "02155.HK",
+      "name": "MORIMATSU INTL"
+    },
+    {
+      "symbol": "02157.HK",
+      "name": "LEPU BIO-B"
+    },
+    {
+      "symbol": "02158.HK",
+      "name": "YIDU TECH"
+    },
+    {
+      "symbol": "02162.HK",
+      "name": "KEYMED BIO-B"
+    },
+    {
+      "symbol": "02169.HK",
+      "name": "CANGGANGRAILWAY"
+    },
+    {
+      "symbol": "02172.HK",
+      "name": "MICROPORT NEURO"
+    },
+    {
+      "symbol": "02186.HK",
+      "name": "LUYE PHARMA"
+    },
+    {
+      "symbol": "02192.HK",
+      "name": "MEDLIVE"
+    },
+    {
+      "symbol": "02196.HK",
+      "name": "FOSUN PHARMA"
+    },
+    {
+      "symbol": "02202.HK",
+      "name": "CHINA VANKE"
+    },
+    {
+      "symbol": "02208.HK",
+      "name": "GOLDWIND"
+    },
+    {
+      "symbol": "02218.HK",
+      "name": "ANDRE JUICE"
+    },
+    {
+      "symbol": "02228.HK",
+      "name": "XTALPI"
+    },
+    {
+      "symbol": "02232.HK",
+      "name": "CRYSTAL INTL"
+    },
+    {
+      "symbol": "02233.HK",
+      "name": "WESTCHINACEMENT"
+    },
+    {
+      "symbol": "02238.HK",
+      "name": "GAC GROUP"
+    },
+    {
+      "symbol": "02252.HK",
+      "name": "MEDBOT-B"
+    },
+    {
+      "symbol": "02255.HK",
+      "name": "HAICHANG HLDG"
+    },
+    {
+      "symbol": "02259.HK",
+      "name": "ZIJIN GOLD INTL"
+    },
+    {
+      "symbol": "02268.HK",
+      "name": "WUXI XDC"
+    },
+    {
+      "symbol": "02269.HK",
+      "name": "WUXI BIO"
+    },
+    {
+      "symbol": "02273.HK",
+      "name": "GUSHENGTANG"
+    },
+    {
+      "symbol": "02276.HK",
+      "name": "CONANT OPTICAL"
+    },
+    {
+      "symbol": "02282.HK",
+      "name": "MGM CHINA"
+    },
+    {
+      "symbol": "02285.HK",
+      "name": "CHERVON"
+    },
+    {
+      "symbol": "02291.HK",
+      "name": "SCIENTECH"
+    },
+    {
+      "symbol": "02313.HK",
+      "name": "SHENZHOU INTL"
+    },
+    {
+      "symbol": "02314.HK",
+      "name": "LEE & MAN PAPER"
+    },
+    {
+      "symbol": "02315.HK",
+      "name": "BIOCYTOGEN-B"
+    },
+    {
+      "symbol": "02318.HK",
+      "name": "PING AN"
+    },
+    {
+      "symbol": "02319.HK",
+      "name": "MENGNIU DAIRY"
+    },
+    {
+      "symbol": "02328.HK",
+      "name": "PICC P&C"
+    },
+    {
+      "symbol": "02331.HK",
+      "name": "LI NING"
+    },
+    {
+      "symbol": "02333.HK",
+      "name": "GWMOTOR"
+    },
+    {
+      "symbol": "02338.HK",
+      "name": "WEICHAI POWER"
+    },
+    {
+      "symbol": "02343.HK",
+      "name": "PACIFIC BASIN"
+    },
+    {
+      "symbol": "02356.HK",
+      "name": "DAHSING BANKING"
+    },
+    {
+      "symbol": "02357.HK",
+      "name": "AVICHINA"
+    },
+    {
+      "symbol": "02359.HK",
+      "name": "WUXI APPTEC"
+    },
+    {
+      "symbol": "02367.HK",
+      "name": "GIANT BIOGENE"
+    },
+    {
+      "symbol": "02378.HK",
+      "name": "PRU"
+    },
+    {
+      "symbol": "02380.HK",
+      "name": "CHINA POWER"
+    },
+    {
+      "symbol": "02382.HK",
+      "name": "SUNNY OPTICAL"
+    },
+    {
+      "symbol": "02386.HK",
+      "name": "SINOPEC SEG"
+    },
+    {
+      "symbol": "02388.HK",
+      "name": "BOC HONG KONG"
+    },
+    {
+      "symbol": "02400.HK",
+      "name": "XD INC"
+    },
+    {
+      "symbol": "02402.HK",
+      "name": "SINOHYTEC"
+    },
+    {
+      "symbol": "02410.HK",
+      "name": "TYK MEDICINES-B"
+    },
+    {
+      "symbol": "02419.HK",
+      "name": "DEKON AGR"
+    },
+    {
+      "symbol": "02423.HK",
+      "name": "BEKE-W"
+    },
+    {
+      "symbol": "02429.HK",
+      "name": "UBOX ONLINE"
+    },
+    {
+      "symbol": "02431.HK",
+      "name": "MINIEYE"
+    },
+    {
+      "symbol": "02432.HK",
+      "name": "DOBOT"
+    },
+    {
+      "symbol": "02443.HK",
+      "name": "AUTOSTREETS"
+    },
+    {
+      "symbol": "02460.HK",
+      "name": "CR BEVERAGE"
+    },
+    {
+      "symbol": "02465.HK",
+      "name": "LOPAL TECH"
+    },
+    {
+      "symbol": "02469.HK",
+      "name": "FENBI"
+    },
+    {
+      "symbol": "02473.HK",
+      "name": "XXF"
+    },
+    {
+      "symbol": "02498.HK",
+      "name": "ROBOSENSE"
+    },
+    {
+      "symbol": "02506.HK",
+      "name": "XUNFEIHEALTH"
+    },
+    {
+      "symbol": "02510.HK",
+      "name": "TS LINES"
+    },
+    {
+      "symbol": "02517.HK",
+      "name": "GUOQUAN"
+    },
+    {
+      "symbol": "02522.HK",
+      "name": "RIMAG GROUP"
+    },
+    {
+      "symbol": "02533.HK",
+      "name": "BLACK SESAME"
+    },
+    {
+      "symbol": "02555.HK",
+      "name": "CHABAIDAO"
+    },
+    {
+      "symbol": "02556.HK",
+      "name": "MARKETINGFORCE"
+    },
+    {
+      "symbol": "02562.HK",
+      "name": "SYNAGISTICS"
+    },
+    {
+      "symbol": "02570.HK",
+      "name": "REFIRE"
+    },
+    {
+      "symbol": "02577.HK",
+      "name": "INNOSCIENCE"
+    },
+    {
+      "symbol": "02579.HK",
+      "name": "CNGR"
+    },
+    {
+      "symbol": "02580.HK",
+      "name": "AUX ELECTRIC"
+    },
+    {
+      "symbol": "02582.HK",
+      "name": "GUOFUHEE"
+    },
+    {
+      "symbol": "02586.HK",
+      "name": "DMALL"
+    },
+    {
+      "symbol": "02587.HK",
+      "name": "HEALTHYWAY INC"
+    },
+    {
+      "symbol": "02588.HK",
+      "name": "BOC AVIATION"
+    },
+    {
+      "symbol": "02589.HK",
+      "name": "AUNTEA JENNY"
+    },
+    {
+      "symbol": "02591.HK",
+      "name": "INNOGEN-B"
+    },
+    {
+      "symbol": "02600.HK",
+      "name": "CHALCO"
+    },
+    {
+      "symbol": "02601.HK",
+      "name": "CPIC"
+    },
+    {
+      "symbol": "02602.HK",
+      "name": "ONEWO"
+    },
+    {
+      "symbol": "02603.HK",
+      "name": "JIHONG CO"
+    },
+    {
+      "symbol": "02607.HK",
+      "name": "SH PHARMA"
+    },
+    {
+      "symbol": "02609.HK",
+      "name": "BAYZED HEALTH"
+    },
+    {
+      "symbol": "02610.HK",
+      "name": "NANSHAN AL INTL"
+    },
+    {
+      "symbol": "02611.HK",
+      "name": "GTHT"
+    },
+    {
+      "symbol": "02617.HK",
+      "name": "TRANSTHERA-B"
+    },
+    {
+      "symbol": "02618.HK",
+      "name": "JD LOGISTICS"
+    },
+    {
+      "symbol": "02628.HK",
+      "name": "CHINA LIFE"
+    },
+    {
+      "symbol": "02629.HK",
+      "name": "MIRXES-B"
+    },
+    {
+      "symbol": "02631.HK",
+      "name": "SICC"
+    },
+    {
+      "symbol": "02643.HK",
+      "name": "CAOCAO INC"
+    },
+    {
+      "symbol": "02648.HK",
+      "name": "ANJOY FOOD"
+    },
+    {
+      "symbol": "02666.HK",
+      "name": "UNI MEDICAL"
+    },
+    {
+      "symbol": "02669.HK",
+      "name": "CHINA OVS PPT"
+    },
+    {
+      "symbol": "02676.HK",
+      "name": "NOVOSENSE"
+    },
+    {
+      "symbol": "02688.HK",
+      "name": "ENN ENERGY"
+    },
+    {
+      "symbol": "02689.HK",
+      "name": "ND PAPER"
+    },
+    {
+      "symbol": "02727.HK",
+      "name": "SH ELECTRIC"
+    },
+    {
+      "symbol": "02799.HK",
+      "name": "CITIC FAMC"
+    },
+    {
+      "symbol": "02800.HK",
+      "name": "TRACKER FUND"
+    },
+    {
+      "symbol": "02801.HK",
+      "name": "ISHARES CHINA"
+    },
+    {
+      "symbol": "02825.HK",
+      "name": "WISECSIHK100ETF"
+    },
+    {
+      "symbol": "02828.HK",
+      "name": "HSCEI ETF"
+    },
+    {
+      "symbol": "02837.HK",
+      "name": "GX HS TECH"
+    },
+    {
+      "symbol": "02858.HK",
+      "name": "YIXIN"
+    },
+    {
+      "symbol": "02865.HK",
+      "name": "DRINDA"
+    },
+    {
+      "symbol": "02866.HK",
+      "name": "COSCO SHIP DEV"
+    },
+    {
+      "symbol": "02869.HK",
+      "name": "GREENTOWN SER"
+    },
+    {
+      "symbol": "02877.HK",
+      "name": "SHINEWAY PHARM"
+    },
+    {
+      "symbol": "02880.HK",
+      "name": "LIAONING PORT"
+    },
+    {
+      "symbol": "02883.HK",
+      "name": "CHINA OILFIELD"
+    },
+    {
+      "symbol": "02888.HK",
+      "name": "STANCHART"
+    },
+    {
+      "symbol": "02899.HK",
+      "name": "ZIJIN MINING"
+    },
+    {
+      "symbol": "03032.HK",
+      "name": "HSTECH ETF"
+    },
+    {
+      "symbol": "03033.HK",
+      "name": "CSOP HS TECH"
+    },
+    {
+      "symbol": "03037.HK",
+      "name": "CSOP HSI ETF"
+    },
+    {
+      "symbol": "03039.HK",
+      "name": "EFUNDHSIESG"
+    },
+    {
+      "symbol": "03040.HK",
+      "name": "GX MSCI CHINA"
+    },
+    {
+      "symbol": "03067.HK",
+      "name": "ISHARESHSTECH"
+    },
+    {
+      "symbol": "03069.HK",
+      "name": "CAM HSBIOTECH"
+    },
+    {
+      "symbol": "03070.HK",
+      "name": "PING AN HKDIV"
+    },
+    {
+      "symbol": "03088.HK",
+      "name": "CAM HS TECH"
+    },
+    {
+      "symbol": "03110.HK",
+      "name": "GX HS HIGH DIV"
+    },
+    {
+      "symbol": "03115.HK",
+      "name": "ISHARESHSI"
+    },
+    {
+      "symbol": "03167.HK",
+      "name": "ICBCCSOPCHINA"
+    },
+    {
+      "symbol": "03174.HK",
+      "name": "CSOP HSBIOTECH"
+    },
+    {
+      "symbol": "03288.HK",
+      "name": "HAITIAN FLAV"
+    },
+    {
+      "symbol": "03306.HK",
+      "name": "JNBY"
+    },
+    {
+      "symbol": "03311.HK",
+      "name": "CHINA STATE CON"
+    },
+    {
+      "symbol": "03320.HK",
+      "name": "CHINARES PHARMA"
+    },
+    {
+      "symbol": "03323.HK",
+      "name": "CNBM"
+    },
+    {
+      "symbol": "03328.HK",
+      "name": "BANKCOMM"
+    },
+    {
+      "symbol": "03339.HK",
+      "name": "LONKING"
+    },
+    {
+      "symbol": "03347.HK",
+      "name": "TIGERMED"
+    },
+    {
+      "symbol": "03360.HK",
+      "name": "FE HORIZON"
+    },
+    {
+      "symbol": "03369.HK",
+      "name": "QHD PORT"
+    },
+    {
+      "symbol": "03380.HK",
+      "name": "LOGAN GROUP"
+    },
+    {
+      "symbol": "03396.HK",
+      "name": "LEGENDHOLDING"
+    },
+    {
+      "symbol": "03403.HK",
+      "name": "CAM HSI ESG"
+    },
+    {
+      "symbol": "03423.HK",
+      "name": "CMS HS TECH"
+    },
+    {
+      "symbol": "03432.HK",
+      "name": "CSOP HKCNCON"
+    },
+    {
+      "symbol": "03441.HK",
+      "name": "CSOP EWSELECT"
+    },
+    {
+      "symbol": "03442.HK",
+      "name": "CSOP HKUSTECH"
+    },
+    {
+      "symbol": "03606.HK",
+      "name": "FUYAO GLASS"
+    },
+    {
+      "symbol": "03613.HK",
+      "name": "TONGRENTANGCM"
+    },
+    {
+      "symbol": "03618.HK",
+      "name": "CQRC BANK"
+    },
+    {
+      "symbol": "03633.HK",
+      "name": "ZHONGYU ENERGY"
+    },
+    {
+      "symbol": "03668.HK",
+      "name": "YANCOAL AUS"
+    },
+    {
+      "symbol": "03677.HK",
+      "name": "ZENERGY"
+    },
+    {
+      "symbol": "03678.HK",
+      "name": "HOLLY FUTURES"
+    },
+    {
+      "symbol": "03690.HK",
+      "name": "MEITUAN-W"
+    },
+    {
+      "symbol": "03692.HK",
+      "name": "HANSOH PHARMA"
+    },
+    {
+      "symbol": "03709.HK",
+      "name": "EEKA FASHION"
+    },
+    {
+      "symbol": "03738.HK",
+      "name": "VOBILE GROUP"
+    },
+    {
+      "symbol": "03750.HK",
+      "name": "CATL"
+    },
+    {
+      "symbol": "03759.HK",
+      "name": "PHARMARON"
+    },
+    {
+      "symbol": "03800.HK",
+      "name": "GCL TECH"
+    },
+    {
+      "symbol": "03808.HK",
+      "name": "SINOTRUK"
+    },
+    {
+      "symbol": "03866.HK",
+      "name": "BQD"
+    },
+    {
+      "symbol": "03868.HK",
+      "name": "XINYI ENERGY"
+    },
+    {
+      "symbol": "03877.HK",
+      "name": "CSSC SHIPPING"
+    },
+    {
+      "symbol": "03888.HK",
+      "name": "KINGSOFT"
+    },
+    {
+      "symbol": "03896.HK",
+      "name": "KINGSOFT CLOUD"
+    },
+    {
+      "symbol": "03898.HK",
+      "name": "TIMES ELECTRIC"
+    },
+    {
+      "symbol": "03899.HK",
+      "name": "CIMC ENRIC"
+    },
+    {
+      "symbol": "03900.HK",
+      "name": "GREENTOWN CHINA"
+    },
+    {
+      "symbol": "03908.HK",
+      "name": "CICC"
+    },
+    {
+      "symbol": "03918.HK",
+      "name": "NAGACORP"
+    },
+    {
+      "symbol": "03931.HK",
+      "name": "CALB"
+    },
+    {
+      "symbol": "03933.HK",
+      "name": "UNITED LAB"
+    },
+    {
+      "symbol": "03939.HK",
+      "name": "WANGUO GOLD GP"
+    },
+    {
+      "symbol": "03958.HK",
+      "name": "DFZQ"
+    },
+    {
+      "symbol": "03968.HK",
+      "name": "CM BANK"
+    },
+    {
+      "symbol": "03969.HK",
+      "name": "CHINA CRSC"
+    },
+    {
+      "symbol": "03988.HK",
+      "name": "BANK OF CHINA"
+    },
+    {
+      "symbol": "03990.HK",
+      "name": "MIDEA REAL EST"
+    },
+    {
+      "symbol": "03993.HK",
+      "name": "CMOC"
+    },
+    {
+      "symbol": "03996.HK",
+      "name": "CH ENERGY ENG"
+    },
+    {
+      "symbol": "03998.HK",
+      "name": "BOSIDENG"
+    },
+    {
+      "symbol": "06030.HK",
+      "name": "CITIC SEC"
+    },
+    {
+      "symbol": "06031.HK",
+      "name": "SANY HEAVY IND"
+    },
+    {
+      "symbol": "06049.HK",
+      "name": "POLY PPT SER"
+    },
+    {
+      "symbol": "06055.HK",
+      "name": "CTIHK"
+    },
+    {
+      "symbol": "06060.HK",
+      "name": "ZA ONLINE"
+    },
+    {
+      "symbol": "06066.HK",
+      "name": "CSC"
+    },
+    {
+      "symbol": "06069.HK",
+      "name": "SY HOLDINGS"
+    },
+    {
+      "symbol": "06078.HK",
+      "name": "HYGEIA HEALTH"
+    },
+    {
+      "symbol": "06086.HK",
+      "name": "FANGZHOU JIANKE"
+    },
+    {
+      "symbol": "06088.HK",
+      "name": "FIT HON TENG"
+    },
+    {
+      "symbol": "06098.HK",
+      "name": "CG SERVICES"
+    },
+    {
+      "symbol": "06099.HK",
+      "name": "CMSC"
+    },
+    {
+      "symbol": "06110.HK",
+      "name": "TOPSPORTS"
+    },
+    {
+      "symbol": "06127.HK",
+      "name": "JOINN"
+    },
+    {
+      "symbol": "06160.HK",
+      "name": "BEONE MEDICINES"
+    },
+    {
+      "symbol": "06166.HK",
+      "name": "CIG"
+    },
+    {
+      "symbol": "06168.HK",
+      "name": "ZHOU LIU FU"
+    },
+    {
+      "symbol": "06178.HK",
+      "name": "EB SECURITIES"
+    },
+    {
+      "symbol": "06181.HK",
+      "name": "LAOPU GOLD"
+    },
+    {
+      "symbol": "06185.HK",
+      "name": "CANSINOBIO"
+    },
+    {
+      "symbol": "06186.HK",
+      "name": "CHINA FEIHE"
+    },
+    {
+      "symbol": "06196.HK",
+      "name": "BANKOFZHENGZHOU"
+    },
+    {
+      "symbol": "06198.HK",
+      "name": "QINGDAO PORT"
+    },
+    {
+      "symbol": "06603.HK",
+      "name": "IFBH"
+    },
+    {
+      "symbol": "06613.HK",
+      "name": "LENS"
+    },
+    {
+      "symbol": "06616.HK",
+      "name": "GLOBAL NEW MAT"
+    },
+    {
+      "symbol": "06618.HK",
+      "name": "JD HEALTH"
+    },
+    {
+      "symbol": "06655.HK",
+      "name": "HX BLDG MAT"
+    },
+    {
+      "symbol": "06666.HK",
+      "name": "EVERG SERVICES"
+    },
+    {
+      "symbol": "06680.HK",
+      "name": "JLMAG"
+    },
+    {
+      "symbol": "06681.HK",
+      "name": "BRAINAURORA-B"
+    },
+    {
+      "symbol": "06682.HK",
+      "name": "FOURTH PARADIGM"
+    },
+    {
+      "symbol": "06683.HK",
+      "name": "STARPLUS LEGEND"
+    },
+    {
+      "symbol": "06690.HK",
+      "name": "HAIER SMARTHOME"
+    },
+    {
+      "symbol": "06693.HK",
+      "name": "CHIFENG GOLD"
+    },
+    {
+      "symbol": "06699.HK",
+      "name": "ANGELALIGN"
+    },
+    {
+      "symbol": "06806.HK",
+      "name": "SWHY"
+    },
+    {
+      "symbol": "06808.HK",
+      "name": "SUNART RETAIL"
+    },
+    {
+      "symbol": "06818.HK",
+      "name": "CEB BANK"
+    },
+    {
+      "symbol": "06821.HK",
+      "name": "ASYMCHEM"
+    },
+    {
+      "symbol": "06826.HK",
+      "name": "HAOHAI BIOTEC"
+    },
+    {
+      "symbol": "06855.HK",
+      "name": "ASCENTAGE-B"
+    },
+    {
+      "symbol": "06862.HK",
+      "name": "HAIDILAO"
+    },
+    {
+      "symbol": "06865.HK",
+      "name": "FLAT GLASS"
+    },
+    {
+      "symbol": "06869.HK",
+      "name": "YOFC"
+    },
+    {
+      "symbol": "06881.HK",
+      "name": "CGS"
+    },
+    {
+      "symbol": "06886.HK",
+      "name": "HTSC"
+    },
+    {
+      "symbol": "06936.HK",
+      "name": "SF HOLDING"
+    },
+    {
+      "symbol": "06955.HK",
+      "name": "BOAN BIOTECH"
+    },
+    {
+      "symbol": "06963.HK",
+      "name": "SUNSHINE INS"
+    },
+    {
+      "symbol": "06969.HK",
+      "name": "SMOORE INTL"
+    },
+    {
+      "symbol": "06979.HK",
+      "name": "ZJLD"
+    },
+    {
+      "symbol": "06990.HK",
+      "name": "SKB BIO-B"
+    },
+    {
+      "symbol": "06993.HK",
+      "name": "BLUE MOON GROUP"
+    },
+    {
+      "symbol": "09606.HK",
+      "name": "DUALITYBIO-B"
+    },
+    {
+      "symbol": "09626.HK",
+      "name": "BILIBILI-W"
+    },
+    {
+      "symbol": "09633.HK",
+      "name": "NONGFU SPRING"
+    },
+    {
+      "symbol": "09636.HK",
+      "name": "JF SMARTINVEST"
+    },
+    {
+      "symbol": "09658.HK",
+      "name": "SUPER HI"
+    },
+    {
+      "symbol": "09660.HK",
+      "name": "HORIZONROBOT-W"
+    },
+    {
+      "symbol": "09678.HK",
+      "name": "UNISOUND"
+    },
+    {
+      "symbol": "09688.HK",
+      "name": "ZAI LAB"
+    },
+    {
+      "symbol": "09690.HK",
+      "name": "TUHU-W"
+    },
+    {
+      "symbol": "09696.HK",
+      "name": "TIANQI LITHIUM"
+    },
+    {
+      "symbol": "09699.HK",
+      "name": "SF INTRA-CITY"
+    },
+    {
+      "symbol": "09858.HK",
+      "name": "YOURAN DAIRY"
+    },
+    {
+      "symbol": "09860.HK",
+      "name": "ADICON HOLDINGS"
+    },
+    {
+      "symbol": "09863.HK",
+      "name": "LEAPMOTOR"
+    },
+    {
+      "symbol": "09868.HK",
+      "name": "XPENG-W"
+    },
+    {
+      "symbol": "09880.HK",
+      "name": "UBTECH ROBOTICS"
+    },
+    {
+      "symbol": "09885.HK",
+      "name": "YSB"
+    },
+    {
+      "symbol": "09890.HK",
+      "name": "TANWAN"
+    },
+    {
+      "symbol": "09896.HK",
+      "name": "MNSO"
+    },
+    {
+      "symbol": "09899.HK",
+      "name": "NETEASE MUSIC"
+    },
+    {
+      "symbol": "09926.HK",
+      "name": "AKESO"
+    },
+    {
+      "symbol": "09927.HK",
+      "name": "SERES"
+    },
+    {
+      "symbol": "09956.HK",
+      "name": "ANE"
+    },
+    {
+      "symbol": "09969.HK",
+      "name": "INNOCARE"
+    },
+    {
+      "symbol": "09973.HK",
+      "name": "CHERY AUTO"
+    },
+    {
+      "symbol": "09979.HK",
+      "name": "GREENTOWN MGMT"
+    },
+    {
+      "symbol": "09985.HK",
+      "name": "WL DELICIOUS"
+    },
+    {
+      "symbol": "09987.HK",
+      "name": "YUM CHINA"
+    },
+    {
+      "symbol": "09988.HK",
+      "name": "BABA-W"
+    },
+    {
+      "symbol": "09989.HK",
+      "name": "HEPALINK"
+    },
+    {
+      "symbol": "09992.HK",
+      "name": "POP MART"
+    },
+    {
+      "symbol": "09993.HK",
+      "name": "RADIANCE HLDGS"
+    },
+    {
+      "symbol": "09995.HK",
+      "name": "REMEGEN"
+    }
+  ]
+}

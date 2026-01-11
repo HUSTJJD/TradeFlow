@@ -2,8 +2,9 @@ import logging
 import pandas as pd
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from typing import Dict, List, Any
+from typing import Any, Dict, List, Optional, Tuple, cast
 import os
+from datetime import datetime
 
 from app.core.constants import SignalType
 
@@ -199,23 +200,47 @@ def create_performance_chart(
             _add_trade_markers(SignalType.BUY, "买入", "triangle-up", buy_color)
             _add_trade_markers(SignalType.SELL, "卖出", "triangle-down", sell_color)
 
-            if latest_trade_date:
-                df_latest = df_trades[df_trades["time"].dt.date.astype(str) == latest_trade_date].copy()
+            if latest_trade_date is not None and latest_trade_date != "":
+                df_latest = df_trades[
+                    df_trades["time"].dt.date.astype(str) == latest_trade_date
+                ].copy()
                 if not df_latest.empty:
-                    df_latest.sort_values("time", inplace=True)
-                    for _, r in df_latest.iterrows():
-                        trade_table_rows.append(
+                    latest_trade_rows: List[Dict[str, Any]] = []
+                    for i in range(len(df_latest)):
+                        row_series = df_latest.iloc[i]
+                        latest_trade_rows.append(
                             {
-                                "time": r["time"].strftime("%H:%M"),
-                                "symbol": r["symbol"],
-                                "action": r["action"],
-                                "qty": int(r["quantity"]),
-                                "price": float(r["price"]),
-                                "tag": r.get("trade_tag", ""),
+                                "time": row_series["time"],
+                                "symbol": row_series.get("symbol", ""),
+                                "action": row_series.get("action", ""),
+                                "price": row_series.get("price", 0.0),
+                                "quantity": row_series.get("quantity", 0),
+                                "trade_tag": row_series.get("trade_tag", ""),
                             }
                         )
 
-    if mdd_start_date and mdd_end_date and mdd_start_date != mdd_end_date:
+                    latest_trade_rows.sort(
+                        key=lambda x: pd.to_datetime(cast(Any, x.get("time"))).to_pydatetime()
+                    )
+
+                    for r in latest_trade_rows:
+                        trade_time = pd.to_datetime(cast(Any, r.get("time"))).to_pydatetime()
+                        trade_table_rows.append(
+                            {
+                                "time": trade_time.strftime("%H:%M"),
+                                "symbol": str(r.get("symbol", "")),
+                                "action": str(r.get("action", "")),
+                                "qty": int(r.get("quantity", 0)),
+                                "price": float(r.get("price", 0.0)),
+                                "tag": str(r.get("trade_tag", "")),
+                            }
+                        )
+
+    if (
+        mdd_start_date is not None
+        and mdd_end_date is not None
+        and mdd_start_date != mdd_end_date
+    ):
         fig.add_vrect(
             x0=mdd_start_date,
             x1=mdd_end_date,
@@ -225,8 +250,8 @@ def create_performance_chart(
             line_width=0,
             annotation_text=f"最大回撤: {max_drawdown_val:.2%}",
             annotation_position="top left",
-            row=1,
-            col=1,
+            row=cast(Any, 1),
+            col=cast(Any, 1),
         )
 
         fig.add_trace(

@@ -5,6 +5,8 @@ from typing import Any, Dict, Optional
 
 import pandas as pd
 
+import logging
+
 from app.core.config import global_config
 from app.core.constants import SignalType
 from app.strategies.base import Strategy
@@ -14,6 +16,9 @@ from app.utils.indicators import (
     calculate_donchian_channel,
     calculate_ema,
 )
+
+
+logger = logging.getLogger(__name__)
 
 
 @dataclass(frozen=True)
@@ -50,11 +55,11 @@ class TrendSwingConfig:
 
 def _calculate_rsi_fast(df: pd.DataFrame, period: int, column: str = "close") -> pd.Series:
     delta = df[column].diff()
-    gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
+    gain = delta.where(delta > 0, 0).rolling(window=period).mean()
     loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
     rs = gain / loss
     rsi = 100 - (100 / (1 + rs))
-    return rsi
+    return pd.Series(rsi, index=df.index, dtype="float64")
 
 
 class TrendSwingTStrategy(Strategy):
@@ -65,7 +70,7 @@ class TrendSwingTStrategy(Strategy):
         config: Optional[TrendSwingConfig] = None,
         **kwargs: Any,
     ) -> None:
-        super().__init__()
+        super().__init__(name="TrendSwingT", description="趋势突破 + ATR风控 + 目标仓位管理 + 低频做T策略")
 
         # 兼容工厂方法：get_strategy(name, **strategy.params)
         # - 若显式传入 config，则优先使用
@@ -84,28 +89,43 @@ class TrendSwingTStrategy(Strategy):
         self._t_last_date: Dict[str, str] = {}
         self._t_count: Dict[str, int] = {}
         self._tp1_done: Dict[str, bool] = {}
-
         self._base_target_ratio: Dict[str, float] = {}
 
-    def analyze(self, symbol: str, df: pd.DataFrame) -> Dict[str, Any]:
-        if df is None or df.empty:
-            return {"action": SignalType.HOLD, "reason": "数据为空"}
-
-        required_cols = {"open", "high", "low", "close"}
-        if not required_cols.issubset(set(df.columns)):
-            return {"action": SignalType.HOLD, "reason": "缺少OHLC数据"}
-
-        df = df.sort_index()
-
-        warmup = max(
+        self._min_data_length = max(
             self.cfg.ema_slow,
             self.cfg.donchian_period,
             self.cfg.atr_period,
             self.cfg.adx_period,
         ) + 5
-        if len(df) < warmup:
+
+    def _on_initialize(self, **kwargs: Any) -> bool:
+        """趋势摆动策略初始化"""
+        # 验证参数有效性
+        if self.cfg.ema_fast <= 0 or self.cfg.ema_slow <= 0:
+            raise ValueError("EMA周期必须为正整数")
+        if self.cfg.ema_fast >= self.cfg.ema_slow:
+            raise ValueError("快速EMA周期必须小于慢速EMA周期")
+        if self.cfg.adx_threshold <= 0:
+            raise ValueError("ADX阈值必须为正数")
+        if self.cfg.atr_stop_loss <= 0 or self.cfg.atr_trailing <= 0:
+            raise ValueError("ATR止损倍数必须为正数")
+        if self.cfg.base_target_position_ratio <= 0 or self.cfg.base_target_position_ratio > 1:
+            raise ValueError("基础目标仓位比例必须在(0, 1]范围内")
+        
+        return True
+
+    def analyze(self, symbol: str, df: pd.DataFrame) -> Dict[str, Any]:
+        """分析市场数据并生成交易信号"""
+        # 数据验证
+        if not self.validate_data(df, ['open', 'high', 'low', 'close']):
+            return {"action": SignalType.HOLD, "reason": "数据无效"}
+
+        if len(df) < self._min_data_length:
             return {"action": SignalType.HOLD, "reason": "数据不足"}
 
+        df = df.sort_index()
+
+        # 计算技术指标
         df = calculate_ema(df, self.cfg.ema_fast, out_col="ema_fast")
         df = calculate_ema(df, self.cfg.ema_slow, out_col="ema_slow")
         df = calculate_adx(df, self.cfg.adx_period)
@@ -253,6 +273,7 @@ class TrendSwingTStrategy(Strategy):
         }
 
     def _reset_symbol(self, symbol: str) -> None:
+        """重置指定标的的状态"""
         self._entry_price.pop(symbol, None)
         self._trail_high.pop(symbol, None)
         self._tp1_done.pop(symbol, None)
@@ -260,3 +281,39 @@ class TrendSwingTStrategy(Strategy):
 
         self._t_last_date.pop(symbol, None)
         self._t_count.pop(symbol, None)
+
+    def get_info(self) -> Dict[str, Any]:
+        """获取趋势摆动策略的详细信息"""
+        base_info = super().get_info()
+        base_info.update({
+            "parameters": {
+                "ema_fast": self.cfg.ema_fast,
+                "ema_slow": self.cfg.ema_slow,
+                "adx_period": self.cfg.adx_period,
+                "adx_threshold": self.cfg.adx_threshold,
+                "donchian_period": self.cfg.donchian_period,
+                "atr_period": self.cfg.atr_period,
+                "atr_stop_loss": self.cfg.atr_stop_loss,
+                "atr_trailing": self.cfg.atr_trailing,
+                "take_profit_r_multiple_1": self.cfg.take_profit_r_multiple_1,
+                "take_profit_ratio_1": self.cfg.take_profit_ratio_1,
+                "enable_t": self.cfg.enable_t,
+                "t_rsi_period": self.cfg.t_rsi_period,
+                "t_overbought": self.cfg.t_overbought,
+                "t_oversold": self.cfg.t_oversold,
+                "t_step_ratio": self.cfg.t_step_ratio,
+                "base_target_position_ratio": self.cfg.base_target_position_ratio,
+                "min_data_length": self._min_data_length
+            }
+        })
+        return base_info
+
+    def _on_cleanup(self) -> None:
+        """清理策略资源"""
+        self._entry_price.clear()
+        self._trail_high.clear()
+        self._t_last_date.clear()
+        self._t_count.clear()
+        self._tp1_done.clear()
+        self._base_target_ratio.clear()
+        logger.info("趋势摆动策略资源已清理")

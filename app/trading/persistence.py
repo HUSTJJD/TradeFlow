@@ -31,7 +31,10 @@ class AccountPersistence:
                 account.trades = data.get("trades", [])
                 account.equity_history = data.get("equity_history", [])
                 # 加载已处理的信号ID
-                account.processed_signals = set(data.get("processed_signals", []))
+                account.clear_processed_signals()
+                for signal_id in data.get("processed_signals", []):
+                    if signal_id:
+                        account.mark_signal_processed(str(signal_id))
                 # latest_prices 不持久化
                 account.latest_prices = {}
                 
@@ -61,7 +64,7 @@ class AccountPersistence:
                 "avg_costs": account.avg_costs,
                 "trades": account.trades,
                 "equity_history": account.equity_history,
-                "processed_signals": list(account.processed_signals),
+                "processed_signals": list(account._processed_signals),
             }
             with open(self.file_path, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=4, ensure_ascii=False)

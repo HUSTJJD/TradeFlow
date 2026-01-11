@@ -96,12 +96,8 @@ backtest:
 monitor:
   interval: 60
   request_delay: 0.5
-  symbols:
-    - "700.HK"
-    - "9988.HK"
-    - "3690.HK"
-    - "1810.HK"
-    - "1024.HK"
+  # 监控标的由动态筛选系统自动生成，无需硬编码配置
+  # symbols: []
 
 universe:
   selector:

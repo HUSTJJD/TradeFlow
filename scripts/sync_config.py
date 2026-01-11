@@ -8,15 +8,15 @@ SENSITIVE_CONFIG = {
     "app_key": {"section": "longport", "placeholder": "YOUR_APP_KEY"},
     "app_secret": {"section": "longport", "placeholder": "YOUR_APP_SECRET"},
     "access_token": {"section": "longport", "placeholder": "YOUR_ACCESS_TOKEN"},
-    "smtp_server": {"section": "notification", "placeholder": "smtp.example.com"},
-    "smtp_port": {"section": "notification", "placeholder": 465},
+    "smtp_server": {"section": "email", "placeholder": "smtp.example.com"},
+    "smtp_port": {"section": "email", "placeholder": 465},
     "sender_email": {
-        "section": "notification",
+        "section": "email",
         "placeholder": "your_email@example.com",
     },
-    "sender_password": {"section": "notification", "placeholder": "your_password"},
+    "sender_password": {"section": "email", "placeholder": "your_password"},
     "receiver_emails": {
-        "section": "notification",
+        "section": "email",
         "placeholder": ["receiver@example.com"],
     },
 }

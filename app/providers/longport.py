@@ -1,25 +1,28 @@
 import logging
-import pandas as pd
-from datetime import date, timedelta
-from typing import List, Dict, Any, Optional
 import os
 import json
+from datetime import date, timedelta
+from typing import List, Dict, Any, Optional
+
+import pandas as pd
 from longport.openapi import QuoteContext, Period, AdjustType
-from app.core.config import global_config
+
 from app.utils.finance import calculate_interval_return
 
 logger = logging.getLogger(__name__)
 
 
+# Universe cache paths (not configurable)
 _UNIVERSE_CACHE_PATH = os.path.join("data", "universe", "universe_snapshot.json")
 _UNIVERSE_SCORE_PATH = os.path.join("data", "universe", "universe_scores.json")
 
-# 第一步产物：仅保存“标的代码+名称”（不依赖长桥全量标的能力）
+# Step1 outputs: only "symbol + name"
 _UNIVERSE_SYMBOLS_CN_PATH = os.path.join("data", "universe", "universe_symbols_cn.json")
 _UNIVERSE_SYMBOLS_HKCONNECT_PATH = os.path.join("data", "universe", "universe_symbols_hkconnect.json")
 
 
 def _load_json(path: str, default: Any) -> Any:
+    """加载JSON文件"""
     if not path or not os.path.exists(path):
         return default
     try:
@@ -31,6 +34,7 @@ def _load_json(path: str, default: Any) -> Any:
 
 
 def _save_json(path: str, data: Any) -> None:
+    """保存JSON文件"""
     try:
         os.makedirs(os.path.dirname(path), exist_ok=True)
         with open(path, "w", encoding="utf-8") as f:
@@ -40,10 +44,7 @@ def _save_json(path: str, data: Any) -> None:
 
 
 def save_universe_symbols(path: str, items: List[Dict[str, Any]]) -> None:
-    """保存标的基础清单（代码+名称）。
-
-    items: [{"symbol": "000001.SZ", "name": "平安银行"}, ...]
-    """
+    """保存标的基础清单（代码+名称）。"""
     payload = {
         "items": items,
     }
@@ -51,6 +52,7 @@ def save_universe_symbols(path: str, items: List[Dict[str, Any]]) -> None:
 
 
 def load_universe_symbols(path: str) -> List[Dict[str, Any]]:
+    """加载标的基础清单"""
     payload = _load_json(path, {})
     items = payload.get("items", []) if isinstance(payload, dict) else []
     if not isinstance(items, list):
@@ -59,22 +61,27 @@ def load_universe_symbols(path: str) -> List[Dict[str, Any]]:
 
 
 def save_cn_universe_symbols(items: List[Dict[str, Any]]) -> None:
+    """保存A股标的清单"""
     save_universe_symbols(_UNIVERSE_SYMBOLS_CN_PATH, items)
 
 
 def load_cn_universe_symbols() -> List[Dict[str, Any]]:
+    """加载A股标的清单"""
     return load_universe_symbols(_UNIVERSE_SYMBOLS_CN_PATH)
 
 
 def save_hkconnect_universe_symbols(items: List[Dict[str, Any]]) -> None:
+    """保存港股通标的清单"""
     save_universe_symbols(_UNIVERSE_SYMBOLS_HKCONNECT_PATH, items)
 
 
 def load_hkconnect_universe_symbols() -> List[Dict[str, Any]]:
+    """加载港股通标的清单"""
     return load_universe_symbols(_UNIVERSE_SYMBOLS_HKCONNECT_PATH)
 
 
 def get_universe_symbols_paths() -> Dict[str, str]:
+    """获取标的清单文件路径"""
     return {
         "CN": _UNIVERSE_SYMBOLS_CN_PATH,
         "HKCONNECT": _UNIVERSE_SYMBOLS_HKCONNECT_PATH,
@@ -86,6 +93,7 @@ def _select_top_symbols(
     max_symbols: int,
     one_per_industry: bool,
 ) -> List[str]:
+    """选择顶级标的"""
     selected: List[str] = []
     used_industries = set()
 
@@ -108,15 +116,7 @@ def _select_top_symbols(
 
 
 def get_stock_pool() -> List[str]:
-    """获取需要监控的股票代码列表。
-
-    说明：
-    - 不再通过 config.yaml 固定配置标的；改为从本地缓存的“全市场扫描 + 打分”结果中自动选择。
-    - 规则：最多 5 个标的；默认每个行业只选 1 个。
-
-    需要先离线刷新：见 `refresh_universe_cache()`。
-    """
-
+    """获取需要监控的股票代码列表。"""
     selector_cfg = global_config.get("universe.selector", {}) or {}
     max_symbols = int(selector_cfg.get("max_symbols", 5))
     one_per_industry = bool(selector_cfg.get("one_per_industry", True))
@@ -142,16 +142,7 @@ def refresh_universe_cache(snapshot: Dict[str, Any], scores: Dict[str, Any]) -> 
 
 
 def get_stock_names(quote_ctx: QuoteContext, symbols: List[str]) -> Dict[str, str]:
-    """
-    获取指定股票代码的股票名称。
-
-    Args:
-        quote_ctx: LongPort QuoteContext 对象。
-        symbols: 股票代码列表。
-
-    Returns:
-        股票代码到股票名称的映射字典。
-    """
+    """获取指定股票代码的股票名称。"""
     name_map = {}
     try:
         # 获取包含名称的静态信息
@@ -175,16 +166,7 @@ def get_stock_names(quote_ctx: QuoteContext, symbols: List[str]) -> Dict[str, st
 
 
 def get_stock_lot_sizes(quote_ctx: QuoteContext, symbols: List[str]) -> Dict[str, int]:
-    """
-    获取指定股票代码的最小交易单位（lot size）。
-
-    Args:
-        quote_ctx: LongPort QuoteContext 对象。
-        symbols: 股票代码列表。
-
-    Returns:
-        股票代码到最小交易单位的映射字典。默认为 1。
-    """
+    """获取指定股票代码的最小交易单位（lot size）。"""
     lot_size_map = {}
     try:
         static_infos = quote_ctx.static_info(symbols)
@@ -202,9 +184,7 @@ def get_stock_lot_sizes(quote_ctx: QuoteContext, symbols: List[str]) -> Dict[str
 
 
 def get_period(timeframe_str: str) -> Period:
-    """
-    将时间周期字符串转换为 LongPort Period 枚举。
-    """
+    """将时间周期字符串转换为 LongPort Period 枚举。"""
     mapping = {
         "1m": Period.Min_1,
         "5m": Period.Min_5,
@@ -218,31 +198,28 @@ def get_period(timeframe_str: str) -> Period:
     return mapping.get(timeframe_str, Period.Min_15)
 
 
-def _process_candlesticks(candlesticks: List[Any]) -> pd.DataFrame:
-    """
-    处理 K 线数据列表并转换为 DataFrame。
-    
-    Args:
-        candlesticks: LongPort K 线对象列表。
-        
-    Returns:
-        包含 'time', 'open', 'high', 'low', 'close', 'volume' 的 DataFrame。
-    """
+def fetch_candles(quote_ctx: QuoteContext, symbol: str, period: Period, count: int) -> pd.DataFrame:
+    """获取K线数据并转换为 DataFrame。"""
+    try:
+        candlesticks = quote_ctx.candlesticks(symbol, period, count, AdjustType.ForwardAdjust)
+    except Exception as e:
+        logger.warning(f"获取实时K线失败 {symbol}: {e}")
+        return pd.DataFrame()
+
     if not candlesticks:
         return pd.DataFrame()
 
-    data = []
-    for k in candlesticks:
-        data.append(
-            {
-                "time": k.timestamp,
-                "open": float(k.open),
-                "high": float(k.high),
-                "low": float(k.low),
-                "close": float(k.close),
-                "volume": int(k.volume),
-            }
-        )
+    data = [
+        {
+            "time": k.timestamp,
+            "open": float(k.open),
+            "high": float(k.high),
+            "low": float(k.low),
+            "close": float(k.close),
+            "volume": int(k.volume),
+        }
+        for k in candlesticks
+    ]
 
     df = pd.DataFrame(data)
     if not df.empty:
@@ -251,37 +228,10 @@ def _process_candlesticks(candlesticks: List[Any]) -> pd.DataFrame:
     return df
 
 
-def fetch_candles(
-    quote_ctx: QuoteContext, symbol: str, period: Period, count: int
-) -> pd.DataFrame:
-    """
-    获取K线数据并转换为 DataFrame。
-
-    Args:
-        quote_ctx: LongPort QuoteContext 对象。
-        symbol: 股票代码。
-        period: K线周期。
-        count: 获取的K线数量。
-
-    Returns:
-        包含 'time', 'open', 'high', 'low', 'close', 'volume' 的 DataFrame。
-    """
-    try:
-        candlesticks = quote_ctx.candlesticks(
-            symbol, period, count, AdjustType.ForwardAdjust
-        )
-        return _process_candlesticks(candlesticks)
-    except Exception as e:
-        logger.error(f"获取 {symbol} 的K线数据失败: {e}")
-        return pd.DataFrame()
-
-
 def get_benchmark_returns(
     quote_ctx: QuoteContext, start_date: date, end_date: date
 ) -> Dict[str, float]:
-    """
-    计算特定时间段内的基准收益率。
-    """
+    """计算特定时间段内的基准收益率。"""
     benchmarks_config = global_config.get("backtest.benchmarks")
 
     benchmarks = {}
@@ -325,35 +275,38 @@ def fetch_history_candles(
     end_date: date,
     warmup_days: int = 0,
 ) -> pd.DataFrame:
-    """
-    获取指定日期范围的历史K线数据，支持预热期。
-
-    Args:
-        quote_ctx: LongPort QuoteContext 对象。
-        symbol: 股票代码。
-        period: K线周期。
-        start_date: 开始日期。
-        end_date: 结束日期。
-        warmup_days: 预热天数，将在 start_date 之前获取额外的数据。
-
-    Returns:
-        包含历史数据的 DataFrame。
-    """
+    """获取指定日期范围的历史K线数据，支持预热期。"""
     pre_start_date = start_date - timedelta(days=warmup_days)
-    
+
     try:
         candlesticks = quote_ctx.history_candlesticks_by_date(
-            symbol, period, AdjustType.ForwardAdjust, pre_start_date, end_date
+            symbol,
+            period,
+            AdjustType.ForwardAdjust,
+            pre_start_date,
+            end_date,
         )
-
-        df = _process_candlesticks(candlesticks)
-        
-        if not df.empty:
-            # 确保不包含 end_date 之后的数据 (双重保险)
-            end_ts = pd.Timestamp(end_date) + pd.Timedelta(days=1)
-            df = df[df.index < end_ts]
-            
-        return df
     except Exception as e:
-        logger.error(f"获取 {symbol} 的历史K线数据失败: {e}")
+        logger.debug(f"获取历史K线失败 {symbol}: {e}")
         return pd.DataFrame()
+
+    if not candlesticks:
+        return pd.DataFrame()
+
+    data = [
+        {
+            "time": k.timestamp,
+            "open": float(k.open),
+            "high": float(k.high),
+            "low": float(k.low),
+            "close": float(k.close),
+            "volume": int(k.volume),
+        }
+        for k in candlesticks
+    ]
+
+    df = pd.DataFrame(data)
+    if not df.empty:
+        df["time"] = pd.to_datetime(df["time"], unit="s")
+        df.set_index("time", inplace=True)
+    return df

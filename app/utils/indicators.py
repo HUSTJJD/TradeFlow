@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 
 def calculate_sma(
@@ -95,7 +96,10 @@ def calculate_adx(
     plus_di = 100 * (plus_dm.rolling(window=period).mean() / atr)
     minus_di = 100 * (minus_dm.rolling(window=period).mean() / atr)
 
-    dx = ((plus_di - minus_di).abs() / (plus_di + minus_di)).replace([pd.NA, pd.NaT], 0)
+    diff_di = plus_di - minus_di
+    sum_di = plus_di + minus_di
+
+    dx = pd.Series(np.abs(diff_di) / sum_di, index=df.index).replace([pd.NA, pd.NaT], 0)
     dx = dx.fillna(0.0) * 100
 
     df[out_plus_di] = plus_di
