@@ -5,6 +5,7 @@ from datetime import date, timedelta
 from typing import Any, Dict, List, Optional
 
 import pandas as pd
+import requests
 from longport.openapi import QuoteContext, Period
 
 from app.core.config import global_config
@@ -109,17 +110,76 @@ def _load_cn_universe_by_akshare() -> List[Dict[str, Any]]:
     return results
 
 
-def _calc_tech_score(df: pd.DataFrame) -> float:
-# ... existing code ...
+def _load_hkconnect_universe_by_eastmoney() -> List[Dict[str, str]]:
+    """通过东方财富接口拉取港股通标的清单（仅代码+名称）。
 
+    说明：
+    - 该接口是公开数据源，可能存在频控/字段变更风险
+    - 我们尽量只依赖最稳定的字段：f12(代码)、f14(名称)
+
+    返回：[{"symbol": "00700.HK", "name": "腾讯控股"}, ...]
+    """
+
+    url = "https://push2.eastmoney.com/api/qt/clist/get"
+
+    # 经验参数：m:128+t:3 常被用作“港股通”列表过滤
+    # 若后续发现覆盖不全，可在这里扩展 fs（例如叠加不同市场分类）
+    fs = "m:128+t:3"
+
+    params = {
+        "po": "1",
+        "pz": "5000",
+        "pn": "1",
+        "np": "1",
+        "fltt": "2",
+        "invt": "2",
+        "fid": "f3",
+        "fields": "f12,f14",
+        "fs": fs,
+    }
+
+    headers = {
+        "User-Agent": "Mozilla/5.0",
+        "Accept": "application/json, text/plain, */*",
+        "Referer": "https://quote.eastmoney.com/",
+    }
+
+    try:
+        resp = requests.get(url, params=params, headers=headers, timeout=15)
+        resp.raise_for_status()
+        payload = resp.json() or {}
+        data = (payload.get("data") or {})
+        diff = data.get("diff") or []
+
+        items: List[Dict[str, str]] = []
+        for row in diff:
+            if not isinstance(row, dict):
+                continue
+            code = str(row.get("f12") or "").strip()
+            name = str(row.get("f14") or "").strip()
+            if not code:
+                continue
+            # 港股通标的用 .HK 作为后缀，供后续长桥行情/历史K线查询
+            symbol = f"{code}.HK"
+            items.append({"symbol": symbol, "name": name or symbol})
+
+        return items
+    except Exception as e:
+        logger.warning(f"东方财富拉取港股通标的清单失败: {e}")
+        return []
+
+
+def _calc_tech_score(df: pd.DataFrame) -> float:
+    # ... existing code ...
+    pass
 
 def _calc_hot_score(df: pd.DataFrame) -> float:
 # ... existing code ...
-
+	pass
 
 def _calc_news_score(_: str) -> float:
 # ... existing code ...
-
+	pass
 
 def _calc_fundamental_score(fundamentals: Dict[str, Any]) -> float:
     """财务面打分（占位实现，先做一个偏‘质量’的简单分数）。"""
@@ -147,7 +207,7 @@ def run_universe_symbols_refresh() -> None:
     """第一步：仅拉取 A 股与港股通的“标的代码+名称”，并单独保存到本地。
 
     - A股：AkShare
-    - 港股通：需要第三方数据源（AkShare / 东方财富 / 其他）
+    - 港股通：东方财富（push2 接口）
 
     注意：该步骤不依赖长桥 API。
     """
@@ -157,10 +217,9 @@ def run_universe_symbols_refresh() -> None:
     save_cn_universe_symbols(cn_items)
     logger.info(f"已保存 A股 标的清单: {len(cn_items)}")
 
-    # 港股通标的清单：先留空（接入数据源后填充）
-    hkconnect_items: List[Dict[str, Any]] = []
+    hkconnect_items = _load_hkconnect_universe_by_eastmoney()
     save_hkconnect_universe_symbols(hkconnect_items)
-    logger.warning("港股通标的清单尚未接入第三方数据源：当前保存为空列表")
+    logger.info(f"已保存 港股通 标的清单: {len(hkconnect_items)}")
 
 
 def run_universe_refresh(quote_ctx: QuoteContext) -> None:
