@@ -53,7 +53,9 @@ class TrendSwingConfig:
     base_target_position_ratio: float = 0.20
 
 
-def _calculate_rsi_fast(df: pd.DataFrame, period: int, column: str = "close") -> pd.Series:
+def _calculate_rsi_fast(
+    df: pd.DataFrame, period: int, column: str = "close"
+) -> pd.Series:
     delta = df[column].diff()
     gain = delta.where(delta > 0, 0).rolling(window=period).mean()
     loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
@@ -70,7 +72,10 @@ class TrendSwingTStrategy(Strategy):
         config: Optional[TrendSwingConfig] = None,
         **kwargs: Any,
     ) -> None:
-        super().__init__(name="TrendSwingT", description="趋势突破 + ATR风控 + 目标仓位管理 + 低频做T策略")
+        super().__init__(
+            name="TrendSwingT",
+            description="趋势突破 + ATR风控 + 目标仓位管理 + 低频做T策略",
+        )
 
         # 兼容工厂方法：get_strategy(name, **strategy.params)
         # - 若显式传入 config，则优先使用
@@ -80,7 +85,11 @@ class TrendSwingTStrategy(Strategy):
 
         if config is None:
             config = TrendSwingConfig(
-                **{k: v for k, v in merged.items() if k in TrendSwingConfig.__annotations__}
+                **{
+                    k: v
+                    for k, v in merged.items()
+                    if k in TrendSwingConfig.__annotations__
+                }
             )
         self.cfg = config
 
@@ -91,12 +100,15 @@ class TrendSwingTStrategy(Strategy):
         self._tp1_done: Dict[str, bool] = {}
         self._base_target_ratio: Dict[str, float] = {}
 
-        self._min_data_length = max(
-            self.cfg.ema_slow,
-            self.cfg.donchian_period,
-            self.cfg.atr_period,
-            self.cfg.adx_period,
-        ) + 5
+        self._min_data_length = (
+            max(
+                self.cfg.ema_slow,
+                self.cfg.donchian_period,
+                self.cfg.atr_period,
+                self.cfg.adx_period,
+            )
+            + 5
+        )
 
     def _on_initialize(self, **kwargs: Any) -> bool:
         """趋势摆动策略初始化"""
@@ -109,15 +121,18 @@ class TrendSwingTStrategy(Strategy):
             raise ValueError("ADX阈值必须为正数")
         if self.cfg.atr_stop_loss <= 0 or self.cfg.atr_trailing <= 0:
             raise ValueError("ATR止损倍数必须为正数")
-        if self.cfg.base_target_position_ratio <= 0 or self.cfg.base_target_position_ratio > 1:
+        if (
+            self.cfg.base_target_position_ratio <= 0
+            or self.cfg.base_target_position_ratio > 1
+        ):
             raise ValueError("基础目标仓位比例必须在(0, 1]范围内")
-        
+
         return True
 
     def analyze(self, symbol: str, df: pd.DataFrame) -> Dict[str, Any]:
         """分析市场数据并生成交易信号"""
         # 数据验证
-        if not self.validate_data(df, ['open', 'high', 'low', 'close']):
+        if not self.validate_data(df, ["open", "high", "low", "close"]):
             return {"action": SignalType.HOLD, "reason": "数据无效"}
 
         if len(df) < self._min_data_length:
@@ -143,7 +158,10 @@ class TrendSwingTStrategy(Strategy):
 
         prev_don_high = float(prev["donchian_high"])
 
-        has_pos = self._entry_price.get(symbol) is not None and self._entry_price.get(symbol, 0.0) > 0
+        has_pos = (
+            self._entry_price.get(symbol) is not None
+            and self._entry_price.get(symbol, 0.0) > 0
+        )
 
         trend_up = (ema_fast > ema_slow) and (adx >= self.cfg.adx_threshold)
 
@@ -182,13 +200,18 @@ class TrendSwingTStrategy(Strategy):
             tp1_price = entry_price + self.cfg.take_profit_r_multiple_1 * r
             if (not tp1_done) and close >= tp1_price:
                 self._tp1_done[symbol] = True
-                base_ratio = float(self._base_target_ratio.get(symbol, self.cfg.base_target_position_ratio))
+                base_ratio = float(
+                    self._base_target_ratio.get(
+                        symbol, self.cfg.base_target_position_ratio
+                    )
+                )
                 return {
                     "action": SignalType.SELL,
                     "price": close,
                     "reason": f"分批止盈: 达到 {self.cfg.take_profit_r_multiple_1:.1f}R (tp={tp1_price:.2f})",
                     "trade_tag": "SWING",
-                    "target_position_ratio": base_ratio * float(self.cfg.take_profit_ratio_1),
+                    "target_position_ratio": base_ratio
+                    * float(self.cfg.take_profit_ratio_1),
                     "factors": {
                         "close": close,
                         "entry": entry_price,
@@ -206,10 +229,16 @@ class TrendSwingTStrategy(Strategy):
 
                 t_count = self._t_count.get(symbol, 0)
                 if t_count < 2:
-                    rsi_fast = float(_calculate_rsi_fast(df, self.cfg.t_rsi_period).iloc[-1])
+                    rsi_fast = float(
+                        _calculate_rsi_fast(df, self.cfg.t_rsi_period).iloc[-1]
+                    )
                     deviation = (close / ema_fast - 1.0) if ema_fast > 0 else 0.0
 
-                    base_ratio = float(self._base_target_ratio.get(symbol, self.cfg.base_target_position_ratio))
+                    base_ratio = float(
+                        self._base_target_ratio.get(
+                            symbol, self.cfg.base_target_position_ratio
+                        )
+                    )
 
                     # 超买：轻减仓
                     if rsi_fast >= self.cfg.t_overbought and deviation > 0.01:
@@ -219,8 +248,15 @@ class TrendSwingTStrategy(Strategy):
                             "price": close,
                             "reason": f"做T减仓: RSI{self.cfg.t_rsi_period}={rsi_fast:.1f} 超买",
                             "trade_tag": "T",
-                            "target_position_ratio": max(0.0, base_ratio * (1.0 - self.cfg.t_step_ratio)),
-                            "factors": {"rsi_fast": rsi_fast, "deviation": deviation, "close": close, "atr": atr},
+                            "target_position_ratio": max(
+                                0.0, base_ratio * (1.0 - self.cfg.t_step_ratio)
+                            ),
+                            "factors": {
+                                "rsi_fast": rsi_fast,
+                                "deviation": deviation,
+                                "close": close,
+                                "atr": atr,
+                            },
                         }
 
                     # 超卖：轻加仓（依然由仓位管理器计算数量与现金约束）
@@ -231,8 +267,14 @@ class TrendSwingTStrategy(Strategy):
                             "price": close,
                             "reason": f"做T加仓: RSI{self.cfg.t_rsi_period}={rsi_fast:.1f} 超卖",
                             "trade_tag": "T",
-                            "target_position_ratio": base_ratio * (1.0 + self.cfg.t_step_ratio),
-                            "factors": {"rsi_fast": rsi_fast, "deviation": deviation, "close": close, "atr": atr},
+                            "target_position_ratio": base_ratio
+                            * (1.0 + self.cfg.t_step_ratio),
+                            "factors": {
+                                "rsi_fast": rsi_fast,
+                                "deviation": deviation,
+                                "close": close,
+                                "atr": atr,
+                            },
                         }
 
         # 4) 入场：趋势过滤 + 突破
@@ -285,27 +327,29 @@ class TrendSwingTStrategy(Strategy):
     def get_info(self) -> Dict[str, Any]:
         """获取趋势摆动策略的详细信息"""
         base_info = super().get_info()
-        base_info.update({
-            "parameters": {
-                "ema_fast": self.cfg.ema_fast,
-                "ema_slow": self.cfg.ema_slow,
-                "adx_period": self.cfg.adx_period,
-                "adx_threshold": self.cfg.adx_threshold,
-                "donchian_period": self.cfg.donchian_period,
-                "atr_period": self.cfg.atr_period,
-                "atr_stop_loss": self.cfg.atr_stop_loss,
-                "atr_trailing": self.cfg.atr_trailing,
-                "take_profit_r_multiple_1": self.cfg.take_profit_r_multiple_1,
-                "take_profit_ratio_1": self.cfg.take_profit_ratio_1,
-                "enable_t": self.cfg.enable_t,
-                "t_rsi_period": self.cfg.t_rsi_period,
-                "t_overbought": self.cfg.t_overbought,
-                "t_oversold": self.cfg.t_oversold,
-                "t_step_ratio": self.cfg.t_step_ratio,
-                "base_target_position_ratio": self.cfg.base_target_position_ratio,
-                "min_data_length": self._min_data_length
+        base_info.update(
+            {
+                "parameters": {
+                    "ema_fast": self.cfg.ema_fast,
+                    "ema_slow": self.cfg.ema_slow,
+                    "adx_period": self.cfg.adx_period,
+                    "adx_threshold": self.cfg.adx_threshold,
+                    "donchian_period": self.cfg.donchian_period,
+                    "atr_period": self.cfg.atr_period,
+                    "atr_stop_loss": self.cfg.atr_stop_loss,
+                    "atr_trailing": self.cfg.atr_trailing,
+                    "take_profit_r_multiple_1": self.cfg.take_profit_r_multiple_1,
+                    "take_profit_ratio_1": self.cfg.take_profit_ratio_1,
+                    "enable_t": self.cfg.enable_t,
+                    "t_rsi_period": self.cfg.t_rsi_period,
+                    "t_overbought": self.cfg.t_overbought,
+                    "t_oversold": self.cfg.t_oversold,
+                    "t_step_ratio": self.cfg.t_step_ratio,
+                    "base_target_position_ratio": self.cfg.base_target_position_ratio,
+                    "min_data_length": self._min_data_length,
+                }
             }
-        })
+        )
         return base_info
 
     def _on_cleanup(self) -> None:

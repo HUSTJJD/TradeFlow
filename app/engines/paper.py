@@ -1,3 +1,5 @@
-def run_paper_trading(quote_ctx, strategy) -> None:
-    # TODO: implement paper trading logic
+from app.engines.engine import Engine
+
+
+class PaperEngine(Engine):
     pass

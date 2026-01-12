@@ -1,14 +1,14 @@
+from app.core import global_config, ProviderType
 from .provider import Provider
-from app.core.constants import ProviderType, TradeMode
-__all__ = [
-    "provider",
-    "provider_factory"
-]
+from .longport import LongPortProvider
 
-def create_provider(provider_name: str, trade_mode: TradeMode) -> Provider:
+
+def create_provider() -> Provider:
+    provider_name = global_config.get()
     if provider_name == ProviderType.LONGPORT:
-        from .longport import LongPortProvider
         return LongPortProvider()
     else:
         raise ValueError(f"Unknown provider: {provider_name}")
-    
+
+
+__all__ = ["Provider", "create_provider"]

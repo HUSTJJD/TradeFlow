@@ -9,10 +9,10 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from longport.openapi import QuoteContext, Config, Period
 from app.core.config import global_config
-from app.trading.account import PaperAccount
+from app.trading.account import Account
 from app.trading.persistence import AccountPersistence
 from app.utils.plotter import create_performance_chart
-from app.data.provider import fetch_history_candles
+from app.providers.provider import fetch_history_candles
 
 # 配置日志
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -30,7 +30,7 @@ def main():
 
     # 2. 加载账户数据
     persistence = AccountPersistence("simulate/paper_account.json")
-    account = PaperAccount()
+    account = Account()
     if not persistence.load(account):
         logger.error("无法加载模拟账户数据，请先运行实盘模拟")
         return

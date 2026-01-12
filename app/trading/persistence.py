@@ -2,9 +2,10 @@ import json
 import os
 import logging
 from typing import Optional
-from app.trading.account import PaperAccount
+from app.trading.account import Account
 
 logger = logging.getLogger(__name__)
+
 
 class AccountPersistence:
     """
@@ -14,7 +15,7 @@ class AccountPersistence:
     def __init__(self, file_path: str):
         self.file_path = file_path
 
-    def load(self, account: PaperAccount) -> bool:
+    def load(self, account: Account) -> bool:
         """
         从文件加载账户状态到 account 对象中。
         """
@@ -25,7 +26,9 @@ class AccountPersistence:
             with open(self.file_path, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 account.cash = data.get("cash", account.initial_capital)
-                account.initial_capital = data.get("initial_capital", account.initial_capital)
+                account.initial_capital = data.get(
+                    "initial_capital", account.initial_capital
+                )
                 account.positions = data.get("positions", {})
                 account.avg_costs = data.get("avg_costs", {})
                 account.trades = data.get("trades", [])
@@ -37,7 +40,7 @@ class AccountPersistence:
                         account.mark_signal_processed(str(signal_id))
                 # latest_prices 不持久化
                 account.latest_prices = {}
-                
+
                 logger.info(
                     f"成功加载账户状态: 现金={account.cash}, 持仓={account.positions}, 交易记录数={len(account.trades)}"
                 )
@@ -46,7 +49,7 @@ class AccountPersistence:
             logger.error(f"加载账户状态失败: {e}")
             return False
 
-    def save(self, account: PaperAccount) -> None:
+    def save(self, account: Account) -> None:
         """
         将 account 对象的状态保存到文件。
         """

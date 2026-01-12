@@ -1,1 +1,3 @@
-# TradeFlow App Package
+from .tradeflow import TradeFlow
+
+__all__ = ["TradeFlow"]

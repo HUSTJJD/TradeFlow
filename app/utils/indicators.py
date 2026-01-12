@@ -114,7 +114,7 @@ def calculate_macd(
     fast: int = 12,
     slow: int = 26,
     signal: int = 9,
-    column: str = "close"
+    column: str = "close",
 ) -> pd.DataFrame:
     """
     计算 MACD 指标。
@@ -149,9 +149,7 @@ def calculate_macd(
 
 
 def calculate_rsi(
-    df: pd.DataFrame,
-    period: int = 14,
-    column: str = "close"
+    df: pd.DataFrame, period: int = 14, column: str = "close"
 ) -> pd.DataFrame:
     """
     计算 RSI 指标。
@@ -178,10 +176,7 @@ def calculate_rsi(
 
 
 def calculate_bollinger_bands(
-    df: pd.DataFrame,
-    period: int = 20,
-    std_dev: int = 2,
-    column: str = "close"
+    df: pd.DataFrame, period: int = 20, std_dev: int = 2, column: str = "close"
 ) -> pd.DataFrame:
     """
     计算布林带指标。

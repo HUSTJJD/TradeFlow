@@ -19,7 +19,9 @@ class MACDStrategy(Strategy):
             slow: 慢速 EMA 周期。
             signal: 信号线 EMA 周期。
         """
-        super().__init__(name="MACD", description="移动平均收敛散度策略，基于MACD金叉死叉信号")
+        super().__init__(
+            name="MACD", description="移动平均收敛散度策略，基于MACD金叉死叉信号"
+        )
         self.fast = fast
         self.slow = slow
         self.signal = signal
@@ -32,7 +34,7 @@ class MACDStrategy(Strategy):
             raise ValueError("MACD参数必须为正整数")
         if self.fast >= self.slow:
             raise ValueError("快速EMA周期必须小于慢速EMA周期")
-        
+
         return True
 
     def analyze(self, symbol: str, df: pd.DataFrame) -> Dict[str, Any]:
@@ -43,7 +45,7 @@ class MACDStrategy(Strategy):
         死叉: DIF 下穿 DEA -> 卖出
         """
         # 数据验证
-        if not self.validate_data(df, ['close']):
+        if not self.validate_data(df, ["close"]):
             return {"action": SignalType.HOLD, "reason": "数据无效"}
 
         if len(df) < self._min_data_length:
@@ -89,12 +91,14 @@ class MACDStrategy(Strategy):
     def get_info(self) -> Dict[str, Any]:
         """获取MACD策略的详细信息"""
         base_info = super().get_info()
-        base_info.update({
-            "parameters": {
-                "fast": self.fast,
-                "slow": self.slow,
-                "signal": self.signal,
-                "min_data_length": self._min_data_length
+        base_info.update(
+            {
+                "parameters": {
+                    "fast": self.fast,
+                    "slow": self.slow,
+                    "signal": self.signal,
+                    "min_data_length": self._min_data_length,
+                }
             }
-        })
+        )
         return base_info

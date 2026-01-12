@@ -171,7 +171,9 @@ def create_performance_chart(
         if trade_points:
             df_trades = pd.DataFrame(trade_points)
 
-            def _add_trade_markers(action: str, name: str, marker_symbol: str, color: str):
+            def _add_trade_markers(
+                action: str, name: str, marker_symbol: str, color: str
+            ):
                 df_part = df_trades[df_trades["action"] == action]
                 if df_part.empty:
                     return
@@ -182,7 +184,9 @@ def create_performance_chart(
                         mode="markers",
                         name=name,
                         marker=dict(symbol=marker_symbol, size=10, color=color),
-                        customdata=df_part[["symbol", "price", "quantity", "reason", "trade_tag"]],
+                        customdata=df_part[
+                            ["symbol", "price", "quantity", "reason", "trade_tag"]
+                        ],
                         hovertemplate=(
                             f"<b>{name} %{{customdata[0]}}</b><br>"
                             "时间: %{x}<br>"
@@ -220,11 +224,15 @@ def create_performance_chart(
                         )
 
                     latest_trade_rows.sort(
-                        key=lambda x: pd.to_datetime(cast(Any, x.get("time"))).to_pydatetime()
+                        key=lambda x: pd.to_datetime(
+                            cast(Any, x.get("time"))
+                        ).to_pydatetime()
                     )
 
                     for r in latest_trade_rows:
-                        trade_time = pd.to_datetime(cast(Any, r.get("time"))).to_pydatetime()
+                        trade_time = pd.to_datetime(
+                            cast(Any, r.get("time"))
+                        ).to_pydatetime()
                         trade_table_rows.append(
                             {
                                 "time": trade_time.strftime("%H:%M"),

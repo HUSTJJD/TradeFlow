@@ -1,192 +1,76 @@
 from abc import ABC, abstractmethod
-from typing import Dict, Any, List, Optional, Union, Type
+from app.core import global_config, singleton_threadsafe, Market
+from typing import Dict, Any, List, Optional
 from datetime import date, timedelta
 import pandas as pd
 import logging
-from longport.openapi import QuoteContext, Period
+import os
+import requests
 
 logger = logging.getLogger(__name__)
 
 
+STACK_DB_PATH = os.path.join("data", "stacks.json")
+
+
+@singleton_threadsafe
 class Provider(ABC):
-    """数据提供器抽象基类，定义统一的数据访问接口。"""
-    
-    def __init__(self, name: str, description: str = ""):
-        self.name = name
-        self.description = description
-        self._initialized = False
-    
-    @abstractmethod
-    def initialize(self, **kwargs: Any) -> bool:
-        """初始化数据提供器"""
-        pass
-    
+    """券商API 抽象基类，定义统一的数据访问接口。"""
+
+    def __init__(self):
+        self._session = None
+
+    def pull_stack_list(self) -> bool:
+        """拉取数据"""
+        try:
+            markets = global_config.get("markets", [])
+            for market in markets:
+                if market.upper() == Market.SSE_MAIN.upper():
+                    continue
+                self.get_universe_symbols(market)
+
+            self._session = requests.Session()
+            self._session.headers.update(
+                {
+                    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+                    "Accept": "*/*",
+                }
+            )
+            self._initialized = True
+            logger.info("数据提供器初始化完成")
+            return True
+        except Exception as e:
+            logger.error(f"初始化数据提供器失败: {e}")
+            return False
+
     @abstractmethod
     def get_data(self, symbol: str, **kwargs: Any) -> Optional[pd.DataFrame]:
         """获取指定标的的数据"""
         pass
-    
+
     @abstractmethod
-    def get_multiple_data(self, symbols: List[str], **kwargs: Any) -> Dict[str, pd.DataFrame]:
+    def get_multiple_data(
+        self, symbols: List[str], **kwargs: Any
+    ) -> Dict[str, pd.DataFrame]:
         """批量获取多个标的的数据"""
         pass
-    
-    def get_info(self) -> Dict[str, Any]:
-        """获取数据提供器信息"""
-        return {
-            "name": self.name,
-            "description": self.description,
-            "initialized": self._initialized
-        }
-    
-    def cleanup(self) -> None:
-        """清理资源"""
-        self._initialized = False
 
+    @abstractmethod
+    def get_stock_names(self, symbols: List[str]) -> Dict[str, str]:
+        """获取股票名称"""
+        pass
 
-class LongPortProvider(Provider):
-    """长桥API数据提供器"""
-    
-    def __init__(self):
-        super().__init__("LongPort", "长桥API数据提供器，支持实时和历史数据获取")
-    
-    def initialize(self, **kwargs: Any) -> bool:
-        """初始化长桥数据提供器"""
+    @abstractmethod
+    def get_stock_lot_sizes(self, symbols: List[str]) -> Dict[str, int]:
+        """获取股票最小交易单位"""
+        pass
 
-        if not self.quote_ctx:
-            logger.error("LongPort QuoteContext 未设置")
-            return False
-        
-        self._initialized = True
-        logger.info("LongPort数据提供器初始化完成")
-        return True
-    
-    def get_data(self, symbol: str, **kwargs: Any) -> Optional[pd.DataFrame]:
-        """获取单个标的的数据"""
-        if not self._initialized:
-            if not self.initialize():
-                return None
-        
-        period = kwargs.get("period", Period.Day)
-        period_t: Type[Period] = period if isinstance(period, Type) else type(period)
-        
-        count = kwargs.get("count", 100)
-        start_date = kwargs.get("start_date")
-        end_date = kwargs.get("end_date")
-        
-        try:
-            if start_date and end_date:
-                # 获取历史数据
-                return self._get_history_candles(symbol, period_t, start_date, end_date)
-            else:
-                # 获取实时数据
-                return self._get_realtime_candles(symbol, period_t, count)
-        except Exception as e:
-            logger.error(f"获取 {symbol} 数据失败: {e}")
-            return None
-    
-    def get_multiple_data(self, symbols: List[str], **kwargs: Any) -> Dict[str, pd.DataFrame]:
-        """批量获取多个标的的数据"""
-        if not self._initialized:
-            if not self.initialize():
-                return {}
-        
-        results = {}
-        for symbol in symbols:
-            data = self.get_data(symbol, **kwargs)
-            if data is not None:
-                results[symbol] = data
-        
-        return results
-    
-    def _get_realtime_candles(self, symbol: str, period: Type[Period], count: int) -> Optional[pd.DataFrame]:
-        """获取实时K线数据"""
-        try:
-            from longport.openapi import AdjustType
-            candlesticks = self.quote_ctx.candlesticks(
-                symbol, period, count, AdjustType.ForwardAdjust
-            )
-            return self._process_candlesticks(candlesticks)
-        except Exception as e:
-            logger.error(f"获取实时K线数据失败 {symbol}: {e}")
-            return None
-    
-    def _get_history_candles(
-        self,
-        symbol: str,
-        period: Type[Period],
-        start_date: date,
-        end_date: date,
-    ) -> Optional[pd.DataFrame]:
-        """获取历史K线数据"""
-        try:
-            from longport.openapi import AdjustType
-            candlesticks = self.quote_ctx.history_candlesticks_by_date(
-                symbol, period, AdjustType.ForwardAdjust, start_date, end_date
-            )
-            return self._process_candlesticks(candlesticks)
-        except Exception as e:
-            logger.error(f"获取历史K线数据失败 {symbol}: {e}")
-            return None
-    
-    def _process_candlesticks(self, candlesticks: List[Any]) -> pd.DataFrame:
-        """处理K线数据并转换为DataFrame"""
-        if not candlesticks:
-            return pd.DataFrame()
-        
-        data = []
-        for k in candlesticks:
-            data.append({
-                "time": k.timestamp,
-                "open": float(k.open),
-                "high": float(k.high),
-                "low": float(k.low),
-                "close": float(k.close),
-                "volume": int(k.volume),
-            })
-        
-        df = pd.DataFrame(data)
-        if not df.empty:
-            df["time"] = pd.to_datetime(df["time"], unit="s")
-            df.set_index("time", inplace=True)
-        return df
-
-
-class ExchangeDataProvider(Provider):
-    """交易所官方接口数据提供器"""
-    
-    def __init__(self):
-        super().__init__("Exchange", "交易所官方接口数据提供器，支持沪深交易所和港股通数据")
-        self._session = None
-
-    def initialize(self, **kwargs: Any) -> bool:
-        """初始化交易所数据提供器"""
-        if self._initialized:
-            return True
-        
-        try:
-            import requests
-            self._session = requests.Session()
-            self._session.headers.update({
-                "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-                "Accept": "*/*"
-            })
-            self._initialized = True
-            logger.info("交易所数据提供器初始化完成")
-            return True
-        except Exception as e:
-            logger.error(f"初始化交易所数据提供器失败: {e}")
-            return False
-
-    def get_data(self, symbol: str, **kwargs: Any) -> Optional[pd.DataFrame]:
-        """获取交易所数据（暂不支持单个标的查询）"""
-        logger.warning("交易所数据提供器不支持单个标的查询，请使用批量接口")
-        return None
-
-    def get_multiple_data(self, symbols: List[str], **kwargs: Any) -> Dict[str, pd.DataFrame]:
-        """批量获取交易所数据（暂不支持）"""
-        logger.warning("交易所数据提供器暂不支持批量数据获取")
-        return {}
+    @abstractmethod
+    def get_benchmark_returns(
+        self, start_date: date, end_date: date
+    ) -> Dict[str, float]:
+        """获取基准收益率"""
+        pass
 
     def get_universe_symbols(self, market: str, **kwargs: Any) -> List[Dict[str, Any]]:
         """获取指定市场的标的清单"""
@@ -246,9 +130,13 @@ class ExchangeDataProvider(Provider):
                 name_col = None
                 for c in df.columns:
                     c_str = str(c)
-                    if code_col is None and any(k in c_str for k in ["A股代码", "证券代码", "股票代码", "代码"]):
+                    if code_col is None and any(
+                        k in c_str for k in ["A股代码", "证券代码", "股票代码", "代码"]
+                    ):
                         code_col = c
-                    if name_col is None and any(k in c_str for k in ["证券简称", "股票简称", "简称", "名称"]):
+                    if name_col is None and any(
+                        k in c_str for k in ["证券简称", "股票简称", "简称", "名称"]
+                    ):
                         name_col = c
 
                 if code_col is not None:
@@ -280,8 +168,12 @@ class ExchangeDataProvider(Provider):
                     for row in data:
                         if not isinstance(row, dict):
                             continue
-                        code = str(row.get("A_STOCK_CODE") or row.get("SECURITY_CODE") or "").strip()
-                        name = str(row.get("A_STOCK_ABBR") or row.get("SECURITY_ABBR") or code).strip()
+                        code = str(
+                            row.get("A_STOCK_CODE") or row.get("SECURITY_CODE") or ""
+                        ).strip()
+                        name = str(
+                            row.get("A_STOCK_ABBR") or row.get("SECURITY_ABBR") or code
+                        ).strip()
                         if code.isdigit():
                             parsed2.append({"code": code, "name": name or code})
                 if parsed2:
@@ -318,7 +210,11 @@ class ExchangeDataProvider(Provider):
             try:
                 import io
 
-                headers = {"User-Agent": "Mozilla/5.0", "Accept": "*/*", "Referer": "https://www.szse.cn/"}
+                headers = {
+                    "User-Agent": "Mozilla/5.0",
+                    "Accept": "*/*",
+                    "Referer": "https://www.szse.cn/",
+                }
                 resp = self._session.get(szse_url, headers=headers, timeout=60)
                 resp.raise_for_status()
                 df = pd.read_excel(io.BytesIO(resp.content))
@@ -327,9 +223,14 @@ class ExchangeDataProvider(Provider):
                 name_col = None
                 for c in df.columns:
                     c_str = str(c)
-                    if code_col is None and any(k in c_str for k in ["证券代码", "A股代码", "股票代码", "代码"]):
+                    if code_col is None and any(
+                        k in c_str for k in ["证券代码", "A股代码", "股票代码", "代码"]
+                    ):
                         code_col = c
-                    if name_col is None and any(k in c_str for k in ["证券简称", "A股简称", "股票简称", "简称", "名称"]):
+                    if name_col is None and any(
+                        k in c_str
+                        for k in ["证券简称", "A股简称", "股票简称", "简称", "名称"]
+                    ):
                         name_col = c
 
                 if code_col is not None:
@@ -386,9 +287,20 @@ class ExchangeDataProvider(Provider):
                 name_col = None
                 for c in df.columns:
                     c_str = str(c)
-                    if code_col is None and any(k in c_str for k in ["证券代码", "股票代码", "代码"]):
+                    if code_col is None and any(
+                        k in c_str for k in ["证券代码", "股票代码", "代码"]
+                    ):
                         code_col = c
-                    if name_col is None and any(k in c_str for k in ["中文简称", "中文简称(参考)", "证券简称", "简称", "名称"]):
+                    if name_col is None and any(
+                        k in c_str
+                        for k in [
+                            "中文简称",
+                            "中文简称(参考)",
+                            "证券简称",
+                            "简称",
+                            "名称",
+                        ]
+                    ):
                         name_col = c
 
                 if code_col is None:
@@ -434,8 +346,12 @@ class ExchangeDataProvider(Provider):
                 for row in data:
                     if not isinstance(row, dict):
                         continue
-                    code = str(row.get("HGT_STK_CODE") or row.get("STK_CODE") or "").strip()
-                    name = str(row.get("HGT_STK_NAME") or row.get("STK_NAME") or code).strip()
+                    code = str(
+                        row.get("HGT_STK_CODE") or row.get("STK_CODE") or ""
+                    ).strip()
+                    name = str(
+                        row.get("HGT_STK_NAME") or row.get("STK_NAME") or code
+                    ).strip()
                     code_digits = "".join([ch for ch in code if ch.isdigit()])
                     if not code_digits:
                         continue

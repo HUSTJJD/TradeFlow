@@ -51,7 +51,9 @@ def create_strategy(name: TradeStraegy | str, **kwargs: Any) -> Strategy:
 
     cls = mapping.get(normalized)
     if cls is None:
-        logger.error(f"Strategy '{name}' not found. Defaulting to {TradeStraegy.MACD.value}.")
+        logger.error(
+            f"Strategy '{name}' not found. Defaulting to {TradeStraegy.MACD.value}."
+        )
         cls = MACDStrategy
 
     return cls(**kwargs)

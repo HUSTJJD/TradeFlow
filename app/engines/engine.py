@@ -3,290 +3,60 @@ from typing import Dict, List, Any, Optional, Union, cast, Iterable
 from datetime import datetime
 import pandas as pd
 import logging
-import time
 from longport.openapi import QuoteContext, Period
-from app.core.constants import SignalType, SignalType, TradeMode
+from app.core import global_config, singleton_threadsafe, SignalType, TradeMode
 from app.strategies import Strategy
-from app.trading.account import PaperAccount
-from app.trading.executor import TradeExecutor
-from app.trading.position import PositionManager
-from app.trading.manager import TradeManager
-from app.providers.longport import get_stock_names, get_stock_lot_sizes
+from app.trading.account import Account
+from app.providers import create_provider, Provider
 
 logger = logging.getLogger(__name__)
 
-PeriodLike = Any
-
-
-class MarketDataSource(ABC):
-    """Market data source abstraction for engine runs."""
-
-    @abstractmethod
-    def iter_signal_points(self) -> Iterable[tuple[str, datetime, pd.DataFrame]]:
-        """Yield (symbol, signal_time, slice_df) for analysis."""
-        raise NotImplementedError
-
-    @abstractmethod
-    def get_latest_price(self, symbol: str, signal_time: datetime) -> float:
-        raise NotImplementedError
-
-
-class BacktestDataSource(MarketDataSource):
-    def __init__(self, data: Dict[str, pd.DataFrame], start_time: Optional[pd.Timestamp] = None) -> None:
-        self._data = {k: v.sort_index() for k, v in data.items()}
-        self._start_time = start_time
-
-        all_timestamps: set[Any] = set()
-        for df in self._data.values():
-            all_timestamps.update(df.index)
-        self._sorted_timestamps = sorted(all_timestamps)
-
-    def iter_signal_points(self) -> Iterable[tuple[str, datetime, pd.DataFrame]]:
-        for ts in self._sorted_timestamps:
-            if self._start_time is not None and ts < self._start_time:
-                continue
-
-            for symbol, df in self._data.items():
-                if ts not in df.index:
-                    continue
-
-                ts_pd = pd.Timestamp(ts)
-                if ts_pd is pd.NaT:
-                    continue
-                yield symbol, cast(datetime, ts_pd.to_pydatetime()), df.loc[:ts]
-
-    def get_latest_price(self, symbol: str, signal_time: datetime) -> float:
-        df = self._data[symbol]
-        ts = pd.Timestamp(signal_time)
-        if ts is pd.NaT:
-            raise ValueError("signal_time cannot be NaT")
-        return float(df.loc[ts]["close"])
-
-
-class LiveDataSource(MarketDataSource):
-    def __init__(
-        self,
-        quote_ctx: QuoteContext,
-        symbols: List[str],
-        period: PeriodLike,
-        history_count: int,
-        request_delay: float,
-    ) -> None:
-        self._quote_ctx = quote_ctx
-        self._symbols = symbols
-        self._period = period
-        self._history_count = history_count
-        self._request_delay = request_delay
-
-    def iter_signal_points(self) -> Iterable[tuple[str, datetime, pd.DataFrame]]:
-        from app.providers.longport import fetch_candles
-
-        for symbol in self._symbols:
-            df = fetch_candles(self._quote_ctx, symbol, self._period, self._history_count)
-            if df.empty:
-                time.sleep(self._request_delay)
-                continue
-
-            last_index = df.index.to_list()[-1]
-            ts = pd.Timestamp(last_index)
-            if ts is pd.NaT:
-                time.sleep(self._request_delay)
-                continue
-
-            yield symbol, cast(datetime, ts.to_pydatetime()), df
-            time.sleep(self._request_delay)
-
-    def get_latest_price(self, symbol: str, signal_time: datetime) -> float:
-        # Live mode uses latest candle close from the slice itself.
-        # Caller passes slice_df; we keep API for symmetry but not used.
-        raise NotImplementedError
-
-class BacktestEngine(ExecutionEngine):
-    """回测执行引擎"""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.data: Dict[str, pd.DataFrame] = {}
-
-    def set_data(self, data: Dict[str, pd.DataFrame]) -> None:
-        """设置回测数据"""
-        self.data = data
-
-    def run(self, start_time: Optional[pd.Timestamp] = None) -> Dict[str, Any]:
-        """运行回测"""
-        if not self.data:
-            logger.error("回测数据为空")
-            return {}
-
-        data_source = BacktestDataSource(self.data, start_time=start_time)
-        logger.info(f"开始回测，共 {len(self.data)} 支股票")
-
-        for symbol, current_time, current_data in data_source.iter_signal_points():
-            current_price = float(current_data.iloc[-1]["close"])
-            signal = self.strategy.analyze(symbol, current_data)
-
-            result = self.process_signal(symbol, signal, current_time, current_price)
-            if result.get("status") == "SUCCESS":
-                logger.debug(f"{symbol} 在 {current_time} 执行 {signal.get('action')}")
-
-            self.record_equity(current_time)
-
-        logger.info("回测完成")
-        return self.get_results()
-
-
-class LiveEngine(ExecutionEngine):
-    """实盘执行引擎"""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.quote_ctx: Optional[QuoteContext] = None
-        self.symbols: List[str] = []
-        self.period: PeriodLike = Period.Min_15
-        self.history_count: int = 100
-        self.interval: int = 60
-        self.request_delay: float = 0.5
-
-    def set_live_params(
-        self,
-        quote_ctx: QuoteContext,
-        symbols: List[str],
-        period: PeriodLike = Period.Min_15,
-        history_count: int = 100,
-        interval: int = 60,
-        request_delay: float = 0.5,
-    ) -> None:
-        """设置实盘参数"""
-        self.quote_ctx = quote_ctx
-        self.symbols = symbols
-        self.period = period
-        self.history_count = history_count
-        self.interval = interval
-        self.request_delay = request_delay
-
-    def run(self) -> Dict[str, Any]:
-        """运行实盘监控"""
-        if not self.quote_ctx or not self.symbols:
-            logger.error("实盘参数未设置")
-            return {}
-
-        if not self.initialize(self.symbols, self.quote_ctx):
-            return {}
-
-        logger.info("开始实盘监控...")
-
-        try:
-            while True:
-                logger.info(f"开始新的扫描周期: {datetime.now()}")
-
-                data_source = LiveDataSource(
-                    quote_ctx=self.quote_ctx,
-                    symbols=self.symbols,
-                    period=self.period,
-                    history_count=self.history_count,
-                    request_delay=self.request_delay,
-                )
-
-                for symbol, signal_time, df in data_source.iter_signal_points():
-                    stock_name = self.stock_names.get(symbol, symbol)
-
-                    current_price = float(df.iloc[-1]["close"])
-
-                    if self._is_stale(signal_time):
-                        logger.debug(f"{symbol} 数据滞后，市场可能休市")
-                        continue
-
-                    signal = self.strategy.analyze(symbol, df)
-                    if "price" not in signal:
-                        signal["price"] = current_price
-
-                    result = self.process_signal(symbol, signal, signal_time, current_price)
-                    self.record_equity(signal_time)
-
-                    if result.get("status") == "SUCCESS":
-                        self._send_notification(symbol, stock_name, signal, signal_time, current_price, result)
-
-                logger.info(f"周期完成。等待 {self.interval} 秒...")
-                time.sleep(self.interval)
-
-        except KeyboardInterrupt:
-            logger.info("程序由用户停止。")
-        except Exception as e:
-            logger.error(f"实盘交易中发生未处理的异常: {e}")
-
-        return self.get_results()
-
-    def _is_stale(self, signal_time: datetime) -> bool:
-        time_diff = datetime.now() - signal_time
-        period_seconds = self._get_period_seconds(self.period)
-        return time_diff.total_seconds() > (period_seconds * 2 + 300)
-
-    def _get_period_seconds(self, period: PeriodLike) -> int:
-        """获取时间周期对应的秒数"""
-        period_mapping = {
-            Period.Min_1: 60,
-            Period.Min_5: 300,
-            Period.Min_15: 900,
-            Period.Min_30: 1800,
-            Period.Min_60: 3600,
-            Period.Day: 86400,
-        }
-        return int(period_mapping.get(period, 900))
-
-    def _send_notification(
-        self,
-        symbol: str,
-        stock_name: str,
-        signal: Dict[str, Any],
-        signal_time: datetime,
-        current_price: float,
-        result: Dict[str, Any],
-    ) -> None:
-        """发送交易通知"""
-        try:
-            from app.utils.notifier import notifier
-
-            title = f"【信号】{stock_name} ({symbol}) {signal['action']}"
-            content = (
-                f"代码: {symbol}<br>"
-                f"名称: {stock_name}<br>"
-                f"时间: {signal_time}<br>"
-                f"动作: {signal['action']}<br>"
-                f"价格: {current_price}<br>"
-                f"原因: {signal['reason']}<br>"
-                f"账户状态: 现金={self.account.cash:.2f}, 总权益={self.account.get_total_equity():.2f}"
-            )
-
-            notifier.send_message(title, content)
-            logger.info(f"发送通知: {title}")
-
-        except Exception as e:
-            logger.warning(f"发送通知失败: {e}")
-
-
-
+@singleton_threadsafe
 class Engine(ABC):
     """策略执行引擎抽象基类，定义统一的策略执行接口。"""
-    def __init__(
-        self,
-        quote_ctx: QuoteContext,
-        strategy: Strategy):
-        self._quote_ctx = quote_ctx
-        self._strategy = strategy
-        self.create_account()
-        
-        self.t_daily_counts = {}
+
+    def __init__(self):
+
+        # 初始化数据提供器
+        self.provider = create_provider()
+        self.provider.initialize(quote_ctx=quote_ctx)
+
+        # 仓位管理配置
+        self.position_sizing_config = global_config.get("trading.position_sizing", {})
+        self.max_position_ratio = float(
+            self.position_sizing_config.get("max_position_ratio", 0.25)
+        )
+        self.risk_per_trade = float(
+            self.position_sizing_config.get("risk_per_trade", 0.01)
+        )
+        self.min_rebalance_ratio = float(
+            self.position_sizing_config.get("min_rebalance_ratio", 0.05)
+        )
+
+        self.equity_curve: List[Dict[str, Any]] = []
+        self.t_daily_counts: Dict[str, Dict[str, Any]] = {}
         self.t_max_per_symbol_per_day = 1
+        self.lot_sizes: Dict[str, int] = {}
+        self.stock_names: Dict[str, str] = {}
+
+        self.create_account()
+
+    def initialize(self, symbols: List[str], quote_ctx: QuoteContext) -> bool:
+        """初始化引擎"""
+        try:
+            self.stock_names = self.provider.get_stock_names(symbols)
+            if not self.lot_sizes:
+                self.lot_sizes = self.provider.get_stock_lot_sizes(symbols)
+            return True
+        except Exception as e:
+            logger.error(f"引擎初始化失败: {e}")
+            return False
 
     @abstractmethod
     def create_account(self) -> None:
         """交易账户"""
-        self._account = PaperAccount()
-
-    @abstractmethod
-    def create_executor(self) -> None:
-        """交易执行器"""
-        self._executor = PaperExecutor()
+        # 默认实现，子类可覆盖
+        self._account = Account(initial_balance=self.initial_capital)
 
     @abstractmethod
     def run(self) -> Dict[str, Any]:
@@ -336,13 +106,295 @@ class Engine(ABC):
             return {"status": "SKIPPED", "reason": "做T频控限制"}
 
         # 执行交易
-        result = self._executor.execute(signal, symbol, current_time, current_price)
+        result = self._execute_trade(signal, symbol, current_time, current_price)
 
         # 记录做T交易
         if trade_tag == "T" and result.get("status") == "SUCCESS":
             self._mark_t_trade(symbol, current_time)
 
         return result
+
+    def _execute_trade(
+        self,
+        signal: Dict[str, Any],
+        symbol: str,
+        timestamp: datetime,
+        price: float,
+    ) -> Dict[str, Any]:
+        """执行交易信号，统一处理买入和卖出逻辑。"""
+        action = signal.get("action")
+        reason = str(signal.get("reason", ""))
+        factors = signal.get("factors", {})
+        if not isinstance(factors, dict):
+            factors = {}
+        trade_tag = signal.get("trade_tag")
+
+        signal_id = f"{symbol}_{timestamp.strftime('%Y%m%d%H%M%S')}_{action}"
+
+        if action == SignalType.BUY:
+            return self._execute_buy(
+                signal_id, symbol, timestamp, price, reason, factors, trade_tag
+            )
+        elif action == SignalType.SELL:
+            return self._execute_sell(
+                signal_id, symbol, timestamp, price, reason, factors, trade_tag
+            )
+        else:
+            return {
+                "status": "SKIPPED",
+                "action": action,
+                "symbol": symbol,
+                "price": price,
+                "time": timestamp,
+                "quantity": 0,
+                "msg": "未知动作",
+                "signal_id": signal_id,
+            }
+
+    def _execute_buy(
+        self, signal_id, symbol, timestamp, price, reason, factors, trade_tag
+    ):
+        lot_size = self.lot_sizes.get(symbol, 1)
+        current_equity = self._account.get_total_equity()
+        current_position = self._account.positions.get(symbol, 0)
+
+        quantity = self.calculate_order_quantity(
+            action=SignalType.BUY,
+            current_position=current_position,
+            price=price,
+            total_equity=current_equity,
+            available_cash=self._account.cash,
+            lot_size=lot_size,
+            signal={"trade_tag": trade_tag, **factors},
+        )
+
+        quantity = self._normalize_quantity(symbol, quantity)
+
+        if quantity <= 0:
+            return {
+                "status": "SKIPPED",
+                "action": SignalType.BUY,
+                "symbol": symbol,
+                "price": price,
+                "time": timestamp,
+                "quantity": 0,
+                "msg": "计算数量为0",
+                "signal_id": signal_id,
+            }
+
+        success = self._account.buy(
+            symbol=symbol,
+            price=price,
+            quantity=quantity,
+            time=timestamp,
+            reason=reason,
+            signal_id=signal_id,
+            factors=factors,
+            trade_tag=trade_tag,
+        )
+
+        if success:
+            return {
+                "status": "SUCCESS",
+                "action": SignalType.BUY,
+                "symbol": symbol,
+                "price": price,
+                "time": timestamp,
+                "quantity": quantity,
+                "msg": f"买入成功: {quantity}股",
+                "signal_id": signal_id,
+            }
+        else:
+            return {
+                "status": "FAILED",
+                "action": SignalType.BUY,
+                "symbol": symbol,
+                "price": price,
+                "time": timestamp,
+                "quantity": 0,
+                "msg": "买入失败: 资金不足",
+                "signal_id": signal_id,
+            }
+
+    def _execute_sell(
+        self, signal_id, symbol, timestamp, price, reason, factors, trade_tag
+    ):
+        current_position = self._account.positions.get(symbol, 0)
+        if current_position <= 0:
+            return {
+                "status": "FAILED",
+                "action": SignalType.SELL,
+                "symbol": symbol,
+                "price": price,
+                "time": timestamp,
+                "quantity": 0,
+                "msg": "无持仓",
+                "signal_id": signal_id,
+            }
+
+        lot_size = self.lot_sizes.get(symbol, 1)
+        current_equity = self._account.get_total_equity()
+
+        quantity = self.calculate_order_quantity(
+            action=SignalType.SELL,
+            current_position=current_position,
+            price=price,
+            total_equity=current_equity,
+            available_cash=self._account.cash,
+            lot_size=lot_size,
+            signal={"trade_tag": trade_tag, **factors},
+        )
+
+        quantity = self._normalize_quantity(symbol, quantity)
+
+        if quantity <= 0:
+            return {
+                "status": "SKIPPED",
+                "action": SignalType.SELL,
+                "symbol": symbol,
+                "price": price,
+                "time": timestamp,
+                "quantity": 0,
+                "msg": "计算数量为0",
+                "signal_id": signal_id,
+            }
+
+        success = self._account.sell(
+            symbol=symbol,
+            price=price,
+            quantity=quantity,
+            time=timestamp,
+            reason=reason,
+            signal_id=signal_id,
+            factors=factors,
+            trade_tag=trade_tag,
+        )
+
+        if success:
+            return {
+                "status": "SUCCESS",
+                "action": SignalType.SELL,
+                "symbol": symbol,
+                "price": price,
+                "time": timestamp,
+                "quantity": quantity,
+                "msg": f"卖出成功: {quantity}股",
+                "signal_id": signal_id,
+            }
+        else:
+            return {
+                "status": "FAILED",
+                "action": SignalType.SELL,
+                "symbol": symbol,
+                "price": price,
+                "time": timestamp,
+                "quantity": 0,
+                "msg": "卖出失败",
+                "signal_id": signal_id,
+            }
+
+    def _normalize_quantity(self, symbol: str, quantity: int) -> int:
+        """数量标准化（按最小交易单位）"""
+        lot_size = self.lot_sizes.get(symbol, 1)
+        if lot_size > 1:
+            return (quantity // lot_size) * lot_size
+        return quantity
+
+    def calculate_target_position_ratio(self, signal: Dict[str, Any]) -> float:
+        """根据策略因子计算目标仓位比例。"""
+        factors = signal.get("factors") or {}
+        price = float(factors.get("close") or 0.0)
+        atr = float(factors.get("atr") or 0.0)
+
+        # 缺少波动信息时，退化为固定仓位
+        if price <= 0 or atr <= 0:
+            return min(self.position_ratio, self.max_position_ratio)
+
+        vol_ratio = atr / price
+        if vol_ratio <= 0:
+            return min(self.position_ratio, self.max_position_ratio)
+
+        # 简化的波动缩放：波动越大，目标仓位越小
+        scaled = self.max_position_ratio * (0.02 / max(vol_ratio, 0.005))
+        return max(0.0, min(self.max_position_ratio, scaled))
+
+    def calculate_order_quantity(
+        self,
+        action: SignalType,
+        current_position: int,
+        price: float,
+        total_equity: float,
+        available_cash: float,
+        lot_size: int = 1,
+        signal: Optional[Dict[str, Any]] = None,
+    ) -> int:
+        """把 BUY/SELL 信号转换为具体下单数量（支持加/减仓）。"""
+        signal = signal or {}
+
+        if price <= 0 or total_equity <= 0:
+            return 0
+
+        target_shares = signal.get("target_shares")
+        if isinstance(target_shares, (int, float)):
+            target_pos = max(0, int(target_shares))
+        else:
+            target_ratio = signal.get("target_position_ratio")
+            if not isinstance(target_ratio, (int, float)):
+                target_ratio = self.calculate_target_position_ratio(signal)
+
+            target_amount = float(total_equity) * float(target_ratio)
+            target_pos = int(target_amount / price)
+
+        # 使用内部的 _normalize_quantity 逻辑，但这里需要传入 symbol，或者我们直接用 lot_size 计算
+        # 为了复用 _normalize_quantity，我们需要 symbol，但这里参数只有 lot_size
+        # 我们可以简单实现一个基于 lot_size 的标准化
+        if lot_size > 1:
+            target_pos = (target_pos // lot_size) * lot_size
+
+        if action == SignalType.BUY:
+            delta = target_pos - current_position
+            if delta <= 0:
+                return 0
+
+            # 现金约束
+            max_affordable = int(available_cash / price)
+            if lot_size > 1:
+                max_affordable = (max_affordable // lot_size) * lot_size
+            delta = min(delta, max_affordable)
+
+        elif action == SignalType.SELL:
+            # 默认 SELL 视为降低仓位。若策略未指定目标仓位，则清仓。
+            if "target_shares" in signal or "target_position_ratio" in signal:
+                delta = current_position - target_pos
+            else:
+                delta = current_position
+
+            if delta <= 0:
+                return 0
+
+            delta = min(delta, current_position)
+            if lot_size > 1:
+                delta = (delta // lot_size) * lot_size
+
+        else:
+            return 0
+
+        # 低频阈值：变化不足则不交易
+        min_change = int(max(1, current_position) * self.min_rebalance_ratio)
+        if lot_size > 1:
+            min_change = (min_change // lot_size) * lot_size
+
+        if signal.get("trade_tag") == "T":
+            # 做T更严格一些
+            t_threshold = int(max(1, current_position) * 0.10)
+            if lot_size > 1:
+                t_threshold = (t_threshold // lot_size) * lot_size
+            min_change = max(min_change, t_threshold)
+
+        if delta < min_change:
+            return 0
+
+        return int(delta)
 
     def record_equity(self, timestamp: datetime) -> None:
         """记录当前权益"""
@@ -358,7 +410,9 @@ class Engine(ABC):
         total_return = (final_equity - self.initial_capital) / self.initial_capital
 
         df_equity["max_equity"] = df_equity["equity"].cummax()
-        df_equity["drawdown"] = (df_equity["equity"] - df_equity["max_equity"]) / df_equity["max_equity"]
+        df_equity["drawdown"] = (
+            df_equity["equity"] - df_equity["max_equity"]
+        ) / df_equity["max_equity"]
         max_drawdown = float(df_equity["drawdown"].min())
 
         trade_stats = self._account.get_trade_stats()
@@ -380,16 +434,3 @@ class Engine(ABC):
             "positions": self._account.positions,
             "cash": self._account.cash,
         }
-
-
-
-def create_engine(engine_type: TradeMode, quote_ctx: QuoteContext, strategy: Strategy) -> Engine:
-    """创建执行引擎"""
-    if engine_type == TradeMode.BACKTEST:
-        return BacktestEngine(quote_ctx=quote_ctx, strategy=strategy)
-    elif engine_type == TradeMode.LIVE:
-        return LiveEngine(quote_ctx=quote_ctx, strategy=strategy)
-    elif engine_type == TradeMode.PAPER:
-        return PaperEngine(quote_ctx=quote_ctx, strategy=strategy)
-    else:
-        raise ValueError(f"Invalid engine type: {engine_type}")

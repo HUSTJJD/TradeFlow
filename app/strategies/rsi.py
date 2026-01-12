@@ -10,7 +10,9 @@ class RSIStrategy(Strategy):
     相对强弱指数 (RSI) 策略。
     """
 
-    def __init__(self, period: int = 14, overbought: int = 70, oversold: int = 30) -> None:
+    def __init__(
+        self, period: int = 14, overbought: int = 70, oversold: int = 30
+    ) -> None:
         """
         初始化 RSI 策略。
 
@@ -19,7 +21,9 @@ class RSIStrategy(Strategy):
             overbought: 超买阈值。
             oversold: 超卖阈值。
         """
-        super().__init__(name="RSI", description="相对强弱指数策略，基于RSI超买超卖信号")
+        super().__init__(
+            name="RSI", description="相对强弱指数策略，基于RSI超买超卖信号"
+        )
         self.period = period
         self.overbought = overbought
         self.oversold = oversold
@@ -34,7 +38,7 @@ class RSIStrategy(Strategy):
             raise ValueError("超买阈值必须大于超卖阈值")
         if self.overbought <= 50 or self.oversold >= 50:
             raise ValueError("超买阈值应大于50，超卖阈值应小于50")
-        
+
         return True
 
     def analyze(self, symbol: str, df: pd.DataFrame) -> Dict[str, Any]:
@@ -45,7 +49,7 @@ class RSIStrategy(Strategy):
         超买: RSI > 超买阈值 -> 卖出
         """
         # 数据验证
-        if not self.validate_data(df, ['close']):
+        if not self.validate_data(df, ["close"]):
             return {"action": SignalType.HOLD, "reason": "数据无效"}
 
         if len(df) < self._min_data_length:
@@ -68,7 +72,7 @@ class RSIStrategy(Strategy):
                 "factors": {
                     "rsi": rsi_value,
                     "oversold_threshold": self.oversold,
-                    "overbought_threshold": self.overbought
+                    "overbought_threshold": self.overbought,
                 },
             }
 
@@ -81,7 +85,7 @@ class RSIStrategy(Strategy):
                 "factors": {
                     "rsi": rsi_value,
                     "oversold_threshold": self.oversold,
-                    "overbought_threshold": self.overbought
+                    "overbought_threshold": self.overbought,
                 },
             }
 
@@ -90,12 +94,14 @@ class RSIStrategy(Strategy):
     def get_info(self) -> Dict[str, Any]:
         """获取RSI策略的详细信息"""
         base_info = super().get_info()
-        base_info.update({
-            "parameters": {
-                "period": self.period,
-                "overbought": self.overbought,
-                "oversold": self.oversold,
-                "min_data_length": self._min_data_length
+        base_info.update(
+            {
+                "parameters": {
+                    "period": self.period,
+                    "overbought": self.overbought,
+                    "oversold": self.oversold,
+                    "min_data_length": self._min_data_length,
+                }
             }
-        })
+        )
         return base_info

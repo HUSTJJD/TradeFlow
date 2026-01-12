@@ -1,7 +1,5 @@
+from abc import ABC
 import logging
-import json
-from math import floor
-import os
 from typing import Dict, Any, Optional, List, Callable
 from datetime import datetime
 
@@ -10,10 +8,10 @@ from app.core.constants import SignalType
 logger = logging.getLogger(__name__)
 
 
-class PaperAccount:
+class Account(ABC):
     """
-    模拟交易账户，专注于资金和持仓管理。
-    
+    交易账户，专注于资金和持仓管理。
+
     职责边界：
     - 管理现金余额和持仓
     - 计算权益和收益
@@ -36,9 +34,11 @@ class PaperAccount:
         self.avg_costs: Dict[str, float] = {}  # symbol -> avg_cost
         self.latest_prices: Dict[str, float] = {}  # symbol -> last known price
         self.trades: List[Dict[str, Any]] = []  # 交易记录
-        self.stock_names: Dict[str, str] = {}   # symbol -> name
-        self.equity_history: List[Dict[str, Any]] = [] # 权益历史 [{"time": "2023-01-01", "equity": 100000}]
-        
+        self.stock_names: Dict[str, str] = {}  # symbol -> name
+        self.equity_history: List[Dict[str, Any]] = (
+            []
+        )  # 权益历史 [{"time": "2023-01-01", "equity": 100000}]
+
         # 信号处理状态（由TradeManager管理）
         self._processed_signals: set = set()
 
@@ -74,15 +74,17 @@ class PaperAccount:
             return 0.0
         return self.get_position_value(symbol) / total_equity
 
-    def record_equity(self, timestamp: datetime, equity: Optional[float] = None) -> None:
+    def record_equity(
+        self, timestamp: datetime, equity: Optional[float] = None
+    ) -> None:
         """
         记录当前权益。
         策略：每天只保留最后一条记录。
         """
         if equity is None:
             equity = self.get_total_equity()
-        
-        time_str = str(timestamp).split(" ")[0] # 只取日期部分 YYYY-MM-DD
+
+        time_str = str(timestamp).split(" ")[0]  # 只取日期部分 YYYY-MM-DD
 
         if not self.equity_history:
             self.equity_history.append({"time": time_str, "equity": equity})
@@ -148,7 +150,7 @@ class PaperAccount:
     ) -> bool:
         """
         执行买入操作（纯资金和持仓管理）。
-        
+
         Args:
             symbol: 股票代码
             price: 买入价格
@@ -158,7 +160,7 @@ class PaperAccount:
             signal_id: 信号ID（可选）
             factors: 策略因子（可选）
             trade_tag: 交易标签（可选）
-            
+
         Returns:
             是否成功买入
         """
@@ -176,9 +178,7 @@ class PaperAccount:
         total_cost = cost + commission
 
         if self.cash < total_cost:
-            logger.warning(
-                f"资金不足: 需要 {total_cost:.2f}, 可用 {self.cash:.2f}"
-            )
+            logger.warning(f"资金不足: 需要 {total_cost:.2f}, 可用 {self.cash:.2f}")
             return False
 
         # 更新持仓和成本
@@ -186,7 +186,9 @@ class PaperAccount:
         current_avg_cost = self.avg_costs.get(symbol, 0.0)
 
         if current_pos + quantity > 0:
-            new_avg_cost = (current_pos * current_avg_cost + cost) / (current_pos + quantity)
+            new_avg_cost = (current_pos * current_avg_cost + cost) / (
+                current_pos + quantity
+            )
             self.avg_costs[symbol] = new_avg_cost
 
         # 更新资金和持仓
@@ -220,7 +222,7 @@ class PaperAccount:
             f"[{time}] 买入: {self.stock_names.get(symbol, symbol)} {quantity}股 @ {price:.2f}, "
             f"成本: {cost:.2f}, 佣金: {commission:.2f}, 原因: {reason}"
         )
-        
+
         return True
 
     def sell(
@@ -236,7 +238,7 @@ class PaperAccount:
     ) -> bool:
         """
         执行卖出操作（纯资金和持仓管理）。
-        
+
         Args:
             symbol: 股票代码
             price: 卖出价格
@@ -246,7 +248,7 @@ class PaperAccount:
             signal_id: 信号ID（可选）
             factors: 策略因子（可选）
             trade_tag: 交易标签（可选）
-            
+
         Returns:
             是否成功卖出
         """
@@ -276,7 +278,7 @@ class PaperAccount:
         # 更新资金和持仓
         self.cash += round(net_revenue, 2)
         self.positions[symbol] = current_pos - quantity
-        
+
         # 如果持仓为0，清空平均成本
         if self.positions[symbol] == 0:
             self.avg_costs[symbol] = 0.0
@@ -309,7 +311,7 @@ class PaperAccount:
             f"[{time}] 卖出: {self.stock_names.get(symbol, symbol)} {quantity}股 @ {price:.2f}, "
             f"收益: {revenue:.2f}, 佣金: {commission:.2f}, 盈亏: {profit_ratio:.2%}, 原因: {reason}"
         )
-        
+
         return True
 
     def _record_trade(
@@ -343,10 +345,10 @@ class PaperAccount:
             "position_before": position_before,
             "position_after": position_after,
         }
-        
+
         if profit_ratio is not None:
             trade_record["profit_ratio"] = profit_ratio
-        
+
         self.trades.append(trade_record)
 
     def clear_trades(self) -> None:

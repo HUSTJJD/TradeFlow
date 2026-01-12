@@ -6,16 +6,17 @@ from app.utils.finance import calculate_interval_return
 
 logger = logging.getLogger(__name__)
 
+
 def print_backtest_summary(
     results: Dict[str, Any],
     start_date: date,
     end_date: date,
     initial_balance: float,
-    benchmark_returns: Optional[Dict[str, float]] = None
+    benchmark_returns: Optional[Dict[str, float]] = None,
 ) -> None:
     """
     打印回测摘要表格。
-    
+
     Args:
         results: 回测结果字典。
         start_date: 回测开始日期。
@@ -34,7 +35,7 @@ def print_backtest_summary(
     logger.info(f"最终权益: {results.get('final_value', 0):,.2f}")
     logger.info(f"总收益率: {results.get('total_return', 0):.2f}%")
     logger.info(f"最大回撤: {results.get('max_drawdown', 0):.2f}%")
-    
+
     trades = results.get("trades", [])
     logger.info(f"总交易次数: {len(trades)}")
 
@@ -45,7 +46,7 @@ def print_backtest_summary(
             logger.info(f"{k:<20}: {v:.2f}%")
 
     logger.info("=" * 80)
-    
+
     # 提取个股表现
     logger.info("\n个股表现详情:")
     logger.info("-" * 80)
@@ -77,8 +78,8 @@ def print_backtest_summary(
         pnl = stats.get("pnl", 0.0)
         roi = stats.get("roi", 0.0)
         count = trade_counts.get(symbol, 0)
-        
+
         row = f"{symbol:<10} | {pnl:>12.2f} | {roi:>9.2f}% | {count:>8}"
         logger.info(row)
-    
+
     logger.info("-" * 80)

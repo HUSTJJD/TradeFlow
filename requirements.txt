@@ -6,3 +6,4 @@ PyYAML>=6.0
 akshare>=1.13.0
 plotly>=5.0.0
 pydantic>=2.0.0
+pydoc-markdown>=0.1.0
