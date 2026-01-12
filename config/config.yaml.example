@@ -42,32 +42,11 @@ trading:
   initial_balance: 1000000
   position_ratio: 0.2
   total_capital: 100000
-  markets:
-    SSE_MAIN:
-      url: ""
-      symbol: ""
-      name: ""
-      rate: 0.0003
-    SSE_STAR:
-      url: ""
-      symbol: ""
-      name: ""
-      rate: 0.0003
-    SZSE_MAIN:
-      url: ""
-      symbol: ""
-      name: ""
-      rate: 0.0003
-    SZSE_GEM:
-      url: ""
-      symbol: ""
-      name: ""
-      rate: 0.0003
-    HKCONNECT:
-      url: ""
-      symbol: ""
-      name: ""
-      rate: 0.0003
+  allowed_boards:
+    - "Main"
+    # - "ChiNext"
+    # - "STAR"
+    - "HK"
   position_sizing:
     max_position_ratio: 0.25
     risk_per_trade: 0.01
@@ -97,11 +76,7 @@ universe:
 
 market_data:
   update_interval_days: 7
-  allowed_boards:
-    - "Main"
-    - "ChiNext"
-    - "STAR"
-    - "HK"
+
 
 #endregion
 

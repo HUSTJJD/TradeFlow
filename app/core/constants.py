@@ -20,11 +20,13 @@ class SignalType(str, Enum):
 class Market(str, Enum):
     """市场板块枚举"""
 
-    SSE_MAIN = "SSE_MAIN"  # 上交所主板
-    SSE_STAR = "SSE_STAR"  # 上交所科创板
-    SZSE_MAIN = "SZSE_MAIN"  # 深交所主板
-    SZSE_GEM = "SZSE_GEM"  # 深交所创业板
-    HKCONNECT = "HKCONNECT"  # 港股通
+    MAIN = "Main"  # 主板
+    STAR = "STAR"  # 科创板
+    CHINEXT = "ChiNext"  # 创业板
+    BSHARE = "BShare"  # B股
+    BSE = "BSE"  # 北交所
+    NQ = "NQ"  # 新三板
+    HK = "HK"  # 港股通
 
 
 class TradeStatus(str, Enum):

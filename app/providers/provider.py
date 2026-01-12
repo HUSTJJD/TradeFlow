@@ -25,8 +25,6 @@ class Provider(ABC):
         try:
             markets = global_config.get("markets", [])
             for market in markets:
-                if market.upper() == Market.SSE_MAIN.upper():
-                    continue
                 self.get_universe_symbols(market)
 
             self._session = requests.Session()
@@ -77,11 +75,23 @@ class Provider(ABC):
         try:
             df = get_market_symbols()
             
-            if market.upper() == "CN":
+            market_upper = market.upper()
+            
+            if market_upper == "CN":
                 # A股包括 SH, SZ, BJ
                 filtered_df = df[df["market"].isin(["SH", "SZ", "BJ"])]
-            elif market.upper() in ["HKCONNECT", "HK"]:
+            elif market_upper == "HK":
                 filtered_df = df[df["market"] == "HK"]
+            # 支持按板块过滤 (使用新的 Market 枚举值)
+            elif market in [m.value for m in Market]:
+                filtered_df = df[df["board"] == market]
+            # 兼容旧的枚举值字符串
+            elif market_upper in ["SSE_MAIN", "SZSE_MAIN"]:
+                filtered_df = df[df["board"] == Market.MAIN.value]
+            elif market_upper == "SSE_STAR":
+                filtered_df = df[df["board"] == Market.STAR.value]
+            elif market_upper == "SZSE_GEM":
+                filtered_df = df[df["board"] == Market.CHINEXT.value]
             else:
                 logger.warning(f"未知的市场类型: {market}，返回空列表")
                 return []
