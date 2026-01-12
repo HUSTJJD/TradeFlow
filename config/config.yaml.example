@@ -95,7 +95,13 @@ universe:
     lookback_days: 120
     sentiment_window_days: 7
 
-market_update_interval_days: 7
+market_data:
+  update_interval_days: 7
+  allowed_boards:
+    - "Main"
+    - "ChiNext"
+    - "STAR"
+    - "HK"
 
 #endregion
 
