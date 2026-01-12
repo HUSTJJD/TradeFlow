@@ -35,6 +35,7 @@ class AppConfig:
                 配置值或默认值。
         """
         keys = key.split(".")
+        value = self.config
         for k in keys:
             if isinstance(value, dict):
                 value = value.get(k)

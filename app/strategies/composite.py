@@ -1,8 +1,9 @@
-from typing import List, Dict, Any, Optional
-import logging
+from typing import Dict, Any, List, Optional
 import pandas as pd
-from .base import Strategy
+import logging
+from .strategy import Strategy
 from app.core.constants import SignalType
+from app.core.config import global_config
 
 logger = logging.getLogger(__name__)
 

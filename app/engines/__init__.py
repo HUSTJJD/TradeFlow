@@ -1,5 +1,4 @@
-
-from core import TradeMode
+from app.core import TradeMode
 from .engine import Engine
 from .backtest import BacktestEngine
 from .live import LiveEngine

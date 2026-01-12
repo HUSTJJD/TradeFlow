@@ -9,7 +9,7 @@ import logging
 
 from app.core.config import global_config
 from app.core.constants import SignalType
-from app.strategies.base import Strategy
+from app.strategies.strategy import Strategy
 from app.utils.indicators import (
     calculate_adx,
     calculate_atr,

@@ -1,6 +1,6 @@
 from typing import Dict, Any
 import pandas as pd
-from .base import Strategy
+from .strategy import Strategy
 from app.utils.indicators import calculate_rsi
 from app.core.constants import SignalType
 

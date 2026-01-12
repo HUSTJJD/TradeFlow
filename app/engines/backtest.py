@@ -7,7 +7,7 @@ from longport.openapi import QuoteContext, Period
 from app.core.config import global_config
 from app.strategies import Strategy
 from app.engines.engine import Engine
-from app.providers.provider import LongPortProvider
+from app.providers.longport import LongPortProvider
 from app.utils.reporting import print_backtest_summary
 from app.utils.plotter import create_performance_chart
 

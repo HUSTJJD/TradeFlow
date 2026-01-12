@@ -2,9 +2,11 @@ from .provider import Provider
 import logging
 import os
 import json
+from datetime import date
 from typing import List, Dict, Any, Optional, Type
 from longport.openapi import Period, QuoteContext
 from app.core import global_config
+from app.utils.finance import calculate_interval_return
 import pandas as pd
 
 logger = logging.getLogger(__name__)
@@ -14,7 +16,7 @@ class LongPortProvider(Provider):
     """长桥API数据提供器"""
 
     def __init__(self):
-        super().__init__("LongPort", "长桥API数据提供器，支持实时和历史数据获取")
+        super().__init__()
         self.quote_ctx: Optional[QuoteContext] = None
 
     def initialize(self, **kwargs: Any) -> bool:

@@ -11,7 +11,6 @@ from app.providers import create_provider, Provider
 
 logger = logging.getLogger(__name__)
 
-@singleton_threadsafe
 class Engine(ABC):
     """策略执行引擎抽象基类，定义统一的策略执行接口。"""
 

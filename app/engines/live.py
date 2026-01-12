@@ -1,4 +1,6 @@
 import logging
+import time
+from datetime import datetime
 from typing import Any, Dict, List, cast
 from longport.openapi import Period, QuoteContext
 from app.core.config import global_config
@@ -6,6 +8,8 @@ from app.engines.engine import Engine
 from app.strategies import Strategy
 
 logger = logging.getLogger(__name__)
+
+PeriodLike = Period
 
 
 class LiveEngine(Engine):
