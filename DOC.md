@@ -14,8 +14,7 @@
 │   ├── backtest.py
 │   ├── engine.py
 │   ├── live.py
-│   ├── paper.py
-│   └── universe_refresh.py
+│   └── paper.py
 ├── notifier
 │   ├── email.py
 │   └── notifier.py
@@ -37,6 +36,7 @@
     ├── finance.py
     ├── formatting.py
     ├── indicators.py
+    ├── market.py
     ├── plotter.py
     └── reporting.py
 ```
@@ -265,97 +265,6 @@ Args:
 
 ---
 
-### Module: `app.engines.universe_refresh`
-
-#### Class `UniverseSymbolProvider(Protocol)`
-
-- `get_universe_symbols(self, market: str) -> List[Dict[str, Any]]`
-
-#### Class `UniverseListProvider(Provider)`
-
-A simple provider that only implements universe symbol fetching.
-
-
-- `get_data(self, symbol: str, **kwargs: Any) -> Optional[pd.DataFrame]`
-
-- `get_multiple_data(self, symbols: List[str], **kwargs: Any) -> Dict[str, pd.DataFrame]`
-
-- `get_stock_names(self, symbols: List[str]) -> Dict[str, str]`
-
-- `get_stock_lot_sizes(self, symbols: List[str]) -> Dict[str, int]`
-
-- `get_benchmark_returns(self, start_date: date, end_date: date) -> Dict[str, float]`
-
-#### Class `ExchangeUniverseSymbolProvider`
-
-- `__init__(self) -> None`
-
-- `get_universe_symbols(self, market: str) -> List[Dict[str, Any]]`
-
-#### Class `UniverseScorer(Protocol)`
-
-- `score(self, symbol: str, candles: pd.DataFrame, fundamentals: Dict[str, Any]) -> float`
-
-#### Class `TechnicalMomentumScorer`
-
-Simple momentum score by 5-day price change.
-
-
-- `score(self, symbol: str, candles: pd.DataFrame, fundamentals: Dict[str, Any]) -> float`
-
-#### Class `VolatilityHotnessScorer`
-
-Simple hotness score by 20-day volatility.
-
-
-- `score(self, symbol: str, candles: pd.DataFrame, fundamentals: Dict[str, Any]) -> float`
-
-#### Class `PlaceholderNewsScorer`
-
-- `score(self, symbol: str, candles: pd.DataFrame, fundamentals: Dict[str, Any]) -> float`
-
-#### Class `FundamentalQualityScorer`
-
-- `score(self, symbol: str, candles: pd.DataFrame, fundamentals: Dict[str, Any]) -> float`
-
-#### Class `UniverseScoringWeights`
-
-- `from_config(cls) -> UniverseScoringWeights`
-
-#### Class `UniverseCompositeScorer`
-
-- `__init__(self, weights: UniverseScoringWeights, technical: UniverseScorer, sentiment: UniverseScorer, news: UniverseScorer, fundamental: UniverseScorer) -> None`
-
-- `score(self, symbol: str, candles: pd.DataFrame, fundamentals: Dict[str, Any]) -> Dict[str, float]`
-
-#### Class `UniverseCandidateSelector`
-
-- `__init__(self, max_symbols: int, one_per_industry: bool) -> None`
-
-- `select(self, candidates: List[Dict[str, Any]]) -> List[str]`
-
-#### Class `UniverseRefreshService`
-
-- `__init__(self, symbol_provider: UniverseSymbolProvider) -> None`
-
-- `refresh_symbols(self, markets: List[str]) -> List[Dict[str, Any]]`
-
-#### Class `UniverseScoringService`
-
-- `__init__(self, composite_scorer: UniverseCompositeScorer) -> None`
-
-- `build_candidates(self, quote_ctx: QuoteContext, symbols: List[str], name_map: Dict[str, str], industry_map: Dict[str, str], board_map: Dict[str, str], fundamentals_map: Dict[str, Dict[str, Any]], lookback_days: int, batch_size: int) -> List[Dict[str, Any]]`
-
-#### Function `run_universe_symbols_refresh() -> None`
-
-Step 1: refresh universe symbol list without relying on Longbridge API.
-
-#### Function `run_universe_refresh(quote_ctx: QuoteContext) -> None`
-
-Step 2: load universe list, fetch data from Longbridge, and score candidates.
-
----
-
 ### Module: `app.notifier.email`
 
 #### Class `EmailNotifier(Notifier)`
@@ -421,46 +330,6 @@ Step 2: load universe list, fetch data from Longbridge, and score candidates.
 
   获取基准收益率
 
-#### Function `save_universe_symbols(path: str, items: List[Dict[str, Any]]) -> None`
-
-保存标的基础清单（代码+名称）。
-
-#### Function `load_universe_symbols(path: str) -> List[Dict[str, Any]]`
-
-加载标的基础清单
-
-#### Function `save_cn_universe_symbols(items: List[Dict[str, Any]]) -> None`
-
-保存A股标的清单
-
-#### Function `load_cn_universe_symbols() -> List[Dict[str, Any]]`
-
-加载A股标的清单
-
-#### Function `save_hkconnect_universe_symbols(items: List[Dict[str, Any]]) -> None`
-
-保存港股通标的清单
-
-#### Function `load_hkconnect_universe_symbols() -> List[Dict[str, Any]]`
-
-加载港股通标的清单
-
-#### Function `get_universe_symbols_paths() -> Dict[str, str]`
-
-获取标的清单文件路径
-
-#### Function `get_stock_pool() -> List[str]`
-
-获取需要监控的股票代码列表。
-
-#### Function `refresh_universe_cache(snapshot: Dict[str, Any], scores: Dict[str, Any]) -> None`
-
-将闭市扫描得到的全市场快照与打分结果写入本地缓存。
-
-#### Function `get_period(timeframe_str: str) -> Period`
-
-将时间周期字符串转换为 LongPort Period 枚举。
-
 ---
 
 ### Module: `app.providers.provider`
@@ -472,9 +341,9 @@ Step 2: load universe list, fetch data from Longbridge, and score candidates.
 
 - `__init__(self)`
 
-- `initialize(self, **kwargs: Any) -> bool`
+- `pull_stack_list(self) -> bool`
 
-  初始化数据提供器
+  拉取数据
 
 - `get_data(self, symbol: str, **kwargs: Any) -> Optional[pd.DataFrame]`
 
@@ -934,6 +803,14 @@ Args:
 
 Returns:
     添加了 'upper', 'middle', 'lower' 列的 DataFrame。
+
+---
+
+### Module: `app.utils.market`
+
+#### Function `get_market_symbols(force_update: bool = False) -> pd.DataFrame`
+
+获取全市场标的（A股 + 港股通），支持本地缓存和定期更新。
 
 ---
 
