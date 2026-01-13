@@ -3,7 +3,7 @@ import time
 from datetime import datetime
 from typing import Any, Dict, List, cast
 from longport.openapi import Period, QuoteContext
-from app.core import global_config
+from app.core import cfg
 from app.engines.engine import Engine
 from app.strategies import Strategy
 
@@ -206,15 +206,15 @@ def run_live_trading(quote_ctx: QuoteContext, strategy: Strategy) -> Dict[str, A
         logger.error("股票池为空，请先运行universe刷新")
         return {}
 
-    strat_config = global_config.strategy
+    strat_config = cfg.strategy
     period = strat_config.period
     history_count = strat_config.history_count
 
-    initial_capital = global_config.trading.total_capital
-    commission_rate = global_config.trading.commission_rate
-    position_ratio = global_config.trading.position_ratio
+    initial_capital = cfg.trading.total_capital
+    commission_rate = cfg.trading.commission_rate
+    position_ratio = cfg.trading.position_ratio
 
-    monitor_cfg = global_config.monitor
+    monitor_cfg = cfg.monitor
     interval = monitor_cfg.interval
     request_delay = monitor_cfg.request_delay
 

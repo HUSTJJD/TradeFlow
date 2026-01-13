@@ -1,4 +1,4 @@
-from app.core import global_config
+from app.core import cfg
 import logging
 import smtplib
 from email.mime.text import MIMEText
@@ -17,11 +17,11 @@ class EmailNotifier(Notifier):
         """
         初始化 EmailNotifier。
         """
-        self.smtp_server: str = global_config.email.smtp_server
-        self.smtp_port: int = global_config.email.smtp_port
-        self.sender_email: str = global_config.email.sender_email
-        self.sender_password: str = global_config.email.sender_password
-        self.receiver_emails: List[str] = global_config.email.receiver_emails
+        self.smtp_server: str = cfg.email.smtp_server
+        self.smtp_port: int = cfg.email.smtp_port
+        self.sender_email: str = cfg.email.sender_email
+        self.sender_password: str = cfg.email.sender_password
+        self.receiver_emails: List[str] = cfg.email.receiver_emails
 
     def notify(self, title: str, content: str) -> None:
         """

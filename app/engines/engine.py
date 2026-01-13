@@ -4,7 +4,7 @@ from datetime import datetime
 import pandas as pd
 import logging
 from longport.openapi import QuoteContext, Period
-from app.core import global_config, singleton_threadsafe, SignalType, TradeMode
+from app.core import cfg, singleton_threadsafe, SignalType, TradeMode
 from app.strategies import Strategy
 from app.trading.account import Account
 from app.providers import create_provider, Provider
@@ -20,7 +20,7 @@ class Engine(ABC):
         self.provider = create_provider()
 
         # 仓位管理配置
-        self.position_sizing_config = global_config.trading.position_sizing
+        self.position_sizing_config = cfg.trading.position_sizing
         self.max_position_ratio = self.position_sizing_config.max_position_ratio
         self.risk_per_trade = self.position_sizing_config.risk_per_trade
         self.min_rebalance_ratio = self.position_sizing_config.min_rebalance_ratio

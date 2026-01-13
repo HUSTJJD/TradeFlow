@@ -4,7 +4,7 @@ from datetime import date, datetime, timedelta
 from typing import Dict, List, Any, Optional, cast
 from longport.openapi import QuoteContext, Period
 
-from app.core import global_config
+from app.core import cfg
 from app.strategies import Strategy
 from app.engines.engine import Engine
 from app.providers.longport import LongPortProvider
@@ -226,7 +226,7 @@ class BacktestDailyWorkflow:
 
 
 def _resolve_warmup_days(period: Period) -> int:
-    warmup_cfg = global_config.backtest.warmup_days
+    warmup_cfg = cfg.backtest.warmup_days
     if period in [Period.Day, Period.Week, Period.Month]:
         return int(warmup_cfg.get("daily", 365))
     if period in [Period.Min_60, Period.Min_30]:
@@ -237,9 +237,9 @@ def _resolve_warmup_days(period: Period) -> int:
 def _create_engine(
     quote_ctx: QuoteContext, strategy: Strategy, symbols: List[str]
 ) -> BacktestEngine:
-    initial_balance = float(global_config.get("backtest.initial_balance", 100000.0))
-    commission_rate = float(global_config.get("backtest.commission_rate", 0.0003))
-    position_ratio = float(global_config.get("backtest.position_ratio", 0.2))
+    initial_balance = float(cfg.get("backtest.initial_balance", 100000.0))
+    commission_rate = float(cfg.get("backtest.commission_rate", 0.0003))
+    position_ratio = float(cfg.get("backtest.position_ratio", 0.2))
 
     engine = BacktestEngine(
         quote_ctx=quote_ctx,
@@ -300,7 +300,7 @@ def _run_single_timeframe_backtest(
     logger.info("开始执行投资组合回测...")
     results = engine.run()
 
-    initial_balance = float(global_config.get("backtest.initial_balance", 100000.0))
+    initial_balance = float(cfg.get("backtest.initial_balance", 100000.0))
     benchmark_returns = provider.get_benchmark_returns(start_date, end_date)
 
     print_backtest_summary(
@@ -326,7 +326,7 @@ def _run_multi_timeframe_backtest(
     provider = LongPortProvider()
     provider.initialize(quote_ctx=quote_ctx)
 
-    mt_cfg = global_config.get("backtest.multi_timeframe", {}) or {}
+    mt_cfg = cfg.get("backtest.multi_timeframe", {}) or {}
     swing_timeframe = str(mt_cfg.get("swing_timeframe", "1d"))
     t_timeframe = str(mt_cfg.get("t_timeframe", "15m"))
 
@@ -382,7 +382,7 @@ def _run_multi_timeframe_backtest(
         engine, data_map_swing, data_map_t, start_date, end_date
     )
 
-    initial_balance = float(global_config.get("backtest.initial_balance", 100000.0))
+    initial_balance = float(cfg.get("backtest.initial_balance", 100000.0))
     benchmark_returns = provider.get_benchmark_returns(start_date, end_date)
 
     print_backtest_summary(
@@ -475,7 +475,7 @@ def _generate_performance_chart(
     results: Dict[str, Any], start_date: date, end_date: date
 ) -> None:
     """生成性能图表"""
-    plot_config = global_config.get("plot", {})
+    plot_config = cfg.get("plot", {})
     if not plot_config.get("enabled", False):
         return
 
@@ -486,7 +486,7 @@ def _generate_performance_chart(
     benchmarks_config = plot_config.get("benchmarks", [])
 
     if not benchmarks_config:
-        backtest_benchmarks = global_config.get("backtest.benchmarks", [])
+        backtest_benchmarks = cfg.get("backtest.benchmarks", [])
         for symbol in backtest_benchmarks:
             benchmarks_config.append({"symbol": symbol})
 
@@ -507,8 +507,8 @@ def run_backtest(quote_ctx: QuoteContext, strategy: Strategy) -> Dict[str, Any]:
     """执行回测流程（Runner entrypoint）。"""
 
     try:
-        start_time_str = global_config.get("backtest.start_time", "2023-01-01")
-        end_time_str = global_config.get("backtest.end_time", "2023-12-31")
+        start_time_str = cfg.get("backtest.start_time", "2023-01-01")
+        end_time_str = cfg.get("backtest.end_time", "2023-12-31")
         start_date = datetime.strptime(start_time_str, "%Y-%m-%d").date()
         end_date = datetime.strptime(end_time_str, "%Y-%m-%d").date()
 
@@ -540,17 +540,17 @@ def run_backtest(quote_ctx: QuoteContext, strategy: Strategy) -> Dict[str, Any]:
         period = cast(Period, strat_config["period"])
         warmup_days = _resolve_warmup_days(period)
 
-        selector_cfg = global_config.get("universe.selector", {}) or {}
+        selector_cfg = cfg.get("universe.selector", {}) or {}
         max_symbols = int(selector_cfg.get("max_symbols", 5))
         one_per_industry = bool(selector_cfg.get("one_per_industry", True))
 
-        data_cfg = global_config.get("data", {}) or {}
+        data_cfg = cfg.get("data", {}) or {}
         batch_size = int(data_cfg.get("batch_size", 200))
 
-        refresh_cfg = global_config.get("universe.refresh", {}) or {}
+        refresh_cfg = cfg.get("universe.refresh", {}) or {}
         lookback_days = int(refresh_cfg.get("lookback_days", 120))
 
-        mt_cfg = global_config.get("backtest.multi_timeframe", {}) or {}
+        mt_cfg = cfg.get("backtest.multi_timeframe", {}) or {}
         multi_timeframe_enabled = bool(mt_cfg.get("enabled", False))
 
         if multi_timeframe_enabled:
@@ -599,7 +599,7 @@ def run_backtest(quote_ctx: QuoteContext, strategy: Strategy) -> Dict[str, Any]:
 
         results = workflow.run(start_date=start_date, end_date=end_date)
 
-        initial_balance = float(global_config.get("backtest.initial_balance", 100000.0))
+        initial_balance = float(cfg.get("backtest.initial_balance", 100000.0))
 
         provider = LongPortProvider()
         provider.initialize(quote_ctx=quote_ctx)

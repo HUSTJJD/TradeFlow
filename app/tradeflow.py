@@ -1,4 +1,4 @@
-from app.core import TradeMode, singleton_threadsafe, global_config
+from app.core import TradeMode, singleton_threadsafe, cfg
 import logging
 from .engines import create_engine
 @singleton_threadsafe
@@ -8,7 +8,7 @@ class TradeFlow:
 
     def run(self) -> None:
         try:
-            run_mode_raw = global_config.run_mode
+            run_mode_raw = cfg.app.run_mode
             logging.info(f"应用运行模式: {run_mode_raw}")
 
             run_mode = (

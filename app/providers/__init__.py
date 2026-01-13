@@ -1,11 +1,11 @@
-from app.core import global_config, ProviderType
+from app.core import cfg, ProviderName
 from .provider import Provider
 from .longport import LongPortProvider
 
 
 def create_provider() -> Provider:
-    provider_name = global_config.get()
-    if provider_name == ProviderType.LONGPORT:
+    provider_name = cfg.get()
+    if provider_name == ProviderName.LONGPORT:
         return LongPortProvider()
     else:
         raise ValueError(f"Unknown provider: {provider_name}")

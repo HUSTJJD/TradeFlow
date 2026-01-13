@@ -255,7 +255,7 @@ Args:
 
 执行实盘交易监控（Runner entrypoint）。
 
-方案A：直接读 `global_config`，不再引入额外的 config/service manager 层。
+方案A：直接读 `cfg`，不再引入额外的 config/service manager 层。
 
 ---
 

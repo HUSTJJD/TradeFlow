@@ -4,24 +4,27 @@ from .singleton import singleton_threadsafe
 from .constants import (
     TradeMode,
     SignalType,
-    Market,
+    MarketType,
     TradeStatus,
-    TradeStraegy,
-    ProviderType,
+    StraegyName,
+    ProviderName,
     NotifierType,
 )
-global_config = load_app_config()
-setup_logging(global_config.log_level)
+try:
+    cfg = load_app_config()
+except Exception as e:
+    print(f"Failed to load app config: {e}")
+    raise
+setup_logging(cfg.app.log_level)
 
 __all__ = [
-    "AppConfig",
-    "global_config",
+    "cfg",
     "singleton_threadsafe",
     "TradeMode",
     "SignalType",
-    "Market",
+    "MarketType",
     "TradeStatus",
-    "TradeStraegy",
-    "ProviderType",
+    "StraegyName",
+    "ProviderName",
     "NotifierType",
 ]

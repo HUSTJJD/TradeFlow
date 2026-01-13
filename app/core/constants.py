@@ -17,7 +17,7 @@ class SignalType(str, Enum):
     HOLD = "HOLD"
 
 
-class Market(str, Enum):
+class MarketType(str, Enum):
     """市场板块枚举"""
 
     MAIN = "MAIN"  # 主板
@@ -37,14 +37,14 @@ class TradeStatus(str, Enum):
     SKIPPED = "SKIPPED"
 
 
-class TradeStraegy(str, Enum):
+class StraegyName(str, Enum):
     """交易策略枚举"""
 
     MACD = "MACD"
     RSI = "RSI"
 
 
-class ProviderType(str, Enum):
+class ProviderName(str, Enum):
     """券商api枚举"""
 
     LONGPORT = "LONGPORT"

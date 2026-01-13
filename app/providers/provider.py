@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from app.core import global_config, singleton_threadsafe, Market
+from app.core import cfg, singleton_threadsafe, MarketType
 from typing import Dict, Any, List, Optional
 from datetime import date, timedelta
 import pandas as pd
@@ -23,7 +23,7 @@ class Provider(ABC):
     def pull_stack_list(self) -> bool:
         """拉取数据"""
         try:
-            markets = global_config.markets
+            markets = cfg.markets
             for market in markets:
                 self.get_universe_symbols(market)
 
@@ -83,15 +83,15 @@ class Provider(ABC):
             elif market_upper == "HK":
                 filtered_df = df[df["market"] == "HK"]
             # 支持按板块过滤 (使用新的 Market 枚举值)
-            elif market in [m.value for m in Market]:
+            elif market in [m.value for m in MarketType]:
                 filtered_df = df[df["board"] == market]
             # 兼容旧的枚举值字符串
             elif market_upper in ["SSE_MAIN", "SZSE_MAIN"]:
-                filtered_df = df[df["board"] == Market.MAIN.value]
+                filtered_df = df[df["board"] == MarketType.MAIN.value]
             elif market_upper == "SSE_STAR":
-                filtered_df = df[df["board"] == Market.STAR.value]
+                filtered_df = df[df["board"] == MarketType.STAR.value]
             elif market_upper == "SZSE_GEM":
-                filtered_df = df[df["board"] == Market.CHINEXT.value]
+                filtered_df = df[df["board"] == MarketType.CHINEXT.value]
             else:
                 logger.warning(f"未知的市场类型: {market}，返回空列表")
                 return []
