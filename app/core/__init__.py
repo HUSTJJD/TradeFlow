@@ -3,7 +3,7 @@ from .logger import setup_logging
 from .singleton import singleton_threadsafe
 from .constants import (
     TradeMode,
-    SignalType,
+    ActionType,
     MarketType,
     TradeStatus,
     StraegyName,
@@ -21,7 +21,7 @@ __all__ = [
     "cfg",
     "singleton_threadsafe",
     "TradeMode",
-    "SignalType",
+    "ActionType",
     "MarketType",
     "TradeStatus",
     "StraegyName",

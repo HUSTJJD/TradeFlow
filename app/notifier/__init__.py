@@ -3,7 +3,7 @@ from .notifier import Notifier
 from .email import EmailNotifier
 
 def create_notifier() -> Notifier:
-    if cfg.notifier_type == NotifierType.EMAIL:
+    if cfg.app.notifier_type == NotifierType.EMAIL:
         return EmailNotifier()
     return Notifier()
 

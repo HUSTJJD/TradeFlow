@@ -9,7 +9,7 @@ class TradeMode(str, Enum):
     BACKTEST = "BACKTEST"
 
 
-class SignalType(str, Enum):
+class ActionType(str, Enum):
     """交易信号类型枚举"""
 
     BUY = "BUY"

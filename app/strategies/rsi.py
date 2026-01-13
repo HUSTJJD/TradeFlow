@@ -2,7 +2,7 @@ from typing import Dict, Any
 import pandas as pd
 from .strategy import Strategy
 from app.utils.indicators import calculate_rsi
-from app.core.constants import SignalType
+from app.core.constants import ActionType
 
 
 class RSIStrategy(Strategy):
@@ -50,10 +50,10 @@ class RSIStrategy(Strategy):
         """
         # 数据验证
         if not self.validate_data(df, ["close"]):
-            return {"action": SignalType.HOLD, "reason": "数据无效"}
+            return {"action": ActionType.HOLD, "reason": "数据无效"}
 
         if len(df) < self._min_data_length:
-            return {"action": SignalType.HOLD, "reason": "数据不足"}
+            return {"action": ActionType.HOLD, "reason": "数据不足"}
 
         # 计算RSI指标
         df = calculate_rsi(df, self.period)
@@ -66,7 +66,7 @@ class RSIStrategy(Strategy):
         # 超卖信号
         if rsi_value < self.oversold:
             return {
-                "action": SignalType.BUY,
+                "action": ActionType.BUY,
                 "price": current_price,
                 "reason": f"RSI 超卖 ({rsi_value:.1f} < {self.oversold})",
                 "factors": {
@@ -79,7 +79,7 @@ class RSIStrategy(Strategy):
         # 超买信号
         if rsi_value > self.overbought:
             return {
-                "action": SignalType.SELL,
+                "action": ActionType.SELL,
                 "price": current_price,
                 "reason": f"RSI 超买 ({rsi_value:.1f} > {self.overbought})",
                 "factors": {
@@ -89,7 +89,7 @@ class RSIStrategy(Strategy):
                 },
             }
 
-        return {"action": SignalType.HOLD, "reason": "无信号"}
+        return {"action": ActionType.HOLD, "reason": "无信号"}
 
     def get_info(self) -> Dict[str, Any]:
         """获取RSI策略的详细信息"""

@@ -22,7 +22,7 @@ class BacktestEngine(Engine):
         super().__init__(*args, **kwargs)
         self.data: Dict[str, pd.DataFrame] = {}
 
-    def run(self, start_time: Optional[pd.Timestamp] = None) -> Dict[str, Any]:
+    def run(self) -> Dict[str, Any]:
         """运行回测"""
         if not self.data:
             logger.error("回测数据为空")

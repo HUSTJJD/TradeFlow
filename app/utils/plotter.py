@@ -6,7 +6,7 @@ from typing import Any, Dict, List, Optional, Tuple, cast
 import os
 from datetime import datetime
 
-from app.core.constants import SignalType
+from app.core.constants import ActionType
 
 logger = logging.getLogger(__name__)
 
@@ -201,8 +201,8 @@ def create_performance_chart(
                     col=1,
                 )
 
-            _add_trade_markers(SignalType.BUY, "买入", "triangle-up", buy_color)
-            _add_trade_markers(SignalType.SELL, "卖出", "triangle-down", sell_color)
+            _add_trade_markers(ActionType.BUY, "买入", "triangle-up", buy_color)
+            _add_trade_markers(ActionType.SELL, "卖出", "triangle-down", sell_color)
 
             if latest_trade_date is not None and latest_trade_date != "":
                 df_latest = df_trades[

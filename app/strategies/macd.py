@@ -2,7 +2,7 @@ from typing import Dict, Any
 import pandas as pd
 from .strategy import Strategy
 from app.utils.indicators import calculate_macd
-from app.core.constants import SignalType
+from app.core.constants import ActionType
 
 
 class MACDStrategy(Strategy):
@@ -46,10 +46,10 @@ class MACDStrategy(Strategy):
         """
         # 数据验证
         if not self.validate_data(df, ["close"]):
-            return {"action": SignalType.HOLD, "reason": "数据无效"}
+            return {"action": ActionType.HOLD, "reason": "数据无效"}
 
         if len(df) < self._min_data_length:
-            return {"action": SignalType.HOLD, "reason": "数据不足"}
+            return {"action": ActionType.HOLD, "reason": "数据不足"}
 
         # 计算MACD指标
         df = calculate_macd(df, self.fast, self.slow, self.signal)
@@ -63,7 +63,7 @@ class MACDStrategy(Strategy):
         # 金叉
         if prev_row["dif"] < prev_row["dea"] and last_row["dif"] > last_row["dea"]:
             return {
-                "action": SignalType.BUY,
+                "action": ActionType.BUY,
                 "price": current_price,
                 "reason": f"MACD 金叉 (DIF: {last_row['dif']:.3f}, DEA: {last_row['dea']:.3f})",
                 "factors": {
@@ -76,7 +76,7 @@ class MACDStrategy(Strategy):
         # 死叉
         elif prev_row["dif"] > prev_row["dea"] and last_row["dif"] < last_row["dea"]:
             return {
-                "action": SignalType.SELL,
+                "action": ActionType.SELL,
                 "price": current_price,
                 "reason": f"MACD 死叉 (DIF: {last_row['dif']:.3f}, DEA: {last_row['dea']:.3f})",
                 "factors": {
@@ -86,7 +86,7 @@ class MACDStrategy(Strategy):
                 },
             }
 
-        return {"action": SignalType.HOLD, "reason": "无信号"}
+        return {"action": ActionType.HOLD, "reason": "无信号"}
 
     def get_info(self) -> Dict[str, Any]:
         """获取MACD策略的详细信息"""

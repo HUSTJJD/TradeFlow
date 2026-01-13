@@ -1,10 +1,11 @@
 from abc import ABC, abstractmethod
+from sys import exception
 from typing import Dict, List, Any, Optional, Union, cast, Iterable
 from datetime import datetime
 import pandas as pd
 import logging
 from longport.openapi import QuoteContext, Period
-from app.core import cfg, singleton_threadsafe, SignalType, TradeMode
+from app.core import cfg, singleton_threadsafe, ActionType, TradeMode
 from app.strategies import Strategy
 from app.trading.account import Account
 from app.providers import create_provider, Provider
@@ -32,19 +33,22 @@ class Engine(ABC):
         self.lot_sizes: Dict[str, int] = {}
         self.stock_names: Dict[str, str] = {}
 
-    @abstractmethod
-    def initialize(self, symbols: List[str], quote_ctx: QuoteContext) -> bool:
-        """初始化策略执行引擎"""
-        raise NotImplementedError
+    def run(self):
+        """运行策略执行引擎"""
+
+        try:
+            while True:
+                self.run_once()
+        except Exception as e:
+            logger.error(f"{self.__class__.__name__}引擎运行异常: {e}")
+
+    def run_once(self) -> None:
+        """运行一次策略执行引擎"""
+        pass
 
     @abstractmethod
     def create_account(self) -> None:
         """交易账户"""
-        raise NotImplementedError
-
-    @abstractmethod
-    def run(self) -> Dict[str, Any]:
-        """运行策略执行引擎"""
         raise NotImplementedError
 
     def _allow_t_trade(self, symbol: str, current_time: datetime) -> bool:
@@ -109,11 +113,11 @@ class Engine(ABC):
 
         signal_id = f"{symbol}_{timestamp.strftime('%Y%m%d%H%M%S')}_{action}"
 
-        if action == SignalType.BUY:
+        if action == ActionType.BUY:
             return self._execute_buy(
                 signal_id, symbol, timestamp, price, reason, factors, trade_tag
             )
-        elif action == SignalType.SELL:
+        elif action == ActionType.SELL:
             return self._execute_sell(
                 signal_id, symbol, timestamp, price, reason, factors, trade_tag
             )
@@ -137,7 +141,7 @@ class Engine(ABC):
         current_position = self._account.positions.get(symbol, 0)
 
         quantity = self.calculate_order_quantity(
-            action=SignalType.BUY,
+            action=ActionType.BUY,
             current_position=current_position,
             price=price,
             total_equity=current_equity,
@@ -151,7 +155,7 @@ class Engine(ABC):
         if quantity <= 0:
             return {
                 "status": "SKIPPED",
-                "action": SignalType.BUY,
+                "action": ActionType.BUY,
                 "symbol": symbol,
                 "price": price,
                 "time": timestamp,
@@ -174,7 +178,7 @@ class Engine(ABC):
         if success:
             return {
                 "status": "SUCCESS",
-                "action": SignalType.BUY,
+                "action": ActionType.BUY,
                 "symbol": symbol,
                 "price": price,
                 "time": timestamp,
@@ -185,89 +189,12 @@ class Engine(ABC):
         else:
             return {
                 "status": "FAILED",
-                "action": SignalType.BUY,
+                "action": ActionType.BUY,
                 "symbol": symbol,
                 "price": price,
                 "time": timestamp,
                 "quantity": 0,
                 "msg": "买入失败: 资金不足",
-                "signal_id": signal_id,
-            }
-
-    def _execute_sell(
-        self, signal_id, symbol, timestamp, price, reason, factors, trade_tag
-    ):
-        current_position = self._account.positions.get(symbol, 0)
-        if current_position <= 0:
-            return {
-                "status": "FAILED",
-                "action": SignalType.SELL,
-                "symbol": symbol,
-                "price": price,
-                "time": timestamp,
-                "quantity": 0,
-                "msg": "无持仓",
-                "signal_id": signal_id,
-            }
-
-        lot_size = self.lot_sizes.get(symbol, 1)
-        current_equity = self._account.get_total_equity()
-
-        quantity = self.calculate_order_quantity(
-            action=SignalType.SELL,
-            current_position=current_position,
-            price=price,
-            total_equity=current_equity,
-            available_cash=self._account.cash,
-            lot_size=lot_size,
-            signal={"trade_tag": trade_tag, **factors},
-        )
-
-        quantity = self._normalize_quantity(symbol, quantity)
-
-        if quantity <= 0:
-            return {
-                "status": "SKIPPED",
-                "action": SignalType.SELL,
-                "symbol": symbol,
-                "price": price,
-                "time": timestamp,
-                "quantity": 0,
-                "msg": "计算数量为0",
-                "signal_id": signal_id,
-            }
-
-        success = self._account.sell(
-            symbol=symbol,
-            price=price,
-            quantity=quantity,
-            time=timestamp,
-            reason=reason,
-            signal_id=signal_id,
-            factors=factors,
-            trade_tag=trade_tag,
-        )
-
-        if success:
-            return {
-                "status": "SUCCESS",
-                "action": SignalType.SELL,
-                "symbol": symbol,
-                "price": price,
-                "time": timestamp,
-                "quantity": quantity,
-                "msg": f"卖出成功: {quantity}股",
-                "signal_id": signal_id,
-            }
-        else:
-            return {
-                "status": "FAILED",
-                "action": SignalType.SELL,
-                "symbol": symbol,
-                "price": price,
-                "time": timestamp,
-                "quantity": 0,
-                "msg": "卖出失败",
                 "signal_id": signal_id,
             }
 
@@ -298,7 +225,7 @@ class Engine(ABC):
 
     def calculate_order_quantity(
         self,
-        action: SignalType,
+        action: ActionType,
         current_position: int,
         price: float,
         total_equity: float,
@@ -329,7 +256,7 @@ class Engine(ABC):
         if lot_size > 1:
             target_pos = (target_pos // lot_size) * lot_size
 
-        if action == SignalType.BUY:
+        if action == ActionType.BUY:
             delta = target_pos - current_position
             if delta <= 0:
                 return 0
@@ -340,7 +267,7 @@ class Engine(ABC):
                 max_affordable = (max_affordable // lot_size) * lot_size
             delta = min(delta, max_affordable)
 
-        elif action == SignalType.SELL:
+        elif action == ActionType.SELL:
             # 默认 SELL 视为降低仓位。若策略未指定目标仓位，则清仓。
             if "target_shares" in signal or "target_position_ratio" in signal:
                 delta = current_position - target_pos
