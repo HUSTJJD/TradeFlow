@@ -3,7 +3,7 @@ import time
 from datetime import datetime
 from typing import Any, Dict, List, cast
 from longport.openapi import Period, QuoteContext
-from app.core.config import global_config
+from app.core import global_config
 from app.engines.engine import Engine
 from app.strategies import Strategy
 
@@ -197,12 +197,10 @@ def _save_account_state(engine: LiveEngine) -> None:
 
 def run_live_trading(quote_ctx: QuoteContext, strategy: Strategy) -> Dict[str, Any]:
     """执行实盘交易监控（Runner entrypoint）。
-
-    方案A：直接读 `global_config`，不再引入额外的 config/service manager 层。
     """
 
     from app.providers.longport import get_stock_pool
-    from app.core.setup import get_strategy_config
+    from app.core import get_strategy_config
 
     symbols = cast(List[str], get_stock_pool())
     if not symbols:
@@ -213,14 +211,9 @@ def run_live_trading(quote_ctx: QuoteContext, strategy: Strategy) -> Dict[str, A
     period = cast(Period, strat_config["period"])
     history_count = int(strat_config["history_count"])
 
-    initial_capital = float(
-        global_config.get(
-            "trading.total_capital",
-            global_config.get("trading.initial_balance", 100000.0),
-        )
-    )
-    commission_rate = float(global_config.get("trading.commission_rate", 0.0003))
-    position_ratio = float(global_config.get("trading.position_ratio", 0.2))
+    initial_capital = global_config.trading.total_capital
+    commission_rate = float(global_config.trading.commission_rate)
+    position_ratio = float(global_config.trading.position_ratio)
 
     monitor_cfg = cast(Dict[str, Any], global_config.get("monitor", {}) or {})
     interval = int(monitor_cfg.get("interval", 60))

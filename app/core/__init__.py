@@ -1,4 +1,4 @@
-from .config import AppConfig, load_app_config
+from .config import load_app_config
 from .logger import setup_logging
 from .singleton import singleton_threadsafe
 from .constants import (

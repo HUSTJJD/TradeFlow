@@ -121,18 +121,12 @@ class LongPortProvider(Provider):
         if not self._initialized or not self.quote_ctx:
             return {}
 
-        benchmarks_config = global_config.get("backtest.benchmarks")
+        benchmarks_config = global_config.backtest.benchmarks
         benchmarks = {}
-        if isinstance(benchmarks_config, list):
-            name_map = self.get_stock_names(benchmarks_config)
-            for symbol in benchmarks_config:
-                name = name_map.get(symbol, symbol)
-                benchmarks[name] = symbol
-        else:
-            logger.warning(
-                f"基准配置必须是列表格式，当前格式: {type(benchmarks_config)}"
-            )
-            return {}
+        for symbol in benchmarks_config:
+            name_map = self.get_stock_names([symbol])
+            name = name_map.get(symbol, symbol)
+            benchmarks[name] = symbol
 
         returns = {}
         from longport.openapi import AdjustType

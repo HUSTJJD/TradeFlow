@@ -7,7 +7,7 @@ import pandas as pd
 
 import logging
 
-from app.core.config import global_config
+from app.core import global_config
 from app.core.constants import SignalType
 from app.strategies.strategy import Strategy
 from app.utils.indicators import (

@@ -12,15 +12,16 @@ class EmailNotifier(Notifier):
     邮件通知处理程序。
     使用 SMTP 配置发送邮件。
     """
+
     def __init__(self) -> None:
         """
-        使用环境变量或配置文件初始化 EmailNotifier。
+        初始化 EmailNotifier。
         """
-        self.smtp_server: str = global_config.get("email.smtp_server", "")
-        self.smtp_port: int = global_config.get("email.smtp_port", 465)
-        self.sender_email: str = global_config.get("email.sender_email", "")
-        self.sender_password: str = global_config.get("email.sender_password", "")
-        self.receiver_emails: List[str] = global_config.get("email.receiver_emails", [])
+        self.smtp_server: str = global_config.email.smtp_server
+        self.smtp_port: int = global_config.email.smtp_port
+        self.sender_email: str = global_config.email.sender_email
+        self.sender_password: str = global_config.email.sender_password
+        self.receiver_emails: List[str] = global_config.email.receiver_emails
 
     def notify(self, title: str, content: str) -> None:
         """

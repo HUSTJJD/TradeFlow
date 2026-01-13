@@ -3,8 +3,7 @@ import pandas as pd
 import logging
 from .strategy import Strategy
 from app.core.constants import SignalType
-from app.core.config import global_config
-
+from app.core import global_config
 logger = logging.getLogger(__name__)
 
 

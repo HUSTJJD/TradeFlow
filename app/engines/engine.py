@@ -18,19 +18,12 @@ class Engine(ABC):
 
         # 初始化数据提供器
         self.provider = create_provider()
-        self.provider.initialize(quote_ctx=quote_ctx)
 
         # 仓位管理配置
-        self.position_sizing_config = global_config.get("trading.position_sizing", {})
-        self.max_position_ratio = float(
-            self.position_sizing_config.get("max_position_ratio", 0.25)
-        )
-        self.risk_per_trade = float(
-            self.position_sizing_config.get("risk_per_trade", 0.01)
-        )
-        self.min_rebalance_ratio = float(
-            self.position_sizing_config.get("min_rebalance_ratio", 0.05)
-        )
+        self.position_sizing_config = global_config.trading.position_sizing
+        self.max_position_ratio = self.position_sizing_config.max_position_ratio
+        self.risk_per_trade = self.position_sizing_config.risk_per_trade
+        self.min_rebalance_ratio = self.position_sizing_config.min_rebalance_ratio
 
         self.equity_curve: List[Dict[str, Any]] = []
         self.t_daily_counts: Dict[str, Dict[str, Any]] = {}

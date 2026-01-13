@@ -4,7 +4,7 @@ from datetime import date, datetime, timedelta
 from typing import Dict, List, Any, Optional, cast
 from longport.openapi import QuoteContext, Period
 
-from app.core.config import global_config
+from app.core import global_config
 from app.strategies import Strategy
 from app.engines.engine import Engine
 from app.providers.longport import LongPortProvider
