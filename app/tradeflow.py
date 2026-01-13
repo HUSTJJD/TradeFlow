@@ -8,15 +8,9 @@ class TradeFlow:
 
     def run(self) -> None:
         try:
-            run_mode_raw = cfg.app.run_mode
-            logging.info(f"应用运行模式: {run_mode_raw}")
-
-            run_mode = (
-                run_mode_raw
-                if isinstance(run_mode_raw, TradeMode)
-                else TradeMode(str(run_mode_raw).upper())
-            )
-            engine = create_engine(run_mode)
+            trade_mode = cfg.app.trade_mode
+            logging.info(f"应用运行模式: {trade_mode}")
+            engine = create_engine(trade_mode)
             while True:
                 engine.run()
         except Exception as e:

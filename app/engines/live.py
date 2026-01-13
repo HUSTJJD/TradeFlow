@@ -161,40 +161,6 @@ class LiveEngine(Engine):
             logger.warning(f"发送通知失败: {e}")
 
 
-def _load_account_state(engine: LiveEngine) -> None:
-    try:
-        from app.trading.persistence import AccountPersistence
-
-        persistence = AccountPersistence("simulate/paper_account.json")
-
-        if persistence.load(engine.account):
-            logger.info("已加载之前的账户状态")
-            logger.info(
-                "当前账户状态: 现金=%.2f, 总权益=%.2f",
-                engine.account.cash,
-                engine.account.get_total_equity(),
-            )
-            if engine.account.positions:
-                logger.info("当前持仓: %s", engine.account.positions)
-        else:
-            logger.info("未找到之前的账户状态，使用初始账户")
-
-    except Exception as exc:
-        logger.warning("加载账户状态失败: %s", exc)
-
-
-def _save_account_state(engine: LiveEngine) -> None:
-    try:
-        from app.trading.persistence import AccountPersistence
-
-        persistence = AccountPersistence("simulate/paper_account.json")
-        persistence.save(engine.account)
-        logger.info("账户状态已保存")
-
-    except Exception as exc:
-        logger.warning("保存账户状态失败: %s", exc)
-
-
 def run_live_trading(quote_ctx: QuoteContext, strategy: Strategy) -> Dict[str, Any]:
     """执行实盘交易监控（Runner entrypoint）。
     """

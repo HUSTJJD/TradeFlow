@@ -1,7 +1,6 @@
 from datetime import datetime
 import os
 from typing import List, Literal
-from soupsieve import select_one
 import yaml
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
@@ -26,6 +25,7 @@ class EmailConfig(BaseModel):
 
 class AppConfig(BaseModel):
     log_level: Literal["INFO", "DEBUG"] = Field(default="INFO", description="日志级别")
+    trade_mode: TradeMode = Field(default=TradeMode.BACKTEST)
     notifier_type: NotifierType = Field(default=NotifierType.EMAIL)
     using_provider: ProviderName = Field(default=ProviderName.LONGPORT)
     using_strategy: StraegyName = Field(default=StraegyName.MACD)
@@ -41,7 +41,6 @@ class BacktestConfig(BaseModel):
 
 class AccountConfig(BaseModel):
     balance: float = Field(default=1000000.0, description="初始资金")
-    history_count: int = Field(default=100, description="历史记录数量")
     max_trades_per_symbol_per_day: int = Field(
         default=2, description="每日每股票最大交易次数"
     )

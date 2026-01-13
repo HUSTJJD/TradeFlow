@@ -1,12 +1,10 @@
 from .provider import Provider
 import logging
-import os
-import json
 from datetime import date
 from typing import List, Dict, Any, Optional, Type
 from longport.openapi import Period, QuoteContext
 from app.core import cfg
-from app.utils.finance import calculate_interval_return
+from app.utils import calculate_interval_return
 import pandas as pd
 
 logger = logging.getLogger(__name__)

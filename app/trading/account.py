@@ -1,14 +1,14 @@
-from abc import ABC
 import logging
 from typing import Dict, Any, Optional, List, Callable
 from datetime import datetime
 
+from app.core import cfg
 from app.core.constants import SignalType
 
 logger = logging.getLogger(__name__)
 
 
-class Account(ABC):
+class Account():
     """
     交易账户，专注于资金和持仓管理。
 
@@ -21,30 +21,20 @@ class Account(ABC):
 
     def __init__(
         self,
-        initial_capital: float = 100000.0,
-        commission_rate: float = 0.0003,
+        commission_rate,
         on_trade: Optional[Callable] = None,
     ):
         self.commission_rate = commission_rate
         self.on_trade = on_trade
 
-        self.cash = initial_capital
-        self.initial_capital = initial_capital
-        self.positions: Dict[str, int] = {}  # symbol -> quantity
-        self.avg_costs: Dict[str, float] = {}  # symbol -> avg_cost
-        self.latest_prices: Dict[str, float] = {}  # symbol -> last known price
-        self.trades: List[Dict[str, Any]] = []  # 交易记录
-        self.stock_names: Dict[str, str] = {}  # symbol -> name
-        self.equity_history: List[Dict[str, Any]] = (
-            []
-        )  # 权益历史 [{"time": "2023-01-01", "equity": 100000}]
-
-        # 信号处理状态（由TradeManager管理）
-        self._processed_signals: set = set()
-
-    def set_stock_names(self, names: Dict[str, str]) -> None:
-        """设置股票名称映射"""
-        self.stock_names = names
+        self.
+        self.
+        self.
+        self.
+        self.
+        self.
+        self.
+        self.
 
     def update_price(self, symbol: str, price: float) -> None:
         """更新股票最新价格"""
@@ -351,10 +341,6 @@ class Account(ABC):
 
         self.trades.append(trade_record)
 
-    def clear_trades(self) -> None:
-        """清空交易记录"""
-        self.trades.clear()
-
     def get_account_summary(self) -> Dict[str, Any]:
         """获取账户摘要信息"""
         return {
@@ -366,15 +352,3 @@ class Account(ABC):
             "trade_count": len(self.trades),
             "active_positions": len([p for p in self.positions.values() if p > 0]),
         }
-
-    def is_signal_processed(self, signal_id: str) -> bool:
-        """检查信号是否已处理"""
-        return signal_id in self._processed_signals
-
-    def mark_signal_processed(self, signal_id: str) -> None:
-        """标记信号为已处理"""
-        self._processed_signals.add(signal_id)
-
-    def clear_processed_signals(self) -> None:
-        """清空已处理的信号记录"""
-        self._processed_signals.clear()

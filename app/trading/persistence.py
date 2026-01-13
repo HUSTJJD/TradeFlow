@@ -1,75 +1,69 @@
+from datetime import datetime
 import json
-import os
 import logging
-from typing import Optional
-from app.trading.account import Account
+from re import A
+from typing import Any, Dict, List
+from pydantic import BaseModel, ConfigDict, Field
+from yarg import get
+from app.core import cfg
 
 logger = logging.getLogger(__name__)
 
 
-class AccountPersistence:
+class Position(BaseModel):
     """
-    负责 PaperAccount 的持久化（加载和保存）。
+    仓位信息。
     """
 
-    def __init__(self, file_path: str):
-        self.file_path = file_path
+    symbol: str = Field(pattern=r"^[a-zA-Z0-9_-]{1,32}$")
+    quantity: int = Field(ge=0)
+    avg_cost: float = Field(ge=0)
+    latest_price: float = Field(ge=0)
 
-    def load(self, account: Account) -> bool:
-        """
-        从文件加载账户状态到 account 对象中。
-        """
-        if not self.file_path or not os.path.exists(self.file_path):
-            return False
 
-        try:
-            with open(self.file_path, "r", encoding="utf-8") as f:
-                data = json.load(f)
-                account.cash = data.get("cash", account.initial_capital)
-                account.initial_capital = data.get(
-                    "initial_capital", account.initial_capital
-                )
-                account.positions = data.get("positions", {})
-                account.avg_costs = data.get("avg_costs", {})
-                account.trades = data.get("trades", [])
-                account.equity_history = data.get("equity_history", [])
-                # 加载已处理的信号ID
-                account.clear_processed_signals()
-                for signal_id in data.get("processed_signals", []):
-                    if signal_id:
-                        account.mark_signal_processed(str(signal_id))
-                # latest_prices 不持久化
-                account.latest_prices = {}
+class TradeRecord(BaseModel):
+    """
+    交易记录。
+    """
 
-                logger.info(
-                    f"成功加载账户状态: 现金={account.cash}, 持仓={account.positions}, 交易记录数={len(account.trades)}"
-                )
-                return True
-        except Exception as e:
-            logger.error(f"加载账户状态失败: {e}")
-            return False
+    id: str = Field(pattern=r"^[a-zA-Z0-9_-]{1,32}$")
+    timestamp: datetime = Field(default_factory=datetime)
+    symbol: str = Field(pattern=r"^[a-zA-Z0-9_-]{1,32}$")
+    action: str = Field(pattern=r"^[a-zA-Z0-9_-]{1,32}$")
+    quantity: int = Field(ge=0)
+    price: float = Field(ge=0)
+    commission: float = Field(ge=0)
 
-    def save(self, account: Account) -> None:
-        """
-        将 account 对象的状态保存到文件。
-        """
-        if not self.file_path:
-            return
 
-        try:
-            # 确保目录存在
-            os.makedirs(os.path.dirname(self.file_path), exist_ok=True)
+class AccountData(BaseModel):
+    """
+    账户信息。
+    """
 
-            data = {
-                "cash": account.cash,
-                "initial_capital": account.initial_capital,
-                "positions": account.positions,
-                "avg_costs": account.avg_costs,
-                "trades": account.trades,
-                "equity_history": account.equity_history,
-                "processed_signals": list(account._processed_signals),
-            }
-            with open(self.file_path, "w", encoding="utf-8") as f:
-                json.dump(data, f, indent=4, ensure_ascii=False)
-        except Exception as e:
-            logger.error(f"保存账户状态失败: {e}")
+    model_config = ConfigDict(
+        str_strip_whitespace=True,
+        validate_assignment=True,
+        frozen=True,
+    )
+    cash: float = Field(default=cfg.account.balance)
+    positions: List[Position] = Field(default_factory=list)
+    trade_record: List[TradeRecord] = Field(default_factory=list)
+
+
+ACCOUNT_DATA_FILE = "simulate/account.json"
+
+
+def load_account_data() -> AccountData:
+    """
+    获取账户信息。
+    """
+    with open(ACCOUNT_DATA_FILE, "r") as f:
+        data = f.read()
+        return AccountData(**json.loads(data))
+    return AccountData()
+
+
+def save_account_data(data: AccountData) -> None:
+    with open(ACCOUNT_DATA_FILE, "w") as f:
+        f.write(data.model_dump_json())
+    logger.info("账户状态已保存")

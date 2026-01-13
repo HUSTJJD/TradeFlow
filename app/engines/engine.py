@@ -11,6 +11,7 @@ from app.providers import create_provider, Provider
 
 logger = logging.getLogger(__name__)
 
+
 class Engine(ABC):
     """策略执行引擎抽象基类，定义统一的策略执行接口。"""
 
@@ -31,35 +32,20 @@ class Engine(ABC):
         self.lot_sizes: Dict[str, int] = {}
         self.stock_names: Dict[str, str] = {}
 
-        self.create_account()
-
+    @abstractmethod
     def initialize(self, symbols: List[str], quote_ctx: QuoteContext) -> bool:
-        """初始化引擎"""
-        try:
-            self.stock_names = self.provider.get_stock_names(symbols)
-            if not self.lot_sizes:
-                self.lot_sizes = self.provider.get_stock_lot_sizes(symbols)
-            return True
-        except Exception as e:
-            logger.error(f"引擎初始化失败: {e}")
-            return False
+        """初始化策略执行引擎"""
+        raise NotImplementedError
 
     @abstractmethod
     def create_account(self) -> None:
         """交易账户"""
-        # 默认实现，子类可覆盖
-        self._account = Account(initial_balance=self.initial_capital)
+        raise NotImplementedError
 
     @abstractmethod
     def run(self) -> Dict[str, Any]:
         """运行策略执行引擎"""
         raise NotImplementedError
-
-    @abstractmethod
-    def reset(self) -> None:
-        """清理资源"""
-        self.create_account()
-        logger.info("策略执行引擎已清理")
 
     def _allow_t_trade(self, symbol: str, current_time: datetime) -> bool:
         """做T频控：仅限制 trade_tag==\"T\" 的信号。"""

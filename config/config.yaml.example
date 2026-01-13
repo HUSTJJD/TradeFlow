@@ -18,7 +18,7 @@ email:
 
 app:
   log_level: "DEBUG"
-  run_mode: "BACKTEST" # LIVE, PAPER, BACKTEST
+  trade_mode: "BACKTEST" # LIVE, PAPER, BACKTEST
   notifier_type: "EMAIL"
   using_provider: "LONGPORT"
   using_strategy: "MACD" # WR, MACD, RSI
@@ -45,7 +45,6 @@ backtest:
 
 account:
   balance: 1000000
-  history_count: 100
   max_trades_per_symbol_per_day: 2
   position_ratio: 0.2
 

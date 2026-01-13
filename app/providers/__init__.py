@@ -4,11 +4,11 @@ from .longport import LongPortProvider
 
 
 def create_provider() -> Provider:
-    provider_name = cfg.get()
-    if provider_name == ProviderName.LONGPORT:
+    provider = cfg.app.using_provider
+    if provider == ProviderName.LONGPORT:
         return LongPortProvider()
     else:
-        raise ValueError(f"Unknown provider: {provider_name}")
+        raise ValueError(f"Unknown provider: {provider}")
 
 
 __all__ = ["Provider", "create_provider"]
