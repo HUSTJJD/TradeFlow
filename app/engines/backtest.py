@@ -226,11 +226,11 @@ class BacktestDailyWorkflow:
 
 
 def _resolve_warmup_days(period: Period) -> int:
-    warmup_cfg = global_config.get("backtest.warmup_days", {}) or {}
+    warmup_cfg = global_config.backtest.warmup_days
     if period in [Period.Day, Period.Week, Period.Month]:
         return int(warmup_cfg.get("daily", 365))
     if period in [Period.Min_60, Period.Min_30]:
-        return int(warmup_cfg.get("hourly", 60))
+        return warmup_cfg.hourly
     return int(warmup_cfg.get("intraday", 30))
 
 

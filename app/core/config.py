@@ -1,7 +1,10 @@
 import os
-from typing import Any, Dict, List
+from typing import List
+
 import yaml
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
+
+from .constants import Market, NotifierType, ProviderType, TradeMode, TradeStraegy
 
 
 class LongPortConfig(BaseModel):
@@ -18,10 +21,27 @@ class EmailConfig(BaseModel):
     receiver_emails: List[EmailStr] = Field(default_factory=list)
 
 
+class AppConfig(BaseModel):
+    log_level: str = "INFO"
+    run_mode: TradeMode = TradeMode.BACKTEST
+    notifier_type: NotifierType = NotifierType.EMAIL
+    using_provider: ProviderType = ProviderType.LONGPORT
+    using_strategy: TradeStraegy = TradeStraegy.MACD
+    allowed_boards: List[Market] = Field(default_factory=list)
+    update_market_data_interval_days: int = 7
+
+
 class BacktestConfig(BaseModel):
     start_time: str = "2023-01-01"
     end_time: str = "2023-12-31"
     benchmarks: List[str] = Field(default_factory=list)
+
+
+class AccountConfig(BaseModel):
+    balance: float = 1000000.0
+    history_count: int = 100
+    max_trades_per_symbol_per_day: int = 2
+    position_ratio: float = 0.2
 
 
 class PositionSizingConfig(BaseModel):
@@ -37,12 +57,11 @@ class MonitorConfig(BaseModel):
 
 
 class TradingConfig(BaseModel):
+    enable_t: bool = True
     initial_balance: float = 1000000.0
-    position_ratio: float = 0.2
     total_capital: float = 100000.0
-    allowed_boards: List[str] = Field(default_factory=list)
-    position_sizing: PositionSizingConfig = Field(default_factory=PositionSizingConfig)
     monitor: MonitorConfig = Field(default_factory=MonitorConfig)
+    position_sizing: PositionSizingConfig = Field(default_factory=PositionSizingConfig)
 
 
 class BenchmarkColorConfig(BaseModel):
@@ -57,73 +76,62 @@ class ReportConfig(BaseModel):
     benchmarks: List[BenchmarkColorConfig] = Field(default_factory=list)
 
 
-class UniverseSelectorConfig(BaseModel):
-    max_symbols: int = 5
-    one_per_industry: bool = True
+class WRConfig(BaseModel):
+    period: int = 14
+    threshold: float = 0.02
 
 
-class UniverseRefreshConfig(BaseModel):
-    lookback_days: int = 120
-    sentiment_window_days: int = 7
+class MACDConfig(BaseModel):
+    fast: int = 12
+    slow: int = 26
+    signal: int = 9
 
 
-class UniverseConfig(BaseModel):
-    selector: UniverseSelectorConfig = Field(default_factory=UniverseSelectorConfig)
-    refresh: UniverseRefreshConfig = Field(default_factory=UniverseRefreshConfig)
+class RSIConfig(BaseModel):
+    period: int = 14
+    overbought: int = 70
+    oversold: int = 30
 
 
-class MarketDataConfig(BaseModel):
-    update_interval_days: int = 7
-
-
-class StrategyMultiTimeframeConfig(BaseModel):
-    swing_timeframe: str = "1d"
-    t_timeframe: str = "15m"
-
-
-class StrategyConfig(BaseModel):
-    name: str = ""
-    params: Dict[str, Any] = Field(default_factory=dict)
-    multi_timeframe: StrategyMultiTimeframeConfig = Field(
-        default_factory=StrategyMultiTimeframeConfig
-    )
-
-
-class AppConfig(BaseModel):
+class TradeFlowConfig(BaseModel):
     model_config = ConfigDict(
-        str_strip_whitespace=True,  # 自动去除字符串首尾空格
-        validate_assignment=True,  # 赋值时也验证
-        frozen=True,  # 不可变对象
-        extra="forbid",  # 禁止额外字段
+        str_strip_whitespace=True,
+        validate_assignment=True,
+        frozen=True,
+        extra="forbid",
     )
 
+    # region 隐私配置
     longport: LongPortConfig = Field(default_factory=LongPortConfig)
     email: EmailConfig = Field(default_factory=EmailConfig)
+    # endregion
 
-    log_level: str = "INFO"
-    run_mode: str = "backtest"
-    notifier_type: str = "email"
-
+    # region 全局配置
+    app: AppConfig = Field(default_factory=AppConfig)
     backtest: BacktestConfig = Field(default_factory=BacktestConfig)
+    account: AccountConfig = Field(default_factory=AccountConfig)
     trading: TradingConfig = Field(default_factory=TradingConfig)
     report: ReportConfig = Field(default_factory=ReportConfig)
-    universe: UniverseConfig = Field(default_factory=UniverseConfig)
-    market_data: MarketDataConfig = Field(default_factory=MarketDataConfig)
-    strategy: StrategyConfig = Field(default_factory=StrategyConfig)
+    # endregion
 
-    markets: List[str] = Field(default_factory=list)
-    plot: Dict[str, Any] = Field(default_factory=dict)
-    data: Dict[str, Any] = Field(default_factory=dict)
+    # region 策略配置
+    WR: WRConfig = Field(default_factory=WRConfig)
+    MACD: MACDConfig = Field(default_factory=MACDConfig)
+    RSI: RSIConfig = Field(default_factory=RSIConfig)
+    # endregion
 
 
-def load_app_config() -> AppConfig:
+def load_app_config() -> TradeFlowConfig:
     current = os.path.dirname(__file__)
     while os.path.basename(current) != "app":
         current = os.path.dirname(current)
     base_dir = os.path.dirname(current)
     config_path = os.path.join(base_dir, "config", "config.yaml")
+
     with open(config_path, "r", encoding="utf-8") as f:
         loaded = yaml.safe_load(f) or {}
+
     if not isinstance(loaded, dict):
         loaded = {}
-    return AppConfig(**loaded)
+
+    return TradeFlowConfig(**loaded)

@@ -1,4 +1,5 @@
 #region 隐私配置
+
 longport:
   app_key: "YOUR_APP_KEY"
   app_secret: "YOUR_APP_SECRET"
@@ -15,11 +16,16 @@ email:
 
 #region 全局配置
 
-log_level: "DEBUG"
-
-run_mode: "backtest"
-
-notifier_type: "email"
+app:
+  log_level: "DEBUG"
+  run_mode: "BACKTEST" # LIVE, PAPER, BACKTEST
+  notifier_type: "EMAIL"
+  using_provider: "LONGPORT"
+  using_strategy: "MACD" # WR, MACD, RSI
+  allowed_boards: # MAIN, STAR, CHINEXT, BSHARE, BSE, NQ, HK
+    - "Main"
+    - "HK"
+  update_market_data_interval_days: 7
 
 backtest:
   start_time: "2025-01-01"
@@ -37,23 +43,24 @@ backtest:
     - "000905.SH"
     - "399006.SZ"
 
-trading:
-  initial_balance: 1000000
+account:
+  balance: 1000000
+  history_count: 100
+  max_trades_per_symbol_per_day: 2
   position_ratio: 0.2
+
+trading:
+  enable_t: true
+  initial_balance: 1000000
   total_capital: 100000
-  allowed_boards:
-    - "Main"
-    # - "ChiNext"
-    # - "STAR"
-    - "HK"
+  monitor:
+    interval: 60
+    request_delay: 0.5
   position_sizing:
     max_position_ratio: 0.25
     risk_per_trade: 0.01
     atr_stop_multiple: 2.5
     min_rebalance_ratio: 0.05
-  monitor:
-    interval: 60
-    request_delay: 0.5
 
 report:
   account: "#1f77b4"
@@ -65,57 +72,21 @@ report:
     - symbol: ".IXIC.US"
       color: "#9467bd"
 
-universe:
-  selector:
-    max_symbols: 5
-    one_per_industry: true
-  refresh:
-    lookback_days: 120
-    sentiment_window_days: 7
-
-market_data:
-  update_interval_days: 7
-
 #endregion
 
 #region 策略配置
 
-strategy:
-  name: "TrendSwingT"
-  params:
-    ema_fast: 20
-    ema_slow: 60
-    adx_period: 14
-    adx_threshold: 20
-    donchian_period: 20
-    atr_period: 14
-    atr_stop_loss: 2.5
-    atr_trailing: 3.0
-    take_profit_r_multiple_1: 2.0
-    take_profit_ratio_1: 0.5
-    enable_t: true
-    t_rsi_period: 6
-    t_overbought: 75
-    t_oversold: 25
-    t_step_ratio: 0.10
-    base_target_position_ratio: 0.20
+WR:
+  period: 14
+  threshold: 0.02
 
-  multi_timeframe:
-    swing_timeframe: "1d"
-    t_timeframe: "15m"
-  # # 多因子组合策略模式
-  # name: "Composite"
-  # params:
-  #   mode: "any" # consensus (一致), any (任意), vote (投票)
-  #   strategies:
-  #     - name: "MACD"
-  #       params: {fast: 12, slow: 26, signal: 9}
-  #     - name: "RSI"
-  #       params: {period: 14, overbought: 70, oversold: 30}
+MACD:
+  fast: 12
+  slow: 26
+  signal: 9
 
-  # timeframe: "1d" # 1m, 5m, 15m, 30m, 60m, 1d
-  # history_count: 100
-  # t:
-  #   max_trades_per_symbol_per_day: 2
-
-  #endregion
+RSI:
+  period: 14
+  overbought: 70
+  oversold: 30
+#endregion

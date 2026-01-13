@@ -200,24 +200,23 @@ def run_live_trading(quote_ctx: QuoteContext, strategy: Strategy) -> Dict[str, A
     """
 
     from app.providers.longport import get_stock_pool
-    from app.core import get_strategy_config
 
     symbols = cast(List[str], get_stock_pool())
     if not symbols:
         logger.error("股票池为空，请先运行universe刷新")
         return {}
 
-    strat_config = get_strategy_config()
-    period = cast(Period, strat_config["period"])
-    history_count = int(strat_config["history_count"])
+    strat_config = global_config.strategy
+    period = strat_config.period
+    history_count = strat_config.history_count
 
     initial_capital = global_config.trading.total_capital
-    commission_rate = float(global_config.trading.commission_rate)
-    position_ratio = float(global_config.trading.position_ratio)
+    commission_rate = global_config.trading.commission_rate
+    position_ratio = global_config.trading.position_ratio
 
-    monitor_cfg = cast(Dict[str, Any], global_config.get("monitor", {}) or {})
-    interval = int(monitor_cfg.get("interval", 60))
-    request_delay = float(monitor_cfg.get("request_delay", 0.5))
+    monitor_cfg = global_config.monitor
+    interval = monitor_cfg.interval
+    request_delay = monitor_cfg.request_delay
 
     logger.info(
         "实盘监控初始化完成。监控 %d 支股票，周期: %d 秒", len(symbols), interval
