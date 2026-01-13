@@ -9,7 +9,7 @@ class TradeFlow:
 
     def run(self) -> None:
         try:
-            run_mode = global_config.get("run_mode", "backtest")
+            run_mode = global_config.run_mode
             logging.info(f"应用运行模式: {run_mode}")
             engine = create_engine(run_mode)
             while True:

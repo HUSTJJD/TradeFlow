@@ -1,5 +1,5 @@
+!AppConfig
 #region 隐私配置
-
 longport:
   app_key: "YOUR_APP_KEY"
   app_secret: "YOUR_APP_SECRET"

@@ -13,8 +13,7 @@ def get_market_symbols(force_update: bool = False) -> pd.DataFrame:
     获取全市场标的（A股 + 港股通），支持本地缓存和定期更新。
     """
     file_path = "data/market_symbols.csv"
-    market_config = global_config.get("market_data", {})
-    update_interval_days = market_config.get("update_interval_days", 30)
+    update_interval_days = global_config.market_data.update_interval_days
     os.makedirs(os.path.dirname(file_path), exist_ok=True)
     need_update = not os.path.exists(file_path) or force_update
     if not need_update:

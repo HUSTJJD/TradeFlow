@@ -23,7 +23,7 @@ class Provider(ABC):
     def pull_stack_list(self) -> bool:
         """拉取数据"""
         try:
-            markets = global_config.get("markets", [])
+            markets = global_config.markets
             for market in markets:
                 self.get_universe_symbols(market)
 

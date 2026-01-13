@@ -507,8 +507,8 @@ def run_backtest(quote_ctx: QuoteContext, strategy: Strategy) -> Dict[str, Any]:
     """执行回测流程（Runner entrypoint）。"""
 
     try:
-        start_time_str = str(global_config.get("backtest.start_time", "2023-01-01"))
-        end_time_str = str(global_config.get("backtest.end_time", "2023-12-31"))
+        start_time_str = global_config.get("backtest.start_time", "2023-01-01")
+        end_time_str = global_config.get("backtest.end_time", "2023-12-31")
         start_date = datetime.strptime(start_time_str, "%Y-%m-%d").date()
         end_date = datetime.strptime(end_time_str, "%Y-%m-%d").date()
 
