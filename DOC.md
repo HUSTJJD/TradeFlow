@@ -22,11 +22,9 @@
 │   ├── longport.py
 │   └── provider.py
 ├── strategies
-│   ├── composite.py
 │   ├── macd.py
 │   ├── rsi.py
-│   ├── strategy.py
-│   └── trend_swing_t.py
+│   └── strategy.py
 ├── tradeflow.py
 ├── trading
 │   ├── account.py
@@ -57,26 +55,35 @@
 
 ### Module: `app.core.config`
 
-#### Class `AppConfig`
+#### Class `LongPortConfig(BaseModel)`
 
-应用程序配置管理器。
-从 YAML 文件加载配置并提供访问方法。
+#### Class `EmailConfig(BaseModel)`
 
+#### Class `AppConfig(BaseModel)`
 
-- `__init__(self) -> None`
+#### Class `BacktestConfig(BaseModel)`
 
-  初始化 AppConfig。
+#### Class `AccountConfig(BaseModel)`
 
-- `get(self, key: str, default: Any = None) -> Any`
+#### Class `PositionSizingConfig(BaseModel)`
 
-  使用点号表示法获取配置值。
-  
-  Args:
-                  key: 配置键（例如 'longport.app_key'）。
-                  default: 如果键未找到时的默认值。
-  
-  Returns:
-          配置值或默认值。
+#### Class `MonitorConfig(BaseModel)`
+
+#### Class `TradingConfig(BaseModel)`
+
+#### Class `BenchmarkColorConfig(BaseModel)`
+
+#### Class `ReportConfig(BaseModel)`
+
+#### Class `WRConfig(BaseModel)`
+
+#### Class `MACDConfig(BaseModel)`
+
+#### Class `RSIConfig(BaseModel)`
+
+#### Class `TradeFlowConfig(BaseModel)`
+
+#### Function `load_app_config() -> TradeFlowConfig`
 
 ---
 
@@ -92,7 +99,7 @@
 交易信号类型枚举
 
 
-#### Class `Market(str, Enum)`
+#### Class `MarketType(str, Enum)`
 
 市场板块枚举
 
@@ -102,12 +109,12 @@
 交易状态枚举
 
 
-#### Class `TradeStraegy(str, Enum)`
+#### Class `StraegyName(str, Enum)`
 
 交易策略枚举
 
 
-#### Class `ProviderType(str, Enum)`
+#### Class `ProviderName(str, Enum)`
 
 券商api枚举
 
@@ -157,29 +164,9 @@ Args:
 
 - `__init__(self, *args, **kwargs)`
 
-- `set_data(self, data: Dict[str, pd.DataFrame]) -> None`
-
-  设置回测数据
-
 - `run(self, start_time: Optional[pd.Timestamp] = None) -> Dict[str, Any]`
 
   运行回测
-
-#### Class `BacktestUniversePoolBuilder`
-
-- `__init__(self, quote_ctx: QuoteContext, max_symbols: int, one_per_industry: bool, lookback_days: int, batch_size: int) -> None`
-
-- `build_pool(self, all_symbols: List[str], as_of: date) -> List[str]`
-
-#### Class `BacktestDailyWorkflow`
-
-- `__init__(self, quote_ctx: QuoteContext, engine: BacktestEngine, pool_builder: BacktestUniversePoolBuilder, symbols_universe: List[str], period: Period, warmup_days: int) -> None`
-
-- `run(self, start_date: date, end_date: date) -> Dict[str, Any]`
-
-#### Function `run_backtest(quote_ctx: QuoteContext, strategy: Strategy) -> Dict[str, Any]`
-
-执行回测流程（Runner entrypoint）。
 
 ---
 
@@ -194,7 +181,7 @@ Args:
 
 - `initialize(self, symbols: List[str], quote_ctx: QuoteContext) -> bool`
 
-  初始化引擎
+  初始化策略执行引擎
 
 - `create_account(self) -> None`
 
@@ -203,10 +190,6 @@ Args:
 - `run(self) -> Dict[str, Any]`
 
   运行策略执行引擎
-
-- `reset(self) -> None`
-
-  清理资源
 
 - `process_signal(self, symbol: str, signal: Dict[str, Any], current_time: datetime, current_price: float) -> Dict[str, Any]`
 
@@ -254,8 +237,7 @@ Args:
 #### Function `run_live_trading(quote_ctx: QuoteContext, strategy: Strategy) -> Dict[str, Any]`
 
 执行实盘交易监控（Runner entrypoint）。
-
-方案A：直接读 `cfg`，不再引入额外的 config/service manager 层。
+    
 
 ---
 
@@ -275,7 +257,7 @@ Args:
 
 - `__init__(self) -> None`
 
-  使用环境变量或配置文件初始化 EmailNotifier。
+  初始化 EmailNotifier。
 
 - `notify(self, title: str, content: str) -> None`
 
@@ -339,82 +321,13 @@ Args:
 券商API 抽象基类，定义统一的数据访问接口。
 
 
-- `__init__(self)`
+- `request_buy(self, symbol: str, quantity: int) -> bool`
 
-- `pull_stack_list(self) -> bool`
+  买入股票
 
-  拉取数据
+- `request_sell(self, symbol: str, quantity: int) -> bool`
 
-- `get_data(self, symbol: str, **kwargs: Any) -> Optional[pd.DataFrame]`
-
-  获取指定标的的数据
-
-- `get_multiple_data(self, symbols: List[str], **kwargs: Any) -> Dict[str, pd.DataFrame]`
-
-  批量获取多个标的的数据
-
-- `get_stock_names(self, symbols: List[str]) -> Dict[str, str]`
-
-  获取股票名称
-
-- `get_stock_lot_sizes(self, symbols: List[str]) -> Dict[str, int]`
-
-  获取股票最小交易单位
-
-- `get_benchmark_returns(self, start_date: date, end_date: date) -> Dict[str, float]`
-
-  获取基准收益率
-
-- `get_universe_symbols(self, market: str, **kwargs: Any) -> List[Dict[str, Any]]`
-
-  获取指定市场的标的清单
-
----
-
-### Module: `app.strategies.composite`
-
-#### Class `CompositeStrategy(Strategy)`
-
-组合策略，结合多个子策略。
-
-
-- `__init__(self, strategies: List[Strategy], mode: str = 'consensus', name: Optional[str] = None, description: str = '') -> None`
-
-  初始化组合策略。
-  
-  Args:
-      strategies: 策略实例列表。
-      mode: 决策模式。
-            'consensus': 所有策略必须一致。
-            'any': 任意策略触发信号（卖出优先）。
-            'vote': 多数投票。
-      name: 策略名称，默认使用类名
-      description: 策略描述
-
-- `analyze(self, symbol: str, df: pd.DataFrame) -> Dict[str, Any]`
-
-  使用多个策略分析数据并合并结果。
-
-- `add_strategy(self, strategy: Strategy) -> None`
-
-  添加子策略到组合中。
-  
-  Args:
-      strategy: 要添加的策略实例
-
-- `remove_strategy(self, strategy_name: str) -> bool`
-
-  从组合中移除指定名称的子策略。
-  
-  Args:
-      strategy_name: 要移除的策略名称
-  
-  Returns:
-      bool: 是否成功移除
-
-- `get_info(self) -> Dict[str, Any]`
-
-  获取组合策略的详细信息
+  卖出股票
 
 ---
 
@@ -555,151 +468,28 @@ Args:
 
 ---
 
-### Module: `app.strategies.trend_swing_t`
-
-#### Class `TrendSwingConfig`
-
-偏波段的趋势突破策略参数。
-
-说明：默认值仅作为兜底，建议在 `config/config.yaml` 的
-`strategy.params` 下配置，便于回测与实盘保持一致。
-
-
-#### Class `TrendSwingTStrategy(Strategy)`
-
-趋势突破 + ATR 风控 + 目标仓位管理 + 低频做T（可选）。
-
-
-- `__init__(self, config: Optional[TrendSwingConfig] = None, **kwargs: Any) -> None`
-
-- `analyze(self, symbol: str, df: pd.DataFrame) -> Dict[str, Any]`
-
-  分析市场数据并生成交易信号
-
-- `get_info(self) -> Dict[str, Any]`
-
-  获取趋势摆动策略的详细信息
-
----
-
-### Module: `app.trading.account`
-
-#### Class `Account(ABC)`
-
-交易账户，专注于资金和持仓管理。
-
-职责边界：
-- 管理现金余额和持仓
-- 计算权益和收益
-- 记录交易历史
-- 不包含交易决策逻辑
-
-
-- `__init__(self, initial_capital: float = 100000.0, commission_rate: float = 0.0003, on_trade: Optional[Callable] = None)`
-
-- `set_stock_names(self, names: Dict[str, str]) -> None`
-
-  设置股票名称映射
-
-- `update_price(self, symbol: str, price: float) -> None`
-
-  更新股票最新价格
-
-- `get_total_equity(self) -> float`
-
-  计算当前总权益（现金 + 持仓市值）
-
-- `get_position_value(self, symbol: str) -> float`
-
-  获取指定股票的持仓市值
-
-- `get_position_ratio(self, symbol: str) -> float`
-
-  获取指定股票的仓位比例
-
-- `record_equity(self, timestamp: datetime, equity: Optional[float] = None) -> None`
-
-  记录当前权益。
-  策略：每天只保留最后一条记录。
-
-- `get_trade_stats(self) -> Dict[str, Any]`
-
-  计算交易统计信息，包括胜率等。
-  
-  统计口径：以"平仓"为一次交易（卖出后 `position_after==0`）。
-
-- `buy(self, symbol: str, price: float, quantity: int, time: datetime, reason: str, signal_id: Optional[str] = None, factors: Optional[Dict[str, Any]] = None, trade_tag: Optional[str] = None) -> bool`
-
-  执行买入操作（纯资金和持仓管理）。
-  
-  Args:
-      symbol: 股票代码
-      price: 买入价格
-      quantity: 买入数量
-      time: 交易时间
-      reason: 买入原因
-      signal_id: 信号ID（可选）
-      factors: 策略因子（可选）
-      trade_tag: 交易标签（可选）
-  
-  Returns:
-      是否成功买入
-
-- `sell(self, symbol: str, price: float, quantity: int, time: datetime, reason: str, signal_id: Optional[str] = None, factors: Optional[Dict[str, Any]] = None, trade_tag: Optional[str] = None) -> bool`
-
-  执行卖出操作（纯资金和持仓管理）。
-  
-  Args:
-      symbol: 股票代码
-      price: 卖出价格
-      quantity: 卖出数量
-      time: 交易时间
-      reason: 卖出原因
-      signal_id: 信号ID（可选）
-      factors: 策略因子（可选）
-      trade_tag: 交易标签（可选）
-  
-  Returns:
-      是否成功卖出
-
-- `clear_trades(self) -> None`
-
-  清空交易记录
-
-- `get_account_summary(self) -> Dict[str, Any]`
-
-  获取账户摘要信息
-
-- `is_signal_processed(self, signal_id: str) -> bool`
-
-  检查信号是否已处理
-
-- `mark_signal_processed(self, signal_id: str) -> None`
-
-  标记信号为已处理
-
-- `clear_processed_signals(self) -> None`
-
-  清空已处理的信号记录
-
----
-
 ### Module: `app.trading.persistence`
 
-#### Class `AccountPersistence`
+#### Class `Position(BaseModel)`
 
-负责 PaperAccount 的持久化（加载和保存）。
+仓位信息。
 
 
-- `__init__(self, file_path: str)`
+#### Class `TradeRecord(BaseModel)`
 
-- `load(self, account: Account) -> bool`
+交易记录。
 
-  从文件加载账户状态到 account 对象中。
 
-- `save(self, account: Account) -> None`
+#### Class `AccountData(BaseModel)`
 
-  将 account 对象的状态保存到文件。
+账户信息。
+
+
+#### Function `load_account_data() -> AccountData`
+
+获取账户信息。
+
+#### Function `save_account_data(data: AccountData) -> None`
 
 ---
 
