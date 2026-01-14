@@ -4,7 +4,15 @@ from typing import List, Literal
 import yaml
 from pydantic import BaseModel, ConfigDict, EmailStr, Field
 
-from .constants import MarketType, NotifierType, ProviderName, TradeMode, StraegyName
+from .constants import (
+    MarketType,
+    NotifierType,
+    ProviderName,
+    TradeMode,
+    StraegyName,
+    SYMBOL_REGEX,
+    HEXCOLOR_REGEX,
+)
 
 
 class LongPortConfig(BaseModel):
@@ -72,21 +80,21 @@ class TradingConfig(BaseModel):
 
 
 class BenchmarkColorConfig(BaseModel):
-    symbol: str = Field(default="", description="股票代码")
+    symbol: str = Field(default="", pattern=SYMBOL_REGEX, description="股票代码")
     color: str = Field(
-        default="#1f77b4", pattern=r"^#[0-9a-fA-F]{6}$", description="基准颜色配置"
+        default="#1f77b4", pattern=HEXCOLOR_REGEX, description="基准颜色配置"
     )
 
 
 class ReportConfig(BaseModel):
     account: str = Field(
-        default="#1f77b4", pattern=r"^#[0-9a-fA-F]{6}$", description="账户颜色配置"
+        default="#1f77b4", pattern=HEXCOLOR_REGEX, description="账户颜色配置"
     )
     buy: str = Field(
-        default="#2ca02c", pattern=r"^#[0-9a-fA-F]{6}$", description="买入颜色配置"
+        default="#2ca02c", pattern=HEXCOLOR_REGEX, description="买入颜色配置"
     )
     sell: str = Field(
-        default="#d62728", pattern=r"^#[0-9a-fA-F]{6}$", description="卖出颜色配置"
+        default="#d62728", pattern=HEXCOLOR_REGEX, description="卖出颜色配置"
     )
     benchmarks: List[BenchmarkColorConfig] = Field(
         default_factory=list, description="基准颜色配置"

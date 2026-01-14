@@ -1,5 +1,8 @@
 from enum import Enum
 
+SYMBOL_REGEX = r"^[a-zA-Z0-9\.]*\.[a-zA-Z0-9]+$"
+
+HEXCOLOR_REGEX = r"^#[0-9a-fA-F]{6}$"
 
 class TradeMode(str, Enum):
     """交易模式枚举"""

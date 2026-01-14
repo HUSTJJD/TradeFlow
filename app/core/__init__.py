@@ -1,6 +1,6 @@
 from .config import load_app_config
 from .logger import setup_logging
-from .singleton import singleton_threadsafe
+
 from .constants import (
     TradeMode,
     ActionType,
@@ -9,6 +9,8 @@ from .constants import (
     StraegyName,
     ProviderName,
     NotifierType,
+    SYMBOL_REGEX,
+    HEXCOLOR_REGEX,
 )
 try:
     cfg = load_app_config()
@@ -19,7 +21,6 @@ setup_logging(cfg.app.log_level)
 
 __all__ = [
     "cfg",
-    "singleton_threadsafe",
     "TradeMode",
     "ActionType",
     "MarketType",
@@ -27,4 +28,6 @@ __all__ = [
     "StraegyName",
     "ProviderName",
     "NotifierType",
+    "SYMBOL_REGEX",
+    "HEXCOLOR_REGEX",
 ]

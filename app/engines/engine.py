@@ -1,14 +1,13 @@
 from abc import ABC, abstractmethod
-from sys import exception
-from typing import Dict, List, Any, Optional, Union, cast, Iterable
+from typing import Dict, List, Any, Optional
 from datetime import datetime
 import pandas as pd
 import logging
 from longport.openapi import QuoteContext, Period
-from app.core import cfg, singleton_threadsafe, ActionType, TradeMode
+from app.core import cfg, ActionType, TradeMode
 from app.strategies import Strategy
-from app.trading.account import Account
-from app.providers import create_provider, Provider
+from app.trading import create_account
+from app.providers import create_provider
 
 logger = logging.getLogger(__name__)
 
@@ -20,6 +19,7 @@ class Engine(ABC):
 
         # 初始化数据提供器
         self.provider = create_provider()
+        self.account = create_account()
 
         # 仓位管理配置
         self.position_sizing_config = cfg.trading.position_sizing
@@ -35,21 +35,7 @@ class Engine(ABC):
 
     def run(self):
         """运行策略执行引擎"""
-
-        try:
-            while True:
-                self.run_once()
-        except Exception as e:
-            logger.error(f"{self.__class__.__name__}引擎运行异常: {e}")
-
-    def run_once(self) -> None:
-        """运行一次策略执行引擎"""
         pass
-
-    @abstractmethod
-    def create_account(self) -> None:
-        """交易账户"""
-        raise NotImplementedError
 
     def _allow_t_trade(self, symbol: str, current_time: datetime) -> bool:
         """做T频控：仅限制 trade_tag==\"T\" 的信号。"""
@@ -80,7 +66,7 @@ class Engine(ABC):
         """处理单个信号"""
 
         # 更新价格
-        self._account.update_price(symbol, current_price)
+        self.account.update_price(symbol, current_price)
 
         # 做T频控检查
         trade_tag = signal.get("trade_tag")
@@ -137,15 +123,15 @@ class Engine(ABC):
         self, signal_id, symbol, timestamp, price, reason, factors, trade_tag
     ):
         lot_size = self.lot_sizes.get(symbol, 1)
-        current_equity = self._account.get_total_equity()
-        current_position = self._account.positions.get(symbol, 0)
+        current_equity = self.account.get_total_equity()
+        current_position = self.account.positions.get(symbol, 0)
 
         quantity = self.calculate_order_quantity(
             action=ActionType.BUY,
             current_position=current_position,
             price=price,
             total_equity=current_equity,
-            available_cash=self._account.cash,
+            available_cash=self.account.cash,
             lot_size=lot_size,
             signal={"trade_tag": trade_tag, **factors},
         )

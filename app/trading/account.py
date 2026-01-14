@@ -1,14 +1,13 @@
 import json
 import logging
 from datetime import datetime
-from app.core import cfg, ActionType, singleton_threadsafe, TradeStatus
+from app.core import cfg, ActionType, TradeStatus
 from .persistence import AccountData, TradeRecord, Position
 from app.notifier import create_notifier
 
 logger = logging.getLogger(__name__)
 
 
-@singleton_threadsafe
 class Account:
     """
     交易账户，专注于资金和持仓管理。
@@ -34,7 +33,7 @@ class Account:
             ensure_ascii=False,
             indent=2,
         )
-        logger.info("账户状态已保存")
+        logger.info(f"账户状态已保存：{self.data}")
 
     def execute(
         self, symbol: str, price: float, action: ActionType, reason: str
@@ -90,8 +89,9 @@ class Account:
                 self.data.position_record[trade.symbol].quantity -= trade.quantity
             elif trade.action == ActionType.BUY:
                 self.data.position_record[trade.symbol].quantity += trade.quantity
+            # 更新平均成本
             self.data.position_record[trade.symbol].avg_cost = (
-                current_avg_cost * current_quantity + trade.cost
+                current_avg_cost * current_quantity + trade.cost + trade.commission
             ) / (current_quantity + trade.quantity)
         else:
             self.data.position_record[trade.symbol] = Position(
