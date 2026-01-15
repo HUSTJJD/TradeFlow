@@ -29,7 +29,7 @@ class TradeRecord(BaseModel):
         extra="forbid",
     )
     timestamp: datetime = Field(default_factory=datetime)
-    action: ActionType = Field()
+    action: ActionType = Field(default=ActionType.HOLD)
     symbol: str = Field(pattern=SYMBOL_REGEX)
     quantity: int = Field(ge=0)
     price: float = Field(ge=0)
