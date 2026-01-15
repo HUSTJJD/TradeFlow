@@ -1,14 +1,16 @@
+from abc import ABC
 import json
 import logging
 from datetime import datetime
-from app.core import cfg, ActionType, TradeStatus
+from pathlib import Path
+from app.core import ActionType, TradeStatus
 from .persistence import AccountData, TradeRecord, Position
-from app.notifier import create_notifier
+from app.notifiers import create_notifier
 
 logger = logging.getLogger(__name__)
 
 
-class Account:
+class Account(ABC):
     """
     交易账户，专注于资金和持仓管理。
 
@@ -18,23 +20,25 @@ class Account:
     - 记录交易历史
     - 不包含交易决策逻辑
     """
-
-    ACCOUNT_DATA_FILE = "simulate/account.json"
+    ACCOUNT_DATA_FILE = Path("simulate/account.json")
 
     def __init__(self):
         self.notifier = create_notifier()
-        self.data = AccountData(**json.load(open(self.ACCOUNT_DATA_FILE)))
-        logger.info(f"账户状态已加载：{self.data}")
+        self.data = AccountData()
+        self.load()
 
     def __del__(self):
-        json.dump(
-            self.data.model_dump(),
-            open(self.ACCOUNT_DATA_FILE, "w"),
-            ensure_ascii=False,
-            indent=2,
-        )
+        self.save()
+    def load(self):
+        try:
+            self.ACCOUNT_DATA_FILE.parent.mkdir(parents=True, exist_ok=True)
+            self.data = AccountData(**json.loads(self.ACCOUNT_DATA_FILE.read_text()))
+            logger.info(f"账户状态已加载：{self.data}")
+        except Exception as e:
+            logger.error(f"加载账户数据失败：{e}")
+    def save(self):
+        self.ACCOUNT_DATA_FILE.write_text(json.dumps(self.data.model_dump())) 
         logger.info(f"账户状态已保存：{self.data}")
-
     def execute(
         self, symbol: str, price: float, action: ActionType, reason: str
     ) -> TradeStatus:
@@ -49,13 +53,13 @@ class Account:
         commission = cost * 0.001
         trade = TradeRecord(
             timestamp=datetime.now(),
-            status=TradeStatus.SUCCESS,
             action=action,
             symbol=symbol,
             quantity=quantity,
             price=price,
             cost=cost,
             commission=commission,
+            reason=reason,
         )
         self.on_trade(trade)
         return TradeStatus.SUCCESS
@@ -100,5 +104,5 @@ class Account:
                 avg_cost=trade.price,
             )
         self.data.trade_record[trade.timestamp] = trade
-
+        self.save()
         self.notifier.notify(f"交易事件：{trade}")
