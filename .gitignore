@@ -26,3 +26,4 @@ venv.bak/
 
 # 日志文件
 *.log
+data/qlib_data/
