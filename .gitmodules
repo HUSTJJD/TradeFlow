@@ -1,0 +1,4 @@
+[submodule "qlib"]
+	path = qlib
+	url = https://github.com/microsoft/qlib.git
+	branch = main
