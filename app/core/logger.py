@@ -59,16 +59,15 @@ def setup_logging(log_level_str: str) -> None:
         handler.close()
         root_logger.removeHandler(handler)
 
-    if not os.path.exists(LOG_FILE_NAME):
-        return
-    timestamp = time.strftime("%Y%m%d_%H%M%S")
-    backup_name = f"{LOG_FILE_NAME}.{timestamp}.log"
-    shutil.copy2(LOG_FILE_NAME, backup_name)
+    if os.path.exists(log_path):
+        timestamp = time.strftime("%Y%m%d_%H%M%S")
+        backup_name = f"{log_path}.{timestamp}.log"
+        shutil.copy2(log_path, backup_name)
     # 清空当前日志文件
-    with open(LOG_FILE_NAME, "w") as f:
+    with open(log_path, "w") as f:
         f.truncate(0)
 
-    bak_pattern = f"{LOG_FILE_NAME}.*.log"
+    bak_pattern = f"{log_path}.*.log"
     bak_files = glob.glob(bak_pattern)
     # 按修改时间排序（最旧的在前）
     bak_files.sort(key=os.path.getmtime)

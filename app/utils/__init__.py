@@ -10,6 +10,7 @@ from .indicators import (
     calculate_rsi,
     calculate_bollinger_bands,
 )
+from .market import update_market_symbols, update_market_qlib_datas
 
 
 __all__ = [
@@ -25,4 +26,6 @@ __all__ = [
     "calculate_macd",
     "calculate_rsi",
     "calculate_bollinger_bands",
+    "update_market_symbols",
+    "update_market_qlib_datas",
 ]

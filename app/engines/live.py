@@ -19,6 +19,7 @@ class LiveEngine(Engine):
         super().__init__()
 
     def run(self):
+        super().run()
         """运行实盘监控"""
         logger.info("开始实盘监控...")
         while True:

@@ -17,4 +17,4 @@ class BacktestEngine(Engine):
 
     def run(self):
         """运行回测"""
-        logger.error("回测数据为空")
+        super().run()

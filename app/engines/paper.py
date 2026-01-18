@@ -8,5 +8,6 @@ class PaperEngine(Engine):
         super().__init__()
 
     def run(self):
+        super().run()
         """运行模拟盘监控"""
         pass

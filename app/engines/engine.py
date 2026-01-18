@@ -8,6 +8,7 @@ from app.core import cfg, ActionType, TradeMode
 from app.strategies import Strategy
 from app.trading import create_account
 from app.providers import create_provider
+from app.utils import update_market_symbols, update_market_qlib_datas
 
 logger = logging.getLogger(__name__)
 
@@ -22,4 +23,8 @@ class Engine(ABC):
 
     def run(self):
         """运行策略执行引擎"""
-        pass
+        self.update_market_data()
+    
+    def update_market_data(self) -> None:
+        update_market_symbols()
+        update_market_qlib_datas()
