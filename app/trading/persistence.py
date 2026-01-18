@@ -28,7 +28,7 @@ class TradeRecord(BaseModel):
         frozen=True,
         extra="forbid",
     )
-    timestamp: datetime = Field(default_factory=datetime)
+    timestamp: datetime = Field(default_factory=datetime.now)
     action: ActionType = Field(default=ActionType.HOLD)
     symbol: str = Field(pattern=SYMBOL_REGEX)
     quantity: int = Field(ge=0)
@@ -50,4 +50,4 @@ class AccountData(BaseModel):
     )
     cash: float = Field(default=cfg.account.balance)
     position_record: Dict[str, Position] = Field(default_factory=dict)
-    trade_record: Dict[str, TradeRecord] = Field(default_factory=dict)
+    trade_record: Dict[datetime, TradeRecord] = Field(default_factory=dict)

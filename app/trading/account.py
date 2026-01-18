@@ -105,4 +105,6 @@ class Account(ABC):
             )
         self.data.trade_record[trade.timestamp] = trade
         self.save()
-        self.notifier.notify(f"交易事件：{trade}")
+        logger.info(f"交易事件：{trade}")
+        title = f"{trade.action} {trade.symbol} x {trade.quantity} @ {trade.price:.2f}"
+        self.notifier.notify(title, f"交易事件：{trade}")

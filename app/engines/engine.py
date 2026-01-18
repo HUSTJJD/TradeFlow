@@ -8,7 +8,7 @@ from app.core import cfg, ActionType, TradeMode
 from app.strategies import Strategy
 from app.trading import create_account
 from app.providers import create_provider
-from app.utils import update_market_symbols, update_market_qlib_datas
+from app.utils import update_market_symbols, update_stock_datas
 
 logger = logging.getLogger(__name__)
 
@@ -27,4 +27,4 @@ class Engine(ABC):
     
     def update_market_data(self) -> None:
         update_market_symbols()
-        update_market_qlib_datas()
+        update_stock_datas()
