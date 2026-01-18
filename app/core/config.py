@@ -42,8 +42,8 @@ class AppConfig(BaseModel):
 
 
 class BacktestConfig(BaseModel):
-    start_time: datetime = Field(default_factory=datetime, description="开始时间")
-    end_time: datetime = Field(default_factory=datetime, description="结束时间")
+    start_time: datetime = Field(default_factory=datetime.today, description="开始时间")
+    end_time: datetime = Field(default_factory=datetime.today, description="结束时间")
     benchmarks: List[str] = Field(default_factory=list, description="基准列表")
 
 
