@@ -28,3 +28,4 @@ venv.bak/
 *.log
 qlib/
 data/stocks
+data/qlib_data
