@@ -23,8 +23,11 @@ app:
   using_provider: "LONGPORT"
   using_strategy: "MACD" # WR, MACD, RSI
   allowed_boards: # MAIN, STAR, CHINEXT, BSHARE, BSE, NQ, HK
-    - "MAIN"
-    - "HK"
+    - "SHMainConnect"
+    - "SHMainNonConnect"
+    - "SZMainConnect"
+    - "SZMainNonConnect"
+    - "HKEquity"
   update_market_data_interval_days: 7
 
 backtest:

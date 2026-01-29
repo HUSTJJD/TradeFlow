@@ -1,12 +1,16 @@
 from abc import ABC, abstractmethod
 import logging
 from typing import Callable
+import pandas as pd
 
 logger = logging.getLogger(__name__)
 
 
 class Provider(ABC):
     """券商API 抽象基类，定义统一的数据访问接口。"""
+
+    def __init__(self):
+        pass
 
     @abstractmethod
     def request_buy(self, symbol: str, quantity: int, callback: Callable) -> None:
@@ -16,4 +20,19 @@ class Provider(ABC):
     @abstractmethod
     def request_sell(self, symbol: str, quantity: int, callback: Callable) -> None:
         """卖出股票"""
+        pass
+
+    @abstractmethod
+    def convert_a_symbol(self, symbol: str) -> str:
+        """转换A股代码"""
+        pass
+
+    @abstractmethod
+    def convert_hk_symbol(self, symbol: str) -> str:
+        """转换H股代码"""
+        pass
+
+    @abstractmethod
+    def request_static_info(self, symbols: list[str]) -> pd.DataFrame:
+        """获取静态信息"""
         pass

@@ -10,7 +10,6 @@ from .indicators import (
     calculate_rsi,
     calculate_bollinger_bands,
 )
-from .dataset import Dataset
 
 
 __all__ = [
@@ -26,5 +25,4 @@ __all__ = [
     "calculate_macd",
     "calculate_rsi",
     "calculate_bollinger_bands",
-    "Dataset",
 ]

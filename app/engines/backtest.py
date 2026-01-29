@@ -1,8 +1,4 @@
 import logging
-import pandas as pd
-from typing import Dict, List, Any, Optional, cast
-from app.core import cfg
-from app.strategies import Strategy
 from app.engines.engine import Engine
 
 
