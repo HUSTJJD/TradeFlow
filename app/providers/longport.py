@@ -70,8 +70,46 @@ class LongPortProvider(Provider):
         return f"{symbol}.HK"
 
     def request_static_info(self, symbols: list[str]) -> pd.DataFrame:
-        df = pd.DataFrame()
+        sec_static_infos = []
         for i in range(0, len(symbols), 500):
             batch = symbols[i : i + 500]
-            df = pd.concat([df, self.quote_ctx.static_info(batch)])
-        return df
+            sec_static_infos.extend(self.quote_ctx.static_info(batch))
+        static_infos = []
+        for quote in sec_static_infos:
+            static_infos.append(
+                [
+                    quote.symbol,
+                    quote.name_cn,
+                    quote.exchange,
+                    quote.currency,
+                    quote.lot_size,
+                    quote.total_shares,
+                    quote.circulating_shares,
+                    quote.hk_shares,
+                    float(quote.eps),
+                    float(quote.eps_ttm),
+                    float(quote.bps),
+                    float(quote.dividend_yield),
+                    quote.stock_derivatives,
+                    str(quote.board).split(".")[1],
+                ]
+            )
+        return pd.DataFrame(
+            static_infos,
+            columns=[
+                "symbol",
+                "name_cn",
+                "exchange",
+                "currency",
+                "lot_size",
+                "total_shares",
+                "circulating_shares",
+                "hk_shares",
+                "eps",
+                "eps_ttm",
+                "bps",
+                "dividend_yield",
+                "stock_derivatives",
+                "board",
+            ],
+        )
