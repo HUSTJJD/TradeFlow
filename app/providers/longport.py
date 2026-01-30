@@ -1,7 +1,11 @@
+from datetime import date
+
+from sympy import true
+from app.core import TIME_FORMAT
 from .provider import Provider
 import logging
 from typing import Callable, Optional
-from longport.openapi import QuoteContext, Config
+from longport.openapi import QuoteContext, Config, Period, AdjustType, TradeSessions
 import pandas as pd
 import os
 from app.core import cfg
@@ -113,3 +117,20 @@ class LongPortProvider(Provider):
                 "board",
             ],
         )
+
+    def request_history_info(
+        self,
+        symbol: str,
+        start_date: str,
+        end_date: str = date.today(),
+    ) -> pd.DataFrame:
+        """获取历史信息"""
+        bars = self.quote_ctx.history_candlesticks_by_date(
+            symbol,
+            Period.Min_15,
+            AdjustType.ForwardAdjust,
+            start_date,
+            end_date,
+            TradeSessions.All,
+        )
+        return pd.DataFrame(bars)

@@ -1,8 +1,12 @@
 from enum import Enum
 
+from sqlalchemy import TIME
+
 SYMBOL_REGEX = r"^[a-zA-Z0-9\.]*\.[a-zA-Z0-9]+$"
 
 HEXCOLOR_REGEX = r"^#[0-9a-fA-F]{6}$"
+
+TIME_FORMAT = "%Y%m%d"
 
 class TradeMode(str, Enum):
     """交易模式枚举"""

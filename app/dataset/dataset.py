@@ -5,14 +5,15 @@ from datetime import datetime, timedelta, date
 import random
 import time
 import pandas as pd
-import akshare as ak
-from sqlalchemy import all_
+from app.core import TIME_FORMAT
 from app.providers import Provider
 
 logger = logging.getLogger(__name__)
 
+
 class Dataset:
     """数据集工具类，提供市场标的和历史数据的获取与更新功能。"""
+
     SYMBOL_FILE_PATH = Path("data/watchlist_symbols.csv")
     STATIC_INFO_FILE_PATH = Path("data/static_infos.csv")
     DATA_FILE_PATH = Path("data/stocks/")
@@ -34,15 +35,17 @@ class Dataset:
             if stock is None or stock.empty:
                 continue
             start_date = stock.get("start_date") or (
-                date.today() - timedelta(days=365 * 10)
-            ).strftime("%Y%m%d")
-            end_date = stock.get("end_date") or date.today().strftime("%Y%m%d")
+                date.today() - timedelta(days=1)
+            )
+            end_date = stock.get("end_date") or date.today()
             if os.path.exists(file_path):
                 df = pd.read_parquet(file_path)
             else:
                 df = pd.DataFrame()
             try:
-                new_df = self.fetch_stock_data(stock, start_date, end_date)
+                new_df = self.provider.request_history_info(
+                    symbol, start_date, end_date
+                )
                 df = pd.concat([df, new_df], ignore_index=True)
                 logger.info(f"{symbol} 历史数据已更新，数据量: {len(df)} 条")
                 df.to_parquet(file_path)
@@ -52,26 +55,17 @@ class Dataset:
                 self.static_infos.loc[symbol] = stock
             except Exception as e:
                 logger.error(f"更新 {symbol} 历史数据失败: {e}")
-            time.sleep(random.uniform(0.5, 1))
-
-    def fetch_stock_data(
-        self, stock: pd.Series, start_date: str, end_date: str
-    ) -> pd.DataFrame:
-        """获取单只股票的历史数据"""
-        origin_symbol = str(stock.get("origin_symbol"))
-        logger.info(f"开始获取 {origin_symbol} 的历史数据...")
-        board = stock.get("board")
-        # if board == MarketType.HK.value:
-        #     return ak.stock_hk_hist(symbol=origin_symbol, period="daily", start_date=start_date, end_date=end_date, adjust="qfq")
-        # if board in [MarketType.MAIN.value, MarketType.STAR.value, MarketType.CHINEXT.value]:
-        #     return ak.stock_zh_a_hist(symbol=origin_symbol, period="daily", start_date=start_date, end_date=end_date, adjust="qfq")
-        return self.provider.request_static_info(stock, start_date, end_date)
+            time.sleep(random.uniform(1, 2))
 
     def update_static_infos(self):
         if os.path.exists(self.STATIC_INFO_FILE_PATH):
-            file_mtime = datetime.fromtimestamp(os.path.getmtime(self.STATIC_INFO_FILE_PATH))
+            file_mtime = datetime.fromtimestamp(
+                os.path.getmtime(self.STATIC_INFO_FILE_PATH)
+            )
             if datetime.now() - file_mtime < timedelta(days=30):
-                self.static_infos = pd.read_csv(self.STATIC_INFO_FILE_PATH, index_col="symbol")
+                self.static_infos = pd.read_csv(
+                    self.STATIC_INFO_FILE_PATH, index_col="symbol"
+                )
         else:
             if not os.path.exists(self.SYMBOL_FILE_PATH):
                 all_symbols = ["700.Hk"]
