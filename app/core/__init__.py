@@ -11,7 +11,9 @@ from .constants import (
     NotifierType,
     SYMBOL_REGEX,
     HEXCOLOR_REGEX,
+    TIME_FORMAT,
 )
+
 try:
     cfg = load_app_config()
 except Exception as e:
@@ -30,4 +32,5 @@ __all__ = [
     "NotifierType",
     "SYMBOL_REGEX",
     "HEXCOLOR_REGEX",
+    "TIME_FORMAT",
 ]
